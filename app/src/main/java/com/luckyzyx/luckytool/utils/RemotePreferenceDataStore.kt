@@ -9,7 +9,7 @@ import androidx.preference.PreferenceDataStore
  * target 由 [appPrefs] 提供：libxposed service 绑定可用时即 remote prefs
  * （与宿主进程 Env.prefs 同一数据源），未绑定时回落本地 prefs。
  */
-class RemotePreferenceDataStore(private val target: SharedPreferences) : PreferenceDataStore {
+class RemotePreferenceDataStore(private val target: SharedPreferences) : PreferenceDataStore() {
 
     private fun editor(): SharedPreferences.Editor = target.edit()
 

@@ -106,9 +106,6 @@ dependencies {
     compileOnly(projects.hiddenApiStub)
     implementation(projects.colorpicker)
 
-    //XPosed or API
-    implementation(libs.yukihookapi)
-
     //libxposed：原生 API（框架注入后提供）+ 模块 App 侧 service（远程偏好载体）
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)

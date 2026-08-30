@@ -16,7 +16,7 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreference
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
+import androidx.preference.PreferenceFragmentCompat
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.ui.activity.MainActivity
 import com.luckyzyx.luckytool.ui.application.MyApplication
@@ -28,6 +28,8 @@ import com.luckyzyx.luckytool.utils.IntentPrefs
 import com.luckyzyx.luckytool.utils.IntentUtils
 import com.luckyzyx.luckytool.utils.LogUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
+import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
+import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.utils.OtherPrefs
 import com.luckyzyx.luckytool.utils.SettingsPrefs
 import com.luckyzyx.luckytool.utils.backupAllPrefs
@@ -56,7 +58,7 @@ import java.io.IOException
 import kotlin.system.exitProcess
 
 @Obfuscate
-class SettingsFragment : ModulePreferenceFragment() {
+class SettingsFragment : PreferenceFragmentCompat() {
     private val backupData = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
     ) {
@@ -166,8 +168,9 @@ class SettingsFragment : ModulePreferenceFragment() {
         (activity as MainActivity).restart()
     }
 
-    override fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) {
-        preferenceManager.sharedPreferencesName = SettingsPrefs
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        preferenceManager.preferenceDataStore =
+            RemotePreferenceDataStore(requireContext().appPrefs(SettingsPrefs))
         preferenceScreen = preferenceManager.createPreferenceScreen(requireActivity()).apply {
             //主题
             addPreference(PreferenceCategory(context).apply {

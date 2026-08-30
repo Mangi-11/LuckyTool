@@ -17,9 +17,11 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceGroup.PreferencePositionCallback
 import androidx.recyclerview.widget.RecyclerView
-import com.highcapable.yukihookapi.hook.xposed.prefs.ui.ModulePreferenceFragment
+import androidx.preference.PreferenceFragmentCompat
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.data.PrefsItem
+import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
+import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.ui.activity.MainActivity
 import com.luckyzyx.luckytool.utils.LogUtils
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
@@ -34,7 +36,7 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @Suppress("unused")
-abstract class BaseScopePreferenceFeagment : ModulePreferenceFragment(), MenuProvider {
+abstract class BaseScopePreferenceFeagment : PreferenceFragmentCompat(), MenuProvider {
 
     /**
      * @see [getOSVersionName]
@@ -123,9 +125,9 @@ abstract class BaseScopePreferenceFeagment : ModulePreferenceFragment(), MenuPro
         setupMenuProvider(this)
     }
 
-    override fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) {
-        if (currentPrefsName.isNotBlank()) preferenceManager.sharedPreferencesName =
-            currentPrefsName
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        if (currentPrefsName.isNotBlank()) preferenceManager.preferenceDataStore =
+            RemotePreferenceDataStore(requireContext().appPrefs(currentPrefsName))
         preferenceScreen = preferenceManager.createPreferenceScreen(requireActivity()).apply {
             context.loadPreferences().forEachIndexed { index, preference ->
                 try {

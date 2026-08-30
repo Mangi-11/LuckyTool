@@ -16,9 +16,14 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
+import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.R
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.FlowUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.AbsSettingsValueProxyUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.WifiUtils
@@ -27,7 +32,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object WiFiDataIconRelated : YukiBaseHooker() {
+object WiFiDataIconRelated : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         when (osCode) {
@@ -37,7 +42,7 @@ object WiFiDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object WiFiDataIcon : YukiBaseHooker() {
+    object WiFiDataIcon : Hooker {
 
         private val hasRegisterCallback = false
         private var wifiInfo: WifiInfo? = null
@@ -167,7 +172,7 @@ object WiFiDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object WiFiDataIconV14 : YukiBaseHooker() {
+    object WiFiDataIconV14 : Hooker {
         override fun onHook() {
             val removeInout = prefs(ModulePrefs).getBoolean("remove_wifi_data_inout", false)
 

@@ -8,7 +8,11 @@ import androidx.core.text.layoutDirection
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.sysui.LunarHelperUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.WeatherInfoParseHelper
 import com.luckyzyx.luckytool.utils.A13
@@ -23,7 +27,7 @@ import kotlin.math.abs
 
 @Obfuscate
 @Suppress("LocalVariableName", "DiscouragedApi")
-object ControlCenterDateStyle : YukiBaseHooker() {
+object ControlCenterDateStyle : Hooker {
     override fun onHook() {
         var removeComma = prefs(ModulePrefs).getBoolean("remove_control_center_date_comma", false)
         dataChannel.wait<Boolean>("remove_control_center_date_comma") { removeComma = it }

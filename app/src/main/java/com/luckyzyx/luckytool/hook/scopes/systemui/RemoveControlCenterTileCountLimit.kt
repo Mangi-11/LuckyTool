@@ -2,7 +2,10 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
@@ -10,7 +13,7 @@ import org.luckypray.dexkit.DexKitBridge
 import org.luckypray.dexkit.query.enums.StringMatchType
 
 @Obfuscate
-class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode < 26) {
@@ -23,7 +26,7 @@ class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : YukiBa
     }
 
     @Obfuscate
-    object RemoveLimitNumberHint : YukiBaseHooker() {
+    object RemoveLimitNumberHint : Hooker {
         override fun onHook() {
             //Source OplusSeparateQSCustomizer
             "com.oplus.systemui.plugins.qs.customize.OplusSeparateQSCustomizer".toClass().resolve()
@@ -40,13 +43,13 @@ class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : YukiBa
     }
 
     @Obfuscate
-    class RemoveReceiveItemLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class RemoveReceiveItemLimit(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source OplusQSCustomizer
             val clazz = VariousClass(
                 "com.oplusos.systemui.qs.customize.OplusQSCustomizer", //C12 C13
                 "com.oplus.systemui.qs.customize.OplusQSCustomizer" //C14
-            ).toClassOrNull(appClassLoader) ?: return
+            ).loadOrNull(appClassLoader) ?: return
 
             dexKitBridge.findClass {
                 matcher {
@@ -68,7 +71,7 @@ class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : YukiBa
     }
 
     @Obfuscate
-    object RemoveLimitNumberHintV14 : YukiBaseHooker() {
+    object RemoveLimitNumberHintV14 : Hooker {
         override fun onHook() {
             //Source OplusQSCustomizer
             VariousClass(
@@ -86,13 +89,13 @@ class RemoveControlCenterTileCountLimit(val dexKitBridge: DexKitBridge) : YukiBa
     }
 
     @Obfuscate
-    class RemoveReceiveItemLimitV12(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class RemoveReceiveItemLimitV12(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source OplusQSCustomizer
             val clazz = VariousClass(
                 "com.oplusos.systemui.qs.customize.OplusQSCustomizer", //C12 C13
                 "com.oplus.systemui.qs.customize.OplusQSCustomizer" //C14
-            ).toClassOrNull(appClassLoader) ?: return
+            ).loadOrNull(appClassLoader) ?: return
 
             dexKitBridge.findClass {
                 matcher {

@@ -10,8 +10,12 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isSubclassOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.closeScreen
@@ -20,7 +24,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LockScreenBottomButton : YukiBaseHooker() {
+object LockScreenBottomButton : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 37) loadHooker(FlashlightQuickCloseScreen)
@@ -29,7 +33,7 @@ object LockScreenBottomButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object FlashlightQuickCloseScreen : YukiBaseHooker() {
+    object FlashlightQuickCloseScreen : Hooker {
         override fun onHook() {
             var autoCloseScreen = prefs(ModulePrefs).getBoolean(
                 "lock_screen_switch_flashlight_auto_close_screen", false
@@ -54,7 +58,7 @@ object LockScreenBottomButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LockScreenBottomButtonV14 : YukiBaseHooker() {
+    object LockScreenBottomButtonV14 : Hooker {
         val ViewModel =
             "com.android.systemui.keyguard.ui.viewmodel.KeyguardQuickAffordanceViewModel"
 
@@ -114,7 +118,7 @@ object LockScreenBottomButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LockScreenBottomButtonV13 : YukiBaseHooker() {
+    object LockScreenBottomButtonV13 : Hooker {
         override fun onHook() {
             //affordance_magazine
             var rmLeft =

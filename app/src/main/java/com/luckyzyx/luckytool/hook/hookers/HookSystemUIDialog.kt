@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.DisableDuplicateFloatingWindow
 import com.luckyzyx.luckytool.hook.scopes.systemui.DisableHeadphoneHighVolumeWarning
 import com.luckyzyx.luckytool.hook.scopes.systemui.DisableVolumeBarThicknessEffect
@@ -17,8 +17,9 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSystemUIDialog : YukiBaseHooker() {
+object HookSystemUIDialog : Hooker {
     override fun onHook() {
+
         val osCode = getOSVersionCode
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

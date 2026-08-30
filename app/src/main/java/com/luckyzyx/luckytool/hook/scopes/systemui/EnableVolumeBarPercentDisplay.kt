@@ -7,13 +7,16 @@ import android.text.TextPaint
 import android.view.View
 import androidx.core.graphics.toColorInt
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableVolumeBarPercentDisplay : YukiBaseHooker() {
+object EnableVolumeBarPercentDisplay : Hooker {
     override fun onHook() {
         var color = prefs(ModulePrefs).getString("custom_volume_bar_percent_color", "#FFFFFFFF")
         dataChannel.wait<String>("custom_volume_bar_percent_color") { color = it }

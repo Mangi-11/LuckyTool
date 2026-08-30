@@ -4,11 +4,14 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveTopLockScreenIcon : YukiBaseHooker() {
+object RemoveTopLockScreenIcon : Hooker {
     override fun onHook() {
         //Source LockIcon C14-
         "com.android.systemui.statusbar.phone.LockIcon".toClassOrNull()?.resolve()?.apply {
@@ -23,7 +26,7 @@ object RemoveTopLockScreenIcon : YukiBaseHooker() {
         val lockIconView = VariousClass(
             "com.android.keyguard.LockIconView",
             "com.android.keyguard.OplusLockIconView" //C16
-        ).toClassOrNull() ?: return
+        ).loadOrNull() ?: return
 
         lockIconView.resolve().apply {
             firstMethod { name = "updateColorAndBackgroundVisibility" }.hook {

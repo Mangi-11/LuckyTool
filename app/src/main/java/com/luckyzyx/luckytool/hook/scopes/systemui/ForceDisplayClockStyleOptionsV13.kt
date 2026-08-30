@@ -5,11 +5,16 @@ import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceDisplayClockStyleOptionsV13 : YukiBaseHooker() {
+object ForceDisplayClockStyleOptionsV13 : Hooker {
     private const val flavorTwoFeatureOption =
         "com.oplusos.systemui.common.feature.FlavorTwoFeatureOption"
     private const val type = "TYPE_PREFRENCE_JUMP"

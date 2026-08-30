@@ -7,14 +7,19 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
+object NotificationBackgroundBlurAlpha : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 34) loadHooker(NotificationBackgroundBlurAlphaV15)
@@ -22,7 +27,7 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object NotificationBackgroundBlurAlphaV15 : YukiBaseHooker() {
+    object NotificationBackgroundBlurAlphaV15 : Hooker {
         override fun onHook() {
             var customAlpha =
                 prefs(ModulePrefs).getInt("custom_notification_background_transparency", -1)
@@ -74,7 +79,7 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object NotificationBackgroundBlurAlphaV14 : YukiBaseHooker() {
+    object NotificationBackgroundBlurAlphaV14 : Hooker {
         private var disableBlur = false
 
         @SuppressLint("DiscouragedApi")

@@ -3,13 +3,16 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveSmallWindowReplyWhitelist : YukiBaseHooker() {
+object RemoveSmallWindowReplyWhitelist : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 34) loadHooker(SmallWindowReplyWhitelist)
@@ -17,7 +20,7 @@ object RemoveSmallWindowReplyWhitelist : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object SmallWindowReplyWhitelist : YukiBaseHooker() {
+    object SmallWindowReplyWhitelist : Hooker {
         override fun onHook() {
             //Source HeadsUpToZoomUtils
             "com.android.systemui.util.HeadsUpToZoomUtils".toClass().resolve().apply {
@@ -29,9 +32,9 @@ object RemoveSmallWindowReplyWhitelist : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object SmallWindowReplyWhitelistV14 : YukiBaseHooker() {
+    object SmallWindowReplyWhitelistV14 : Hooker {
         override fun onHook() {
-            var set =
+            var set: Set<String> =
                 prefs(ModulePrefs).getStringSet("set_small_window_reply_blacklist_list", ArraySet())
             dataChannel.wait<Set<String>>("set_small_window_reply_blacklist_list") { set = it }
 

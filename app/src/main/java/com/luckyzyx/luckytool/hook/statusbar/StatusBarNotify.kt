@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.statusbar
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.DisableHighVolumeWarningNotifications
 import com.luckyzyx.luckytool.hook.scopes.systemui.EnableGlobalNotificationSimpleBannerMode
 import com.luckyzyx.luckytool.hook.scopes.systemui.RemoveChargingCompleted
@@ -18,7 +18,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object StatusBarNotify : YukiBaseHooker() {
+object StatusBarNotify : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

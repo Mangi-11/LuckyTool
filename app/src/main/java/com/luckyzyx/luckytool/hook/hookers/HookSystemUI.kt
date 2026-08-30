@@ -5,14 +5,18 @@ import android.media.MediaMetadata
 import android.os.Bundle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.hook.scopes.systemui.HookSystemUIFeature
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
 
 @Obfuscate
-object HookSystemUI : YukiBaseHooker() {
+object HookSystemUI : Hooker {
     override fun onHook() {
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

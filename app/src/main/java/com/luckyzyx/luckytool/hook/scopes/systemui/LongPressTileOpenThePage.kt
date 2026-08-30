@@ -5,14 +5,18 @@ import android.os.Handler
 import android.telephony.SubscriptionManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 import java.lang.ref.WeakReference
 
 @Obfuscate
-object LongPressTileOpenThePage : YukiBaseHooker() {
+object LongPressTileOpenThePage : Hooker {
     override fun onHook() {
         if (SDK == A13) loadHooker(LongPressTileV13)
         else loadHooker(LongPressTile)
@@ -21,7 +25,7 @@ object LongPressTileOpenThePage : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LongPressTile : YukiBaseHooker() {
+    object LongPressTile : Hooker {
         override fun onHook() {
             //QSTileImpl
             "com.android.systemui.qs.tileimpl.QSTileImpl".toClass().resolve().apply {
@@ -38,7 +42,7 @@ object LongPressTileOpenThePage : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LongPressTileV13 : YukiBaseHooker() {
+    object LongPressTileV13 : Hooker {
         override fun onHook() {
             //QSTileImpl
             "com.android.systemui.qs.tileimpl.QSTileImpl".toClass().resolve().apply {
@@ -54,7 +58,7 @@ object LongPressTileOpenThePage : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookCellularTileIntent : YukiBaseHooker() {
+    object HookCellularTileIntent : Hooker {
         override fun onHook() {
             //Source OplusCellularTile
             VariousClass(

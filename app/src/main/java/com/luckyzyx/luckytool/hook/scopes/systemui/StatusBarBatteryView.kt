@@ -4,14 +4,17 @@ import android.graphics.Typeface
 import android.util.TypedValue
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object StatusBarBatteryView : YukiBaseHooker() {
+object StatusBarBatteryView : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(StatusBarPowerStyle)
@@ -19,7 +22,7 @@ object StatusBarBatteryView : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object StatusBarPowerStyle : YukiBaseHooker() {
+    object StatusBarPowerStyle : Hooker {
         override fun onHook() {
             val removePercent =
                 prefs(ModulePrefs).getBoolean("remove_statusbar_battery_percent", false)
@@ -100,7 +103,7 @@ object StatusBarBatteryView : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object StatusBarPowerStyleC13 : YukiBaseHooker() {
+    object StatusBarPowerStyleC13 : Hooker {
         override fun onHook() {
             val removePercent =
                 prefs(ModulePrefs).getBoolean("remove_statusbar_battery_percent", false)

@@ -2,11 +2,13 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DisableSysUIOTGAutoOff : YukiBaseHooker() {
+object DisableSysUIOTGAutoOff : Hooker {
     override fun onHook() {
         // Search OtgHelper 600000
         VariousClass(

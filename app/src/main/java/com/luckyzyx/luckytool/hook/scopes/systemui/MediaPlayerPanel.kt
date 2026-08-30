@@ -8,7 +8,11 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.sysui.DependencyUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.MediaPlayerDataUtils
 import com.luckyzyx.luckytool.utils.A13
@@ -18,13 +22,13 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object MediaPlayerPanel : YukiBaseHooker() {
+object MediaPlayerPanel : Hooker {
     override fun onHook() {
         //自动显示媒体播放器
         val isAutoDisplay = VariousClass(
             "com.oplusos.systemui.qs.OplusQSTileMediaContainer", //C13.1
             "com.oplus.systemui.qs.OplusQSTileMediaContainer" //C14
-        ).toClassOrNull()?.let {
+        ).loadOrNull()?.let {
             it.resolve().firstMethodOrNull { name = "setMediaMode" } != null
         } ?: true
 
@@ -38,7 +42,7 @@ object MediaPlayerPanel : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MediaPlayerDisplayMode : YukiBaseHooker() {
+    object MediaPlayerDisplayMode : Hooker {
         override fun onHook() {
             var mode = prefs(ModulePrefs).getString("set_media_player_display_mode", "0")
             dataChannel.wait<String>("set_media_player_display_mode") { mode = it }
@@ -113,7 +117,7 @@ object MediaPlayerPanel : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MediaPlayerDisplayModePermanent : YukiBaseHooker() {
+    object MediaPlayerDisplayModePermanent : Hooker {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             var mode = prefs(ModulePrefs).getString("set_media_player_display_mode", "0")
@@ -247,7 +251,7 @@ object MediaPlayerPanel : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ForceEnableMediaToggleButton : YukiBaseHooker() {
+    object ForceEnableMediaToggleButton : Hooker {
         override fun onHook() {
             //Source OplusQsMediaPanelView
             "com.oplus.systemui.qs.media.OplusQsMediaPanelView".toClass().resolve().apply {

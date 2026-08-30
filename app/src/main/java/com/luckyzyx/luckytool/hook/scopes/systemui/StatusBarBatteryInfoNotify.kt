@@ -10,9 +10,10 @@ import android.os.SystemProperties
 import android.util.TypedValue
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import com.luckyzyx.luckytool.hook.core.onAppLifecycle
 import org.lsposed.lsparanoid.Obfuscate
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.utils.IChargerUtils
@@ -33,7 +34,7 @@ import java.util.Properties
 import kotlin.math.abs
 
 @Obfuscate
-object StatusBarBatteryInfoNotify : YukiBaseHooker() {
+object StatusBarBatteryInfoNotify : Hooker {
     //battery
     private var status: String = ""
     private var statusValue: Int = 0
@@ -207,7 +208,7 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
                 } else chargeInfo.getIntProperty("wireless_voltage_now") / 1000.0
             }
         } catch (e: Exception) {
-            YLog.error("StatusBarBatteryInfoNotify -> InitInfo", e)
+            XLog.error("StatusBarBatteryInfoNotify -> InitInfo", e)
         }
     }
 
@@ -398,7 +399,7 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
                 if (queryChargeInfo.isNotBlank()) load(StringReader(queryChargeInfo))
             }
         } catch (e: Exception) {
-            YLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
+            XLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
             Properties()
         }
     }

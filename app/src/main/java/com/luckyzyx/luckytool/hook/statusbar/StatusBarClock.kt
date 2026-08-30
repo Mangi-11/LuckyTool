@@ -8,7 +8,12 @@ import android.view.Gravity
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.sysui.LunarHelperUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
@@ -24,7 +29,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 @Obfuscate
-class StatusBarClock : YukiBaseHooker() {
+class StatusBarClock : Hooker {
 
     val clockMode = prefs(ModulePrefs).getString("statusbar_clock_mode", "0")
     val isYear = prefs(ModulePrefs).getBoolean("statusbar_clock_show_year", false)

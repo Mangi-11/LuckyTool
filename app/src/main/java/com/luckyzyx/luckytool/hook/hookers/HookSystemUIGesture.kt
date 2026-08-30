@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.FullScreenGestureSideSlideBar
 import com.luckyzyx.luckytool.hook.scopes.systemui.RemoveBackGestureConfirmationLimit
 import com.luckyzyx.luckytool.hook.scopes.systemui.RemoveRotateScreenButton
@@ -9,7 +9,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSystemUIGesture : YukiBaseHooker() {
+object HookSystemUIGesture : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

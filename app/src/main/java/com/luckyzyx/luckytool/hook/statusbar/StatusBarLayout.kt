@@ -8,7 +8,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -18,7 +23,7 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @Suppress("UNUSED_VARIABLE", "DiscouragedApi")
-object StatusBarLayout : YukiBaseHooker() {
+object StatusBarLayout : Hooker {
     private var statusBarLeftMargin: Int = 0
     private var statusBarRightMargin: Int = 0
     private var statusBarTopMargin: Int = 0

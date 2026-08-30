@@ -10,14 +10,17 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.utils.sysui.DependencyUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.FlavorOneFeatureUtils
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ShowManualLockButtonPowerMenu : YukiBaseHooker() {
+object ShowManualLockButtonPowerMenu : Hooker {
 
     val OsBinderCacheUtils = "com.android.systemui.oplusutils.OsBinderCacheUtils"
     val LockPatternUtils = "com.android.internal.widget.LockPatternUtils"
@@ -29,7 +32,7 @@ object ShowManualLockButtonPowerMenu : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ManualLockButton : YukiBaseHooker() {
+    object ManualLockButton : Hooker {
         @SuppressLint("MissingPermission")
         override fun onHook() {
             //Source ShutdownViewControl
@@ -131,7 +134,7 @@ object ShowManualLockButtonPowerMenu : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ManualLockButtonV14 : YukiBaseHooker() {
+    object ManualLockButtonV14 : Hooker {
         override fun onHook() {
             //Source ShutdownViewControl
             "com.oplus.systemui.shutdown.ShutdownViewControl".toClass().resolve().apply {

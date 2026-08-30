@@ -21,7 +21,13 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.sysui.ClockSwitchHelper
 import com.luckyzyx.luckytool.hook.utils.sysui.WeatherInfoParseHelper
 import com.luckyzyx.luckytool.utils.A14
@@ -34,7 +40,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import java.util.Calendar
 
 @Obfuscate
-object LockScreenClock : YukiBaseHooker() {
+object LockScreenClock : Hooker {
 
     override fun onHook() {
         val removeClock = prefs(ModulePrefs).getBoolean("remove_lock_screen_clock_component", false)
@@ -45,7 +51,7 @@ object LockScreenClock : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object RemoveLockScreenClock : YukiBaseHooker() {
+    object RemoveLockScreenClock : Hooker {
         override fun onHook() {
             //Source KeyguardStyleClockControllerImpl
             "com.oplus.systemui.keyguard.clockstyle.KeyguardStyleClockControllerImpl".toClass()
@@ -62,7 +68,7 @@ object LockScreenClock : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object RemoveLockScreenClockV14 : YukiBaseHooker() {
+    object RemoveLockScreenClockV14 : Hooker {
         override fun onHook() {
             //Source KeyguardClockSwitch
             "com.android.keyguard.KeyguardClockSwitch".toClass().resolve().apply {
@@ -104,7 +110,7 @@ object LockScreenClock : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LockScreenClockStyleV14 : YukiBaseHooker() {
+    object LockScreenClockStyleV14 : Hooker {
         override fun onHook() {
             var redMode = prefs(ModulePrefs).getString("lock_screen_clock_redone_mode", "0")
             dataChannel.wait<String>("lock_screen_clock_redone_mode") { redMode = it }
@@ -265,7 +271,7 @@ object LockScreenClock : YukiBaseHooker() {
             VariousClass(
                 "com.oplusos.systemui.keyguard.clock.RedHorizontalDualClockView", //C13
                 "com.oplus.systemui.shared.clocks.RedHorizontalDualClockView" //C14
-            ).toClassOrNull()?.resolve()?.apply {
+            ).loadOrNull()?.resolve()?.apply {
                 firstMethod { name = "onFinishInflate" }.hook {
                     after {
                         if (!userTypeface) return@after

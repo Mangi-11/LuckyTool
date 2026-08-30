@@ -6,16 +6,17 @@ import android.nfc.NfcAdapter
 import android.os.Handler
 import com.drake.net.utils.scope
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.BuildConfig
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.onAppLifecycle
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.convertToMillis
 import kotlinx.coroutines.delay
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSystemUIAutoStart : YukiBaseHooker() {
+object HookSystemUIAutoStart : Hooker {
     override fun onHook() {
         var nfcEnable = prefs(ModulePrefs).getBoolean("enable_nfc_delay_shutdown", false)
         dataChannel.wait<Boolean>("enable_nfc_delay_shutdown") { nfcEnable = it }
@@ -33,10 +34,10 @@ object HookSystemUIAutoStart : YukiBaseHooker() {
                             setPackage(BuildConfig.APPLICATION_ID)
                         })
                     } catch (t: Throwable) {
-                        YLog.debug("AutoStartService try sthrow", t)
+                        XLog.debug("AutoStartService try sthrow", t)
                     }
                 }.catch {
-                    YLog.debug("AutoStartService scope throw", it)
+                    XLog.debug("AutoStartService scope throw", it)
                 }
             }
             //监听模块磁贴关闭控制中心
@@ -50,7 +51,7 @@ object HookSystemUIAutoStart : YukiBaseHooker() {
                 val delay = convertToMillis(nfcDelay)
                 if (delay < 0) {
                     nfcEnable = false
-                    YLog.debug("NFC Delay Error -> $nfcDelay | $delay")
+                    XLog.debug("NFC Delay Error -> $nfcDelay | $delay")
                     return@registerReceiver
                 }
                 val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
@@ -64,13 +65,13 @@ object HookSystemUIAutoStart : YukiBaseHooker() {
                         if (handler.hasCallbacks(runnable)) return@registerReceiver
                         handler.postDelayed(runnable, delay)
                     } catch (t: Throwable) {
-                        YLog.debug("NFC [$intExtra] Handler Add Error", t)
+                        XLog.debug("NFC [$intExtra] Handler Add Error", t)
                     }
                 } else {
                     try {
                         if (handler.hasCallbacks(runnable)) handler.removeCallbacks(runnable)
                     } catch (t: Throwable) {
-                        YLog.debug("NFC [$intExtra] Handler Remove Error", t)
+                        XLog.debug("NFC [$intExtra] Handler Remove Error", t)
                     }
                 }
             }

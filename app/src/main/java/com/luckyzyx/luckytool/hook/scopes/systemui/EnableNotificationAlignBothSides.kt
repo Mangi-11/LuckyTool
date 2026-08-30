@@ -7,7 +7,13 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.A15
 import com.luckyzyx.luckytool.utils.SDK
@@ -15,7 +21,7 @@ import com.luckyzyx.luckytool.utils.getScreenOrientation
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableNotificationAlignBothSides : YukiBaseHooker() {
+object EnableNotificationAlignBothSides : Hooker {
 
     private var qsPanelPaddingPx = 0
     override fun onHook() {
@@ -70,7 +76,7 @@ object EnableNotificationAlignBothSides : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object OtherNotification : YukiBaseHooker() {
+    private object OtherNotification : Hooker {
         override fun onHook() {
             //Source KeyguardMediaController -> MediaHost -> HostView -> parent
             VariousClass(
@@ -97,7 +103,7 @@ object EnableNotificationAlignBothSides : YukiBaseHooker() {
             VariousClass(
                 "com.oplusos.systemui.statusbar.notification.row.UbiquitousExpandableRow", //C13
                 "com.oplus.systemui.statusbar.notification.row.UbiquitousExpandableRow" //C14 or null
-            ).toClassOrNull()?.resolve()?.apply {
+            ).loadOrNull()?.resolve()?.apply {
                 firstMethod { name = "onFinishInflate" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
@@ -167,7 +173,7 @@ object EnableNotificationAlignBothSides : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object OtherNotificationC12 : YukiBaseHooker() {
+    private object OtherNotificationC12 : Hooker {
         override fun onHook() {
             //Source OplusMediaHost
             "com.oplusos.systemui.media.OplusMediaHost".toClass().resolve().apply {

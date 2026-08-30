@@ -1,11 +1,13 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveControlCenterCarriers : YukiBaseHooker() {
+object RemoveControlCenterCarriers : Hooker {
     override fun onHook() {
         //Source OplusSecondCarrierText
         "com.oplus.systemui.qs.widget.OplusSecondCarrierText".toClass().resolve().apply {

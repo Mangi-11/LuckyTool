@@ -7,7 +7,11 @@ import android.widget.LinearLayout
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getScreenOrientation
@@ -15,7 +19,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FixTileAlignBothSides : YukiBaseHooker() {
+object FixTileAlignBothSides : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode <= 26) loadHooker(HookTileAlignVertical)
@@ -23,7 +27,7 @@ object FixTileAlignBothSides : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookTileAlignVertical : YukiBaseHooker() {
+    private object HookTileAlignVertical : Hooker {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             //Sourcee QuickStatusBarHeader 竖屏溢出
@@ -50,7 +54,7 @@ object FixTileAlignBothSides : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookTileAlignHorizontal : YukiBaseHooker() {
+    private object HookTileAlignHorizontal : Hooker {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             val isCustomTile = prefs(ModulePrefs).getBoolean("control_center_tile_enable", false)

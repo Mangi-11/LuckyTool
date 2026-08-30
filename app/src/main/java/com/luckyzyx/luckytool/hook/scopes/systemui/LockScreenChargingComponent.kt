@@ -13,8 +13,13 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isSubclassOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.hook.utils.IChargerUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.BatteryControllerUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -27,7 +32,7 @@ import java.util.Properties
 
 @Suppress("MayBeConstant")
 @Obfuscate
-object LockScreenChargingComponent : YukiBaseHooker() {
+object LockScreenChargingComponent : Hooker {
     override fun onHook() {
         when (getOSVersionCode) {
             in 34..Int.MAX_VALUE -> loadHooker(ChargingComponent)
@@ -49,7 +54,7 @@ object LockScreenChargingComponent : YukiBaseHooker() {
 
     @Obfuscate
     @Suppress("LocalVariableName")
-    private object ChargingComponent : YukiBaseHooker() {
+    private object ChargingComponent : Hooker {
 
         private var oplusCharger: Any? = null
 
@@ -354,7 +359,7 @@ object LockScreenChargingComponent : YukiBaseHooker() {
                     if (queryChargeInfo.isNullOrBlank().not()) load(StringReader(queryChargeInfo))
                 }
             } catch (e: Exception) {
-                YLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
+                XLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
                 Properties()
             }
         }
@@ -362,7 +367,7 @@ object LockScreenChargingComponent : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object ChargingComponentC14 : YukiBaseHooker() {
+    private object ChargingComponentC14 : Hooker {
         override fun onHook() {
             var userTypeface =
                 prefs(ModulePrefs).getBoolean("lock_screen_charging_use_user_typeface", false)
@@ -514,7 +519,7 @@ object LockScreenChargingComponent : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object ChargingComponentC13 : YukiBaseHooker() {
+    private object ChargingComponentC13 : Hooker {
         override fun onHook() {
             var userTypeface =
                 prefs(ModulePrefs).getBoolean("lock_screen_charging_use_user_typeface", false)
@@ -648,7 +653,7 @@ object LockScreenChargingComponent : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object ChargingComponentC12 : YukiBaseHooker() {
+    private object ChargingComponentC12 : Hooker {
         override fun onHook() {
             var userTypeface =
                 prefs(ModulePrefs).getBoolean("lock_screen_charging_use_user_typeface", false)

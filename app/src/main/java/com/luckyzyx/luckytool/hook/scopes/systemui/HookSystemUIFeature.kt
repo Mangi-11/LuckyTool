@@ -3,7 +3,15 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.toClass
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -12,7 +20,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : Hooker {
 
     companion object {
         var callback: ((key: String, value: Any) -> Unit)? = null
@@ -21,6 +29,10 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
+
+        loadHooker(HookGlobalFeatureConfig)
+        loadHooker(HookGlobalSystemProperties)
+        loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
         loadHooker(HookFeatureOption)
 //        if (osCode >= 34) loadHooker(HookFeatureFlags)
@@ -31,7 +43,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookFeatureOption : YukiBaseHooker() {
+    private object HookFeatureOption : Hooker {
         override fun onHook() {
             //音量条位置
             val volumePosition =
@@ -95,7 +107,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookStatusBarFeature : YukiBaseHooker() {
+    private object HookStatusBarFeature : Hooker {
         override fun onHook() {
             //隐藏未使用信号标签 config_isSystemUiExpSignalUi
             val hideSignalLabels =
@@ -118,7 +130,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookFlavorOneFeature : YukiBaseHooker() {
+    private object HookFlavorOneFeature : Hooker {
         override fun onHook() {
             //全局搜索按钮
             val searchBtnMode =
@@ -159,7 +171,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookVolumeFeatureOption : YukiBaseHooker() {
+    private object HookVolumeFeatureOption : Hooker {
         override fun onHook() {
             //音量对话框背景透明度
             var volumeBlur =
@@ -178,7 +190,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookQSFeatureOption : YukiBaseHooker() {
+    private object HookQSFeatureOption : Hooker {
         override fun onHook() {
             //自定义控制中心音量条模式
             val volumnSeekbarMode =
@@ -197,7 +209,7 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object HookFeatureFlags : YukiBaseHooker() {
+    private object HookFeatureFlags : Hooker {
         override fun onHook() {
             //Source FeatureFlagsClassicRelease
             "com.android.systemui.flags.FeatureFlagsClassicRelease".toClass().resolve().apply {

@@ -3,7 +3,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.view.View
 import android.view.ViewGroup
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.hook.utils.sysui.MediaPlayerDataUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.QSFeatureOptionUtils
 import com.luckyzyx.luckytool.utils.A13
@@ -14,7 +18,7 @@ import com.luckyzyx.luckytool.utils.getScreenOrientation
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ControlCenterTiles : YukiBaseHooker() {
+object ControlCenterTiles : Hooker {
     var callback: ((key: String, value: String) -> Unit)? = null
 
     override fun onHook() {
@@ -25,7 +29,7 @@ object ControlCenterTiles : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ControlCenterTilesLayout : YukiBaseHooker() {
+    object ControlCenterTilesLayout : Hooker {
         override fun onHook() {
             val osCode = getOSVersionCode
 
@@ -102,7 +106,7 @@ object ControlCenterTiles : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ControlCenterTilesLayoutC12 : YukiBaseHooker() {
+    object ControlCenterTilesLayoutC12 : Hooker {
         override fun onHook() {
             val columnUnexpandedVertical =
                 prefs(ModulePrefs).getInt("tile_unexpanded_columns_vertical", 6)

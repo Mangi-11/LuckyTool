@@ -4,21 +4,25 @@ import android.graphics.Typeface
 import android.widget.TextView
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LockScreenCarriers : YukiBaseHooker() {
+object LockScreenCarriers : Hooker {
     override fun onHook() {
         if (SDK >= A14) loadHooker(LockScreenCarrier)
         else loadHooker(LockScreenCarrierV13)
     }
 
     @Obfuscate
-    private object LockScreenCarrier : YukiBaseHooker() {
+    private object LockScreenCarrier : Hooker {
         override fun onHook() {
             val isRemove = prefs(ModulePrefs).getBoolean("remove_statusbar_carriers", false)
             val customText =
@@ -78,7 +82,7 @@ object LockScreenCarriers : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private object LockScreenCarrierV13 : YukiBaseHooker() {
+    private object LockScreenCarrierV13 : Hooker {
         override fun onHook() {
             val userFont =
                 prefs(ModulePrefs).getBoolean("statusbar_carriers_use_user_typeface", false)

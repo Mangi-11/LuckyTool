@@ -17,7 +17,11 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import org.lsposed.lsparanoid.Obfuscate
@@ -25,7 +29,7 @@ import kotlin.math.pow
 
 @Obfuscate
 @Suppress("MemberVisibilityCanBePrivate")
-object StatusBarNetWorkSpeed : YukiBaseHooker() {
+object StatusBarNetWorkSpeed : Hooker {
 
     override fun onHook() {
         loadHooker(NetWorkSpeedDelay)
@@ -33,7 +37,7 @@ object StatusBarNetWorkSpeed : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object NetWorkSpeedDelay : YukiBaseHooker() {
+    object NetWorkSpeedDelay : Hooker {
         override fun onHook() {
             var networkSpeed = prefs(ModulePrefs).getBoolean("set_network_speed", false)
             dataChannel.wait<Boolean>("set_network_speed") { networkSpeed = it }
@@ -106,7 +110,7 @@ object StatusBarNetWorkSpeed : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object NetWorkSpeedView : YukiBaseHooker() {
+    object NetWorkSpeedView : Hooker {
         var layoutMode = prefs(ModulePrefs).getString("statusbar_network_layout", "0")
         var userTypeface = prefs(ModulePrefs).getBoolean("statusbar_network_user_typeface", false)
         var useBoldFont =

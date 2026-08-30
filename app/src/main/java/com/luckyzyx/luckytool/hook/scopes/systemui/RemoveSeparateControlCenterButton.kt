@@ -3,14 +3,17 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.utils.FlowUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveSeparateControlCenterButton : YukiBaseHooker() {
+object RemoveSeparateControlCenterButton : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 37) loadHooker(SeparateControlCenterButton)
@@ -22,7 +25,7 @@ object RemoveSeparateControlCenterButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object RemoveSeparateControlCenterSettingsButton : YukiBaseHooker() {
+    object RemoveSeparateControlCenterSettingsButton : Hooker {
         override fun onHook() {
             //Source OplusSeparateSettingsEntranceInteractor
             "com.oplus.systemui.plugins.qs.quickentrance.domain.interactor.OplusSeparateSettingsEntranceInteractor".toClass()
@@ -43,7 +46,7 @@ object RemoveSeparateControlCenterButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object SeparateControlCenterButton : YukiBaseHooker() {
+    object SeparateControlCenterButton : Hooker {
         override fun onHook() {
             val hideEdit = prefs(ModulePrefs).getBoolean("remove_control_center_edit_button", false)
             val hideMore = prefs(ModulePrefs).getBoolean("remove_control_center_more_button", false)
@@ -88,7 +91,7 @@ object RemoveSeparateControlCenterButton : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object SeparateControlCenterButtonV15 : YukiBaseHooker() {
+    object SeparateControlCenterButtonV15 : Hooker {
         override fun onHook() {
             val hideEdit = prefs(ModulePrefs).getBoolean("remove_control_center_edit_button", false)
             val hideMore = prefs(ModulePrefs).getBoolean("remove_control_center_more_button", false)

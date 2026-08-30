@@ -2,12 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomMusicFluidCloudWhitelist : YukiBaseHooker() {
+object CustomMusicFluidCloudWhitelist : Hooker {
     override fun onHook() {
         val disabled = prefs(ModulePrefs).getBoolean("disable_music_fluid_cloud_display", false)
         val set =

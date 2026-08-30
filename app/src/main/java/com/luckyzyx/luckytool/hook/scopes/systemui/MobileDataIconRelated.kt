@@ -7,7 +7,11 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.FlowUtils
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -16,7 +20,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object MobileDataIconRelated : YukiBaseHooker() {
+object MobileDataIconRelated : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         when (osCode) {
@@ -27,7 +31,7 @@ object MobileDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MobileDataIcon : YukiBaseHooker() {
+    object MobileDataIcon : Hooker {
         override fun onHook() {
 //            val removeIcon = prefs(ModulePrefs).getBoolean("remove_mobile_data_icon", false)
             val removeInout = prefs(ModulePrefs).getBoolean("remove_mobile_data_inout", false)
@@ -164,7 +168,7 @@ object MobileDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MobileDataIconV14 : YukiBaseHooker() {
+    object MobileDataIconV14 : Hooker {
         override fun onHook() {
             //        val removeIcon = prefs(ModulePrefs).getBoolean("remove_mobile_data_icon", false)
             val removeInout = prefs(ModulePrefs).getBoolean("remove_mobile_data_inout", false)
@@ -249,7 +253,7 @@ object MobileDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MobileDataIconV120 : YukiBaseHooker() {
+    object MobileDataIconV120 : Hooker {
         override fun onHook() {
 //        val removeIcon = prefs(ModulePrefs).getBoolean("remove_mobile_data_icon", false)
             val removeInout = prefs(ModulePrefs).getBoolean("remove_mobile_data_inout", false)

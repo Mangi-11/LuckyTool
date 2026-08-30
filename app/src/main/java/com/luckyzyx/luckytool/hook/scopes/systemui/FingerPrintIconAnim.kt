@@ -7,12 +7,16 @@ import androidx.core.graphics.drawable.toDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FingerPrintIconAnim : YukiBaseHooker() {
+object FingerPrintIconAnim : Hooker {
 
     private val fpIconType = VariousClass(
         "com.oplusos.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintIcon", //C12
@@ -36,18 +40,18 @@ object FingerPrintIconAnim : YukiBaseHooker() {
                 if (removeMode == "3") intercept()
                 else after {
                     when (removeMode) {
-                        "0" -> if (isReplaceIcon) instance.setCustomDrawable(iconPath, true)
-                        "1" -> instance.setCustomDrawable(null, true)
+                        "0" -> if (isReplaceIcon) instance<Any>().setCustomDrawable(iconPath, true)
+                        "1" -> instance<Any>().setCustomDrawable(null, true)
                         "2" -> {
-                            instance.removePressAnim()
-                            if (isReplaceIcon) instance.setCustomDrawable(iconPath, true)
+                            instance<Any>().removePressAnim()
+                            if (isReplaceIcon) instance<Any>().setCustomDrawable(iconPath, true)
                         }
                     }
                 }
             }
             firstMethodOrNull { name = "startFadeInAnimation" }?.hook {
                 if (isReplaceIcon) before {
-                    instance.setCustomDrawable(iconPath, false)
+                    instance<Any>().setCustomDrawable(iconPath, false)
                     resultNull()
                 } else if (removeMode == "1" || removeMode == "3") intercept()
             }

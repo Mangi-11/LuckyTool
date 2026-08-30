@@ -4,14 +4,19 @@ import android.graphics.drawable.ShapeDrawable
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.ThemeUtils.isNightMode
 import com.luckyzyx.luckytool.utils.formatColorAlpha
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomTileBackgroundTransparency : YukiBaseHooker() {
+object CustomTileBackgroundTransparency : Hooker {
     override fun onHook() {
         val customAlpha = prefs(ModulePrefs).getInt("custom_tile_background_transparency", -1)
 

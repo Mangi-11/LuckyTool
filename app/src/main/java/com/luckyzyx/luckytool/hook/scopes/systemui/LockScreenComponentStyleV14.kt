@@ -8,8 +8,14 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -18,7 +24,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import java.util.function.Supplier
 
 @Obfuscate
-object LockScreenComponentStyle : YukiBaseHooker() {
+object LockScreenComponentStyle : Hooker {
     override fun onHook() {
         if (SDK == A14) loadHooker(LockScreenComponentStyleV14)
         if (SDK < A14) loadHooker(LockScreenComponentStyleV13)
@@ -28,7 +34,7 @@ object LockScreenComponentStyle : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LockScreenComponentStyleV14 : YukiBaseHooker() {
+    object LockScreenComponentStyleV14 : Hooker {
         private const val singleClockProvider =
             "com.oplus.systemui.shared.clocks.SingleClockProvider" //C14
         private const val dualClockProvider =
@@ -114,7 +120,7 @@ object LockScreenComponentStyle : YukiBaseHooker() {
                         ).apply {
                             removeIf { it == null }
                             if (isEmpty()) {
-                                YLog.error("Clock Providers is empty!")
+                                XLog.error("Clock Providers is empty!")
                                 return@before
                             }
                         }
@@ -126,7 +132,7 @@ object LockScreenComponentStyle : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LockScreenComponentStyleV13 : YukiBaseHooker() {
+    object LockScreenComponentStyleV13 : Hooker {
         private const val singleClockController =
             "com.oplusos.systemui.keyguard.clock.SingleClockController"
         private const val dualClockController =
@@ -209,7 +215,7 @@ object LockScreenComponentStyle : YukiBaseHooker() {
                             redHorizontalSingleClock, redHorizontalDualClock
                         ).apply {
                             if (isEmpty()) {
-                                YLog.error("Clock Providers is empty!")
+                                XLog.error("Clock Providers is empty!")
                                 return@after
                             }
                             forEach {

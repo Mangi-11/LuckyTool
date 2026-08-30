@@ -7,7 +7,11 @@ import android.widget.CheckBox
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.A15
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -15,7 +19,7 @@ import com.luckyzyx.luckytool.utils.formatColorAlpha
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ControllerCenterSliderTransparency : YukiBaseHooker() {
+object ControllerCenterSliderTransparency : Hooker {
     override fun onHook() {
         val customAlpha = prefs(ModulePrefs).getInt("custom_control_center_silder_transparency", -1)
 
@@ -23,7 +27,7 @@ object ControllerCenterSliderTransparency : YukiBaseHooker() {
         VariousClass(
             "com.oplusos.systemui.qs.widget.OplusToggleSliderView", //C13
             "com.oplus.systemui.qs.widget.OplusToggleSliderView", //C14.0
-        ).toClassOrNull()?.resolve()?.apply {
+        ).loadOrNull()?.resolve()?.apply {
             firstMethod { name = "setupSliderProgressDrawable" }.hook {
                 after {
                     if (customAlpha < 0) return@after

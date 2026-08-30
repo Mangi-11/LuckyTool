@@ -9,7 +9,13 @@ import androidx.core.graphics.toColorInt
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A11
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -20,7 +26,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ControlCenterClockStyle : YukiBaseHooker() {
+object ControlCenterClockStyle : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -34,7 +40,7 @@ object ControlCenterClockStyle : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object RemoveControlCenterClock : YukiBaseHooker() {
+    object RemoveControlCenterClock : Hooker {
         override fun onHook() {
             val newQsClock =
                 "com.oplus.systemui.plugins.qs.quickentrance.OplusQSQuickEntranceComponent"
@@ -69,7 +75,7 @@ object ControlCenterClockStyle : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ControlCenterClock : YukiBaseHooker() {
+    object ControlCenterClock : Hooker {
         override fun onHook() {
             val showSecond =
                 prefs(ModulePrefs).getBoolean("control_center_clock_show_second", false)
@@ -179,7 +185,7 @@ object ControlCenterClockStyle : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object ControlCenterClockStyleA11 : YukiBaseHooker() {
+    object ControlCenterClockStyleA11 : Hooker {
         override fun onHook() {
             val showSecond =
                 prefs(ModulePrefs).getBoolean("control_center_clock_show_second", false)

@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.AutoWakeUpFaceUnlockNotification
 import com.luckyzyx.luckytool.hook.scopes.systemui.ForceEnableScreenOffMusicSupport
 import com.luckyzyx.luckytool.hook.scopes.systemui.HideLockScreenStatusBarDisplay
@@ -20,7 +20,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSystemUILockScreen : YukiBaseHooker() {
+object HookSystemUILockScreen : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

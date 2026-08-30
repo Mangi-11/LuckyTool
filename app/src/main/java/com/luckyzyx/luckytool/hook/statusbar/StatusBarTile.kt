@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.statusbar
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControlCenterTiles
 import com.luckyzyx.luckytool.hook.scopes.systemui.CustomTileBackgroundTransparency
 import com.luckyzyx.luckytool.hook.scopes.systemui.FixTileAlignBothSides
@@ -19,7 +19,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class StatusBarTile(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class StatusBarTile(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

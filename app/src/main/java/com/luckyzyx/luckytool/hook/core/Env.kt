@@ -27,10 +27,18 @@ object Env {
     var appInfo: ApplicationInfo? = null
         private set
 
+    /** 框架能力位（XposedInterface.PROP_CAP_*），onModuleLoaded 时注入 */
+    var frameworkProperties: Long = 0L
+        private set
+
+    /** 远程偏好能力告警只打一次 */
+    private var remotePrefsWarned = false
+
     /** 模块装载（每个进程一次） */
-    fun attach(base: XposedInterface, processName: String) {
+    fun attach(base: XposedInterface, processName: String, frameworkProperties: Long = 0L) {
         this.base = base
         this.processName = processName
+        this.frameworkProperties = frameworkProperties
     }
 
     /** 进入宿主包回调：切换 KavaRef 反射 ClassLoader 与上下文 */
@@ -45,8 +53,16 @@ object Env {
         base ?: error("libxposed not attached, make sure LibXposedEntry is loaded")
 
     /** 远程偏好：读模块 App 的同名 SharedPreferences（框架按 group 快照下发） */
-    fun prefs(name: String): SharedPreferences =
-        runCatching { requireBase().getRemotePreferences(name) }.getOrElse { EmptyPrefs }
+    fun prefs(name: String): SharedPreferences {
+        //框架不支持远程偏好时（PROP_CAP_REMOTE 缺失）所有开关将静默失效，主动告警一次
+        if (!remotePrefsWarned && base != null &&
+            frameworkProperties and XposedInterface.PROP_CAP_REMOTE == 0L
+        ) {
+            remotePrefsWarned = true
+            log(Log.WARN, "LuckyTool", "framework does not support remote preferences, all prefs fall back to defaults")
+        }
+        return runCatching { requireBase().getRemotePreferences(name) }.getOrElse { EmptyPrefs }
+    }
 
     /** 输出到框架日志，框架不可用时回落 logcat */
     fun log(priority: Int, tag: String, msg: String, t: Throwable? = null) {

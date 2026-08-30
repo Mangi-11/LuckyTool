@@ -18,9 +18,13 @@ import org.lsposed.lsparanoid.Obfuscate
 class LibXposedEntry : XposedModule() {
 
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
-        Env.attach(this, param.processName)
+        Env.attach(this, param.processName, frameworkProperties)
+        Env.log(
+            android.util.Log.INFO, "LuckyTool",
+            "LibXposedEntry loaded in ${param.processName}: framework $frameworkName" +
+                "($frameworkVersionCode) API $apiVersion"
+        )
         HookRouterInit.register()
-        Env.log(android.util.Log.INFO, "LuckyTool", "LibXposedEntry loaded in ${param.processName}")
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {

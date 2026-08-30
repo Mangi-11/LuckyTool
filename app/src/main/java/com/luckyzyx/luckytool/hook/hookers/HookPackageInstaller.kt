@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.DisableStartAppDetail
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.FixInstallButtonDisplayException
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.HookInstallAppProgress
@@ -13,7 +13,7 @@ import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookPackageInstaller : YukiBaseHooker() {
+object HookPackageInstaller : Hooker {
     override fun onHook() {
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

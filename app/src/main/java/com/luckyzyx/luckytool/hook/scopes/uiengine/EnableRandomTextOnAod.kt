@@ -5,13 +5,16 @@ import com.drake.net.okhttp.trustSSLCertificate
 import com.drake.net.utils.scopeNet
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
 
 @Obfuscate
-object EnableRandomTextOnAod : YukiBaseHooker() {
+object EnableRandomTextOnAod : Hooker {
     override fun onHook() {
         val mode = prefs(ModulePrefs).getString("set_random_text_display_mode", "0")
 

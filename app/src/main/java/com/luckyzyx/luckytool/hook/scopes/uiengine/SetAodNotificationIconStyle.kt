@@ -1,14 +1,16 @@
 package com.luckyzyx.luckytool.hook.scopes.uiengine
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object SetAodNotificationIconStyle : YukiBaseHooker() {
+object SetAodNotificationIconStyle : Hooker {
 
     override fun onHook() {
         val mode = prefs(ModulePrefs).getString("set_aod_notification_icon_style", "0")

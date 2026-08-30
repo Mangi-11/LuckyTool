@@ -12,9 +12,13 @@ import androidx.core.graphics.toColorInt
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
-import com.luckyzyx.luckytool.hook.hookers.HookSystemUIDialog.hookAll
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.safeOfNull
@@ -22,7 +26,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class AlarmClockWidget(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
 
     companion object {
         private lateinit var redMode: String
@@ -189,7 +193,7 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         }
     }
 
-    private class BaseAlarmClock15(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    private class BaseAlarmClock15(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source BaseClockWidget
             //Source OnePlusWidget / OppoWeather / OppoWeatherSingle / OppoWeatherVertical
@@ -243,14 +247,14 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         }
     }
 
-    private object BaseAlarmClock14 : YukiBaseHooker() {
+    private object BaseAlarmClock14 : Hooker {
         override fun onHook() {
             //Source BaseClockWidget
             hookBaseClock(BaseClockWidget.toClass())
         }
     }
 
-    private class AlarmClock130(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    private class AlarmClock130(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //OnePlusWidget setTextViewText -> local_hour_txt -> SpannableStringBuilder -> CharSequence
             dexKitBridge.findClass {
@@ -294,7 +298,7 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         }
     }
 
-    private object AlarmClock12 : YukiBaseHooker() {
+    private object AlarmClock12 : Hooker {
         override fun onHook() {
             //Source OnePlusWidget
             "com.coloros.widget.smallweather.OnePlusWidget".toClass().resolve().apply {

@@ -3,13 +3,15 @@ package com.luckyzyx.luckytool.hook.scopes.safecenter
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class UnlockStartupLimitOld(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class UnlockStartupLimitOld(val dexKitBridge: DexKitBridge) : Hooker {
 
     override fun onHook() {
         //Source StartupManager.java

@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import org.lsposed.lsparanoid.Obfuscate
 import com.luckyzyx.luckytool.hook.scopes.uiengine.EnableRandomTextOnAod
 import com.luckyzyx.luckytool.hook.scopes.uiengine.RemoveAodNotificationWhitelist
@@ -12,7 +12,7 @@ import com.luckyzyx.luckytool.utils.SDK
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 
 @Obfuscate
-object HookUIEngine : YukiBaseHooker() {
+object HookUIEngine : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

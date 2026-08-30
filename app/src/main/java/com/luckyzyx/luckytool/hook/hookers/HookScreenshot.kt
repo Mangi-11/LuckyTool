@@ -1,16 +1,16 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.screenshot.CustomizeLongScreenshotMaxCapturedPages
 import com.luckyzyx.luckytool.hook.scopes.screenshot.DisableScreenshotPackageNameMd5Encrypt
 import com.luckyzyx.luckytool.hook.scopes.screenshot.EnablePNGSaveFormat
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.getAppVerInfo
+import com.luckyzyx.luckytool.hook.core.getAppVerInfo
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookScreenshot : YukiBaseHooker() {
+object HookScreenshot : Hooker {
     override fun onHook() {
         val appVer = prefs(ModulePrefs).getAppVerInfo(packageName)
 

@@ -7,7 +7,10 @@ import android.view.View
 import android.widget.Button
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -16,7 +19,7 @@ import org.luckypray.dexkit.query.enums.StringMatchType
 import org.luckypray.dexkit.result.MethodData
 
 @Obfuscate
-class HookInstallAppProgress(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class HookInstallAppProgress(val dexKitBridge: DexKitBridge) : Hooker {
 
     val removeAds = prefs(ModulePrefs).getBoolean("remove_install_ads", false)
     val autoDone = prefs(ModulePrefs).getBoolean("auto_click_install_button", false)

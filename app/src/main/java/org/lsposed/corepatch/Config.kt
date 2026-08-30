@@ -1,6 +1,5 @@
 package org.lsposed.corepatch
 
-import org.lsposed.corepatch.App.Companion.rwPrefs
 import org.lsposed.corepatch.XposedHelper.prefs
 
 object Config {

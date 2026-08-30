@@ -21,7 +21,7 @@ import java.io.File
 class LibXposedEntry : XposedModule() {
 
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
-        Env.attach(this, param.processName, frameworkProperties, getModuleApplicationInfo())
+        Env.attach(this, param.processName, frameworkProperties)
         Env.log(
             android.util.Log.INFO, "LuckyTool",
             "LibXposedEntry loaded in ${param.processName}: framework $frameworkName" +

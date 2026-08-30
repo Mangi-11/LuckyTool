@@ -2,6 +2,8 @@ package com.luckyzyx.luckytool.hook.core
 
 import android.content.Context
 import android.content.res.Resources
+import com.highcapable.kavaref.extension.ClassLoaderProvider
+import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.resolver.FieldResolver
 import com.luckyzyx.luckytool.BuildConfig
 
@@ -12,10 +14,24 @@ import com.luckyzyx.luckytool.BuildConfig
 fun <R> FieldResolver<*>.get(): R? = (get() as? R)
 
 /**
- * 同形 YukiHookAPI 的 instance<T>()：HookCall 的成员属性 [HookCall.instance]
- * 提供裸引用，本扩展提供带类型参数的取值形式
+ * 同形 YukiHookAPI 的 instance<T>()：非空强转（legacy 语义，as T）。
+ * HookCall 的成员属性 [HookCall.instance] 提供裸可空引用，instanceOrNull 提供可空取值。
  */
-inline fun <reified T> HookCall.instance(): T? = instance as? T
+inline fun <reified T> HookCall.instance(): T = instance as T
+
+/**
+ * 同形 legacy YukiBaseHooker 成员扩展的 VariousClass.toClass()：委托 KavaRef load()。
+ * legacy 里 VariousClass 没有 toClass 扩展，由 PackageParam 成员扩展提供。
+ * 返回 Class<Any>（非 *），保持 resolve() 结果不变性，.of(instance) 调用点才能匹配。
+ */
+fun VariousClass.toClass(
+    loader: ClassLoader? = ClassLoaderProvider.classLoader, initialize: Boolean = false
+): Class<Any> = load(loader, initialize)
+
+/** 同形 legacy 的 VariousClass.toClassOrNull()：委托 KavaRef loadOrNull() */
+fun VariousClass.toClassOrNull(
+    loader: ClassLoader? = ClassLoaderProvider.classLoader, initialize: Boolean = false
+): Class<Any>? = loadOrNull(loader, initialize)
 
 /**
  * 注入模块资源（同形 YukiHookAPI injectModuleAppResources）：

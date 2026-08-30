@@ -1,10 +1,13 @@
 package com.luckyzyx.luckytool.hook
 
+import android.annotation.SuppressLint
 import com.luckyzyx.luckytool.hook.core.Env
 import com.luckyzyx.luckytool.hook.core.HookRouter
+import com.luckyzyx.luckytool.utils.SettingsPrefs
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface
 import org.lsposed.lsparanoid.Obfuscate
+import java.io.File
 
 /**
  * libxposed (Modern Xposed API) 模块入口。
@@ -28,10 +31,23 @@ class LibXposedEntry : XposedModule() {
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
+        if (!isMasterEnabled()) return
         HookRouter.dispatch(param.packageName, param.classLoader, param.applicationInfo)
     }
 
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
+        if (!isMasterEnabled()) return
         HookRouter.dispatch("android", param.classLoader, null)
+    }
+
+    /** 同形 YukiEntry.onHookEntry 的前置门禁：总开关 + /sdcard/disable_lt 应急开关 */
+    private fun isMasterEnabled(): Boolean {
+        if (!Env.prefs(SettingsPrefs).getBoolean("is_su", false)) return false
+        try {
+            @SuppressLint("SdCardPath")
+            if (File("/sdcard/disable_lt").exists()) return false
+        } catch (_: Throwable) {
+        }
+        return true
     }
 }

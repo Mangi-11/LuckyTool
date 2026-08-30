@@ -20,14 +20,15 @@ object XLog {
 
     fun e(msg: String, tag: String = TAG, t: Throwable? = null) = Env.log(Log.ERROR, tag, msg, t)
 
-    //YLog 同形别名（迁移文件批量替换后兼容原调用名）
-    fun verbose(msg: String, tag: String = TAG, t: Throwable? = null) = v(msg, tag)
+    //YLog 同形别名（迁移文件批量替换后兼容原调用名）。
+    //参数顺序对齐 legacy YLog 的 (msg, e: Throwable?) 重载，tag 走命名参数。
+    fun verbose(msg: String, t: Throwable? = null, tag: String = TAG) = v(msg, tag)
 
-    fun debug(msg: String, tag: String = TAG, t: Throwable? = null) = d(msg, tag, t)
+    fun debug(msg: String, t: Throwable? = null, tag: String = TAG) = d(msg, tag, t)
 
-    fun info(msg: String, tag: String = TAG, t: Throwable? = null) = i(msg, tag)
+    fun info(msg: String, t: Throwable? = null, tag: String = TAG) = i(msg, tag)
 
-    fun warn(msg: String, tag: String = TAG, t: Throwable? = null) = w(msg, tag, t)
+    fun warn(msg: String, t: Throwable? = null, tag: String = TAG) = w(msg, tag, t)
 
-    fun error(msg: String, tag: String = TAG, t: Throwable? = null) = e(msg, tag, t)
+    fun error(msg: String, t: Throwable? = null, tag: String = TAG) = e(msg, tag, t)
 }

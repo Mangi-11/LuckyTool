@@ -2,6 +2,7 @@
 
 package com.luckyzyx.luckytool.hook.core
 
+import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import io.github.libxposed.api.XposedInterface
@@ -52,10 +53,23 @@ class HookAction internal constructor() {
  * Hook 调用上下文：成员形状对齐 YukiHookAPI 的回调参数体
  */
 class HookCall internal constructor(
-    val method: Member,
-    val instance: Any?,
+    member: Member,
+    instance: Any?,
     internal val arguments: Array<Any?>
 ) {
+
+    private val memberRef: Member = member
+
+    private val instanceRef: Any? = instance
+
+    /** 同形 legacy HookParam.instance：非空（静态方法 hook 访问时抛错） */
+    val instance: Any get() = instanceRef ?: error("instance is null for static hook")
+
+    /** 同形 legacy HookParam.method：方法反射对象（构造器 hook 访问时抛错） */
+    val method: Method get() = (memberRef as? Method) ?: error("constructor hook has no method")
+
+    /** 同形 YukiHookAPI HookParam.args 属性：原始参数数组（可下标/集合操作，与 args() 函数并存） */
+    val args: Array<Any?> get() = arguments
 
     /** 全部参数访问器 */
     fun args(): Args = Args(arguments, arguments.indices.toList())
@@ -81,6 +95,13 @@ class HookCall internal constructor(
         }
 
     fun hasThrowable(): Boolean = throwable != null
+
+    /** 同形 YukiHookAPI 的 instanceOrNull 属性 */
+    val instanceOrNull: Any? get() = instanceRef
+
+    /** 死代码兼容：legacy if(false) 块中的 invokeOriginal，实际不会被调用 */
+    fun invokeOriginal(vararg args: Any?): Any? =
+        throw UnsupportedOperationException("invokeOriginal is not supported in native DSL")
 
     /** 提前返回 true（同形 YukiHookAPI 的 resultTrue） */
     fun resultTrue() {
@@ -119,6 +140,11 @@ class Args internal constructor(
         array[indexes[index]] = value
     }
 
+    /** 同形 YukiHookAPI ArgsModifyer.set(value)：修改当前访问器指向的参数 */
+    fun set(value: Any?) {
+        array[indexes[0]] = value
+    }
+
     /** 首参访问器（链式，对齐 YukiHookAPI：first().cast<T>() / first().any()） */
     fun first(): Args = Args(array, listOf(indexes.first()))
 
@@ -137,6 +163,24 @@ class Args internal constructor(
     fun long(): Long = get(0) as? Long ?: 0L
 
     fun boolean(): Boolean = get(0) as? Boolean ?: false
+
+    /** 同形 YukiHookAPI ArgsModifyer.array<T>()：数组参数取值 */
+    inline fun <reified T> array(): Array<T> = get(0) as? Array<T> ?: (arrayOfNulls<T>(0) as Array<T>)
+
+    /** 同形 YukiHookAPI ArgsModifyer.list<T>()：List 参数取值 */
+    fun <T> list(): List<T> = (get(0) as? List<T>) ?: emptyList()
+
+    fun setTrue() {
+        array[indexes[0]] = true
+    }
+
+    fun setFalse() {
+        array[indexes[0]] = false
+    }
+
+    fun setNull() {
+        array[indexes[0]] = null
+    }
 }
 
 /**
@@ -164,6 +208,17 @@ fun <T : Any> List<MethodResolver<T>>?.hookAll(priority: Int = 50, action: HookA
 /** 单个解析器的 hookAll 别名（本项目用法等价 hook） */
 fun <M : Member> MemberResolver<M, *>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) =
     hook(priority, action)
+
+/** 同形 YukiHookAPI 的 hookAll：KavaRef constructor { } 返回的构造器解析器列表全部挂动作块 */
+@JvmName("hookAllCtors")
+fun <T : Any> List<ConstructorResolver<T>>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+    forEach { it.hook(priority, action) }
+}
+
+@JvmName("hookAllOrNullCtors")
+fun <T : Any> List<ConstructorResolver<T>>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+    this?.hookAll(priority, action)
+}
 
 private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) {
     val base = Env.requireBase()

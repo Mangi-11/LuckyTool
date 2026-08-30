@@ -1,6 +1,5 @@
 package com.luckyzyx.luckytool.hook.core
 
-import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.util.Log
 
@@ -18,10 +17,17 @@ interface Hooker {
 
     val classLoader: ClassLoader? get() = Env.classLoader
 
-    val appInfo: ApplicationInfo? get() = Env.appInfo
+    /** 同形 YukiBaseHooker.appClassLoader：宿主应用类加载器（非空） */
+    val appClassLoader: ClassLoader get() = Env.classLoader ?: error("classLoader not attached")
 
-    /** 同形 prefs(ModulePrefs)：远程偏好读取 */
-    fun prefs(name: String): SharedPreferences = Env.prefs(name)
+    /** 同形 YukiBaseHooker.appInfo：宿主包信息（App 分组必非空，legacy 调用点零改动） */
+    val appInfo: ApplicationInfo get() = Env.appInfo ?: error("appInfo is null for non-app host")
+
+    /** 同形 YukiBaseHooker.dataChannel：实时配置推送的远程偏好等价物 */
+    val dataChannel: Channel get() = Channel
+
+    /** 同形 prefs(ModulePrefs)：远程偏好读取（非空 getter 包装，对齐 legacy YukiHookPrefsBridge） */
+    fun prefs(name: String): Env.NonNullPrefs = Env.prefs(name)
 
     /** 同形 loadHooker：装载子 Hooker，异常隔离 */
     fun loadHooker(hooker: Hooker) {

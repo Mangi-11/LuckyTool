@@ -2,6 +2,7 @@
 
 package com.luckyzyx.luckytool.hook.core
 
+import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
 import io.github.libxposed.api.XposedInterface
 import java.lang.reflect.Constructor
@@ -81,8 +82,21 @@ class HookCall internal constructor(
 
     fun hasThrowable(): Boolean = throwable != null
 
+    /** 提前返回 true（同形 YukiHookAPI 的 resultTrue） */
+    fun resultTrue() {
+        result = true
+    }
+
+    /** 提前返回 false（同形 YukiHookAPI 的 resultFalse） */
+    fun resultFalse() {
+        result = false
+    }
+
     internal var early = false
 }
+
+/** 同形 YukiHookAPI 的 result<T>()：泛型取值（成员属性 result 提供裸引用） */
+inline fun <reified T> HookCall.result(): T? = result as? T
 
 /**
  * 参数访问器：first/last/下标 + 类型转换
@@ -131,6 +145,20 @@ fun <M : Member> MemberResolver<M, *>?.hook(priority: Int = 50, action: HookActi
         else -> Unit
     }
 }
+
+/** 同形 YukiHookAPI 的 hookAll：KavaRef method { } 返回的解析器列表全部挂动作块 */
+fun <T : Any> List<MethodResolver<T>>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+    forEach { it.hook(priority, action) }
+}
+
+@JvmName("hookAllOrNull")
+fun <T : Any> List<MethodResolver<T>>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+    this?.hookAll(priority, action)
+}
+
+/** 单个解析器的 hookAll 别名（本项目用法等价 hook） */
+fun <M : Member> MemberResolver<M, *>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) =
+    hook(priority, action)
 
 private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) {
     val base = Env.requireBase()

@@ -34,6 +34,15 @@ public class DisableFlagSecure extends XposedModule {
     private Pair<String, ClassLoader> param;
     private final Set<String> hookedIds = new HashSet<>();
 
+    /** LuckyTool 开关：ModulePrefs.disable_flag_secure（保留旧版开关语义） */
+    private boolean isEnabled() {
+        try {
+            return getRemotePreferences("ModulePrefs").getBoolean("disable_flag_secure", false);
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     @Override
     public void onModuleLoaded(@NonNull ModuleLoadedParam param) {
         module = this;
@@ -41,6 +50,7 @@ public class DisableFlagSecure extends XposedModule {
 
     @Override
     public void onSystemServerStarting(@NonNull SystemServerStartingParam param) {
+        if (!isEnabled()) return;
         var classLoader = param.getClassLoader();
         this.param = Pair.create("system", classLoader);
         try {
@@ -148,6 +158,7 @@ public class DisableFlagSecure extends XposedModule {
     @SuppressLint("PrivateApi")
     @Override
     public void onPackageReady(@NonNull PackageReadyParam param) {
+        if (!isEnabled()) return;
         if (!param.isFirstPackage()) return;
 
         var classLoader = param.getClassLoader();

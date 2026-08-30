@@ -1,9 +1,11 @@
 package org.lsposed.corepatch
 
+import com.luckyzyx.luckytool.hook.core.Env
+import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.corepatch.App.Companion.rwPrefs
-import org.lsposed.corepatch.XposedHelper.prefs
 
 object Config {
+    //上游功能键（保留原值，便于对照上游文档/未来 UI 扩展）
     const val BYPASS_DOWNGRADE = "downgrade"
     const val BYPASS_VERIFICATION = "bypass_verification"
     const val BYPASS_RESOURCE_ARSC_RESTRICTIONS = "bypass_resource_arsc_restrictions"
@@ -15,15 +17,30 @@ object Config {
     const val DISABLE_VERIFICATION_AGENT = "disable_verification_agent"
     const val BYPASS_BLOCK = "bypass_block"
 
+    //LuckyTool ModulePrefs 键映射（沿用旧版 CorePatch 的键名与默认值）
+    private const val KEY_DOWNGRADE = "downgrade" //旧默认 true
+    private const val KEY_AUTHCREAK = "authcreak" //旧开关：验证/digest/arsc 全链
+    private const val KEY_DIGEST = "digestCreak" //旧默认 true
+    private const val KEY_EXACT_SIG = "exactSigCheck"
+    private const val KEY_PREV_SIG = "UsePreSig"
+    private const val KEY_BLOCK = "bypassBlock"
+    private const val KEY_DISABLE_AGENT = "disableVerificationAgent"
+    private const val KEY_SHARED_USER = "sharedUser"
+    private const val KEY_ALLOW_HIDDEN_APIS = "allow_hidden_apis_for_system_apps"
+
+    /** 宿主进程内读 LuckyTool 的 ModulePrefs（远程偏好链路） */
+    private val prefs get() = Env.prefs(ModulePrefs)
+
     private val allConfig = arrayOf(
-        BYPASS_DOWNGRADE,
-        BYPASS_VERIFICATION,
-        BYPASS_RESOURCE_ARSC_RESTRICTIONS,
-        BYPASS_DIGEST,
-        USE_PREVIOUS_SIGNATURES,
-        ALLOW_HIDDEN_APIS_FOR_SYSTEM_APPS,
-        BYPASS_SHARED_USER,
-        BYPASS_BLOCK
+        KEY_DOWNGRADE,
+        KEY_AUTHCREAK,
+        KEY_DIGEST,
+        KEY_EXACT_SIG,
+        KEY_PREV_SIG,
+        KEY_BLOCK,
+        KEY_DISABLE_AGENT,
+        KEY_SHARED_USER,
+        KEY_ALLOW_HIDDEN_APIS
     )
 
     fun printAllConfig() {
@@ -33,43 +50,44 @@ object Config {
     }
 
     fun isBypassDowngradeEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_DOWNGRADE, false)
+        return prefs.getBoolean(KEY_DOWNGRADE, true)
     }
 
     fun isBypassVerificationEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_VERIFICATION, false)
+        return prefs.getBoolean(KEY_AUTHCREAK, false)
     }
 
+    /** 旧 authcreak 门控 AssetManager.containsAllocatedTable，沿用同一开关 */
     fun isBypassResourceArscRestrictionsEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_RESOURCE_ARSC_RESTRICTIONS, false)
+        return prefs.getBoolean(KEY_AUTHCREAK, false)
     }
 
     fun isBypassDigestEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_DIGEST, false)
+        return prefs.getBoolean(KEY_DIGEST, true) || prefs.getBoolean(KEY_AUTHCREAK, false)
     }
 
     fun isBypassExactSignatureMatch(): Boolean {
-        return prefs.getBoolean(BYPASS_EXACT_SIGNATURE_MATCH, false)
+        return prefs.getBoolean(KEY_EXACT_SIG, false)
     }
 
     fun isUsePreviousSignaturesEnabled(): Boolean {
-        return prefs.getBoolean(USE_PREVIOUS_SIGNATURES, false)
+        return prefs.getBoolean(KEY_PREV_SIG, false)
     }
 
     fun isAllowHiddenApisForSystemAppsEnabled(): Boolean {
-        return prefs.getBoolean(ALLOW_HIDDEN_APIS_FOR_SYSTEM_APPS, false)
+        return prefs.getBoolean(KEY_ALLOW_HIDDEN_APIS, false)
     }
 
     fun isBypassSharedUserEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_SHARED_USER, false)
+        return prefs.getBoolean(KEY_SHARED_USER, false)
     }
 
     fun isDisableVerificationAgentEnabled(): Boolean {
-        return prefs.getBoolean(DISABLE_VERIFICATION_AGENT, false)
+        return prefs.getBoolean(KEY_DISABLE_AGENT, false)
     }
 
     fun isBypassBlockEnabled(): Boolean {
-        return prefs.getBoolean(BYPASS_BLOCK, false)
+        return prefs.getBoolean(KEY_BLOCK, false)
     }
 
     fun getConfig(key: String): Boolean {

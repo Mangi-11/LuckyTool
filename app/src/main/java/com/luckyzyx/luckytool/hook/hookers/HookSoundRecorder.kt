@@ -1,14 +1,17 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.hook.scopes.soundrecorder.HookBaseUtil
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSoundRecorder : YukiBaseHooker() {
+object HookSoundRecorder : Hooker {
     override fun onHook() {
+        loadHooker(HookGlobalSystemProperties)
+
         val osCode = getOSVersionCode
 
 

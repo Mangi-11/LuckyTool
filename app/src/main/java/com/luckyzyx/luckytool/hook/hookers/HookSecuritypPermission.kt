@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.securitypermission.AppStartDialogUseOldVersion
 import com.luckyzyx.luckytool.hook.scopes.securitypermission.AutoUnlockAppEcmPermissionRestrict
 import com.luckyzyx.luckytool.hook.scopes.securitypermission.EnableAlwaysAllowAppStartDialog
@@ -9,7 +9,7 @@ import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSecuritypPermission : YukiBaseHooker() {
+object HookSecuritypPermission : Hooker {
     override fun onHook() {
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

@@ -1,12 +1,12 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import org.lsposed.lsparanoid.Obfuscate
 import com.luckyzyx.luckytool.hook.scopes.mediacontroller.ForceEnableMediaMusicFluidCloudRipple
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 
 @Obfuscate
-object HookMediaController : YukiBaseHooker() {
+object HookMediaController : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

@@ -1,6 +1,8 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.getAppVerInfo
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.EnableRunInBackground
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.ForceEnableBuoyAutomaticallyHides
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.HookFeatureOption
@@ -8,13 +10,14 @@ import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
-import com.luckyzyx.luckytool.utils.getAppVerInfo
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSmartSidebar : YukiBaseHooker() {
+object HookSmartSidebar : Hooker {
     override fun onHook() {
+        loadHooker(HookGlobalFeatureConfig)
+
         val osCode = getOSVersionCode
         val appVer = prefs(ModulePrefs).getAppVerInfo(packageName)
 

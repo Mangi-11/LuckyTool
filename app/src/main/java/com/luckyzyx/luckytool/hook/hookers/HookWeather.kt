@@ -1,17 +1,17 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.getAppVerInfo
 import com.luckyzyx.luckytool.hook.scopes.weather.Enable15DayWeatherExpandList
 import com.luckyzyx.luckytool.hook.scopes.weather.RestoreRainfallCloudMapPage
 import com.luckyzyx.luckytool.hook.scopes.weather.WeatherAdsAndJumpBrowser
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.getAppVerInfo
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookWeather : YukiBaseHooker() {
+object HookWeather : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         val appVer = prefs(ModulePrefs).getAppVerInfo(packageName)

@@ -2,11 +2,14 @@ package com.luckyzyx.luckytool.hook.hookers
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAIUnit : YukiBaseHooker() {
+object HookAIUnit : Hooker {
     override fun onHook() {
         //Source Router
         "com.oplus.aiunit.router.Router".toClass().resolve().apply {

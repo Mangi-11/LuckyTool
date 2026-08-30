@@ -1,13 +1,13 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import org.lsposed.lsparanoid.Obfuscate
 import com.luckyzyx.luckytool.hook.scopes.speechassist.ForceEnableAISpeechAssistCall
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 
 @Obfuscate
-object HookSpeechAssist : YukiBaseHooker() {
+object HookSpeechAssist : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

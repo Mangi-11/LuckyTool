@@ -1,7 +1,8 @@
 package com.luckyzyx.luckytool.hook.hookers
 
 import android.os.SystemProperties
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.hook.scopes.ota.EnableOpexLocalInstall
 import com.luckyzyx.luckytool.hook.scopes.ota.HookNotificationHelper
 import com.luckyzyx.luckytool.hook.scopes.ota.HookOTADialogHelper
@@ -12,8 +13,10 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookOplusOta : YukiBaseHooker() {
+object HookOplusOta : Hooker {
     override fun onHook() {
+        loadHooker(HookGlobalSystemProperties)
+
         val osCode = getOSVersionCode
 
 

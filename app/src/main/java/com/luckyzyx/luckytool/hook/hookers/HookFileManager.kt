@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.filemanager.RemoveWordLimitForCompressFiles
 import com.luckyzyx.luckytool.hook.scopes.filemanager.RemoveWordLimitForLabelNameFiles
 import com.luckyzyx.luckytool.hook.scopes.filemanager.RemoveWordLimitForSavingFiles
@@ -10,7 +10,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookFileManager : YukiBaseHooker() {
+object HookFileManager : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

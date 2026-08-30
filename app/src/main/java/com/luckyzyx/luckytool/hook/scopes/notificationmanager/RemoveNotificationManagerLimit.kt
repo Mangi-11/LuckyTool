@@ -1,11 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.notificationmanager
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.get
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveNotificationManagerLimit : YukiBaseHooker() {
+object RemoveNotificationManagerLimit : Hooker {
     override fun onHook() {
         //Source ControllerChannelGroup$AppItemListener -> 通知渠道列表允许通知锁
         "com.oplus.notificationmanager.property.uicontroller.ControllerChannelGroup\$AppItemListener".toClass()

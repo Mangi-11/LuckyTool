@@ -1,5 +1,7 @@
 package com.luckyzyx.luckytool.hook
 
+import com.luckyzyx.luckytool.hook.core.HookRouter
+import com.luckyzyx.luckytool.hook.hookers.HookNotificationManager
 import org.lsposed.lsparanoid.Obfuscate
 
 /**
@@ -10,6 +12,9 @@ import org.lsposed.lsparanoid.Obfuscate
 object HookRouterInit {
 
     fun register() {
+        //通知管理
+        HookRouter.app("com.oplus.notificationmanager", HookNotificationManager)
+
         //后续波次按 YukiEntry 清单平移，例：
         //HookRouter.app("com.android.systemui", HookSystemUI)
         //HookRouter.app("com.oplus.camera", HookCamera)

@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.get
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @Suppress("unused", "ConstPropertyName")
-object ForceDisplayClockStyleOptionsV14 : YukiBaseHooker() {
+object ForceDisplayClockStyleOptionsV14 : Hooker {
     private const val searchItemBuilder =
         "com.oplus.keyguard.settingsearch.KeyguardSettingsSearchProvider\$SearchItem\$Builder"
     private const val providerClient = "com.oplus.keyguard.common.KeyguardSettingProviderClient"

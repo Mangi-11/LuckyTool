@@ -1,6 +1,10 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.hook.scopes.notificationmanager.ForceDisplayClockStyleOptionsV14
 import com.luckyzyx.luckytool.hook.scopes.notificationmanager.RemoveNotificationManagerLimit
 import com.luckyzyx.luckytool.hook.scopes.notificationmanager.RemoveNotificationPinNumberLimit
@@ -11,7 +15,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookNotificationManager : YukiBaseHooker() {
+object HookNotificationManager : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

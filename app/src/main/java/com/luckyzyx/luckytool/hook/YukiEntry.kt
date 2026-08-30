@@ -26,7 +26,6 @@ import com.luckyzyx.luckytool.hook.hookers.HookMarket
 import com.luckyzyx.luckytool.hook.hookers.HookMediaController
 import com.luckyzyx.luckytool.hook.hookers.HookMultiApp
 import com.luckyzyx.luckytool.hook.hookers.HookNfc
-import com.luckyzyx.luckytool.hook.hookers.HookNotificationManager
 import com.luckyzyx.luckytool.hook.hookers.HookOShare
 import com.luckyzyx.luckytool.hook.hookers.HookOplusCosa
 import com.luckyzyx.luckytool.hook.hookers.HookOplusGames
@@ -93,7 +92,7 @@ object YukiEntry {
         loadApp("com.oplus.keyguard.clock.base", HookKeyguardClock)
 
         //通知管理
-        loadApp("com.oplus.notificationmanager", HookNotificationManager)
+        //通知管理（已迁移至 libxposed 路由）
 
         //时钟
         loadApp("com.coloros.alarmclock", HookAlarmClock)

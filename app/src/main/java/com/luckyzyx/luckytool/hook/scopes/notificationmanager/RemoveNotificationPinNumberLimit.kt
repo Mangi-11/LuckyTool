@@ -2,11 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.notificationmanager
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.get
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveNotificationPinNumberLimit : YukiBaseHooker() {
+object RemoveNotificationPinNumberLimit : Hooker {
     override fun onHook() {
         //Source AppNotificationTopController
         "com.oplus.notificationmanager.property.uicontroller.AppNotificationTopController".toClass()

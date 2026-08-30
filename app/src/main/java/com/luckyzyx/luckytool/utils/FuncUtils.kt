@@ -61,12 +61,9 @@ import androidx.preference.Preference
 import com.drake.net.utils.withDefault
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
-import com.highcapable.yukihookapi.hook.factory.dataChannel
-import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.IGlobalFuncController
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.data.AppVerInfo
 import com.luckyzyx.luckytool.data.DisplayMode
 import com.luckyzyx.luckytool.ui.activity.MainActivity
 import com.oplus.miragewindow.OplusMirageOptions
@@ -81,20 +78,6 @@ import java.util.regex.Pattern
 import kotlin.math.roundToLong
 import kotlin.random.Random
 import kotlin.system.exitProcess
-
-/**
- * 获取APP版本数组
- * @receiver YukiHookPrefsBridge
- * @param packName String
- * @return AppVerInfo
- */
-fun YukiHookPrefsBridge.getAppVerInfo(packName: String): AppVerInfo? {
-    return getStringSet(packName, ArraySet()).let {
-        if (it.isEmpty()) null else safeOfNull {
-            Json.decodeFromString(it.firstOrNull() ?: "")
-        }
-    }
-}
 
 /**
  * 获取设备信息
@@ -870,25 +853,28 @@ fun logcatToFile(file: File): Boolean {
 }
 
 /**
- * 发送Prefs键值到dataChannel
- * @receiver Context
- * @param packName String
- * @param key String
- * @param newValue Any
+ * 旧 dataChannel 推送的等价物：键值写入 ModulePrefs（与宿主侧 Channel.wait 同一数据源）。
+ * @param packName 原 dataChannel 目标包，现仅作兼容保留（不再按包路由）
  */
 fun Context.sendPrefsValue(packName: String, key: String, newValue: Any) {
-    dataChannel(packName).put(key, newValue)
+    appPrefs(ModulePrefs).edit().apply {
+        when (newValue) {
+            is String -> putString(key, newValue)
+            is Int -> putInt(key, newValue)
+            is Long -> putLong(key, newValue)
+            is Float -> putFloat(key, newValue)
+            is Boolean -> putBoolean(key, newValue)
+            is Set<*> -> putStringSet(key, newValue.filterIsInstance<String>().toSet())
+            else -> putString(key, newValue.toString())
+        }
+    }.apply()
 }
 
 /**
- * 发送Prefs键值到dataChannel
- * @receiver Context
- * @param packName String
- * @param key String
+ * 旧 dataChannel put(key)（无值推送）没有 remote prefs 对应物；
+ * 键值本身由调用方的 putXxx(ModulePrefs, ...) 已写入，本函数保留为兼容空操作。
  */
-fun Context.sendPrefsKey(packName: String, key: String) {
-    dataChannel(packName).put(key)
-}
+fun Context.sendPrefsKey(packName: String, key: String) = Unit
 
 /**
  * 逆转字符串数组

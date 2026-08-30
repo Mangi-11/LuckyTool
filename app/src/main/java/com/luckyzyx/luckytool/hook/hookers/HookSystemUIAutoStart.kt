@@ -6,14 +6,19 @@ import android.nfc.NfcAdapter
 import android.os.Handler
 import com.drake.net.utils.scope
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.BuildConfig
+import com.luckyzyx.luckytool.hook.core.Env
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.XLog
 import com.luckyzyx.luckytool.hook.core.onAppLifecycle
+import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyGlobalDCMode
+import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyHighBrightness
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.convertToMillis
 import kotlinx.coroutines.delay
 import org.lsposed.lsparanoid.Obfuscate
+import kotlin.time.Duration.Companion.milliseconds
 
 @Obfuscate
 object HookSystemUIAutoStart : Hooker {
@@ -23,26 +28,18 @@ object HookSystemUIAutoStart : Hooker {
         var nfcDelay = prefs(ModulePrefs).getString("custom_nfc_delay_shutdown_time", "10M")
         dataChannel.wait<String>("custom_nfc_delay_shutdown_time") { nfcDelay = it }
 
+        //磁贴全局DC/高亮度模式：模块磁贴写入开关后，宿主侧即时唤起自启控制器执行
+        dataChannel.wait<Boolean>(keyGlobalDCMode) { startAutoStartController() }
+        dataChannel.wait<Boolean>(keyHighBrightness) { startAutoStartController() }
+
         onAppLifecycle {
             //监听锁屏解锁
-            registerReceiver(Intent.ACTION_USER_PRESENT) { context, _ ->
-                scope {
-                    delay(200)
-                    try {
-                        context.startForegroundService(Intent().apply {
-                            action = "${BuildConfig.APPLICATION_ID}.AutoStartControllerService"
-                            setPackage(BuildConfig.APPLICATION_ID)
-                        })
-                    } catch (t: Throwable) {
-                        XLog.debug("AutoStartService try sthrow", t)
-                    }
-                }.catch {
-                    XLog.debug("AutoStartService scope throw", it)
-                }
+            registerReceiver(Intent.ACTION_USER_PRESENT) { _, _ ->
+                startAutoStartController()
             }
             //监听模块磁贴关闭控制中心
             registerReceiver("LuckyTool_CloseCollapse") { context, _ ->
-                val service = context.getSystemService(StatusBarManager::class.java)
+                val service = context.getSystemService(classOf<StatusBarManager>())
                 service.asResolver().firstMethod { name = "collapsePanels" }.invoke()
             }
             //监听NFC启用状态
@@ -75,6 +72,24 @@ object HookSystemUIAutoStart : Hooker {
                     }
                 }
             }
+        }
+    }
+
+    /** 唤起模块自启控制器（读当前磁贴开关执行系统命令），解锁与磁贴开关变化共用 */
+    private fun startAutoStartController() {
+        val context = Env.hostContext() ?: return
+        scope {
+            delay(200.milliseconds)
+            try {
+                context.startForegroundService(Intent().apply {
+                    action = "${BuildConfig.APPLICATION_ID}.AutoStartControllerService"
+                    setPackage(BuildConfig.APPLICATION_ID)
+                })
+            } catch (t: Throwable) {
+                XLog.debug("AutoStartService try sthrow", t)
+            }
+        }.catch {
+            XLog.debug("AutoStartService scope throw", it)
         }
     }
 }

@@ -3,7 +3,7 @@ package com.luckyzyx.luckytool.utils
 import android.content.Context
 import android.os.SystemProperties
 import com.android.internal.os.PowerProfile
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.luckyzyx.luckytool.hook.core.XLog
 import com.luckyzyx.luckytool.R
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
@@ -229,7 +229,7 @@ object DeviceUtils {
             LogUtils.d("calcLocalHealth", "calc", "$calc", isDebug)
             return if (calc > 100) calc / 1000 else calc
         } catch (e: Exception) {
-            YLog.error("Calc Local Health Error", e)
+            XLog.error("Calc Local Health Error", t = e)
             return -1
         }
     }

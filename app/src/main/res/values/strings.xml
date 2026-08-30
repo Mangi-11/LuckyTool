@@ -1339,4 +1339,26 @@
     <string name="net_other_error">Unknown error</string>
     <string name="no_error_message">No error message</string>
 
+    <string name="bypass_downgrade">Bypass downgrade</string>
+    <string name="bypass_verification">Bypass verification</string>
+    <string name="bypass_digest">Bypass digest</string>
+    <string name="bypass_exact_signature_match">Bypass exact signature match</string>
+    <string name="use_previous_signatures">Use previous signatures</string>
+    <string name="bypass_shared_user">Bypass shared user verification</string>
+    <string name="disable_verification_agent">Disable Package Verification Agent</string>
+    <string name="bypass_downgrade_summary">Allow installing an older version over a newer version.</string>
+    <string name="bypass_verification_summary">Allow installing APKs with invalid or modified signatures.</string>
+    <string name="bypass_resource_arsc_restrictions">Bypass resources.arsc alignment restriction</string>
+    <string name="bypass_resource_arsc_restrictions_summary">Allow installing APKs whose resources.arsc is compressed or not 4-byte aligned on Android 11 and later.</string>
+    <string name="bypass_digest_summary">Allow reinstalling an app with a different signature.</string>
+    <string name="bypass_exact_signature_match_summary">Allow split APKs to use different signatures.</string>
+    <string name="use_previous_signatures_summary">Always use the installed app's signatures during installation.</string>
+    <string name="use_previous_signatures_warning">Any APK may overwrite the installed app. Enable only when necessary.</string>
+    <string name="allow_hidden_apis_for_system_apps">Allow hidden APIs for system apps</string>
+    <string name="allow_hidden_apis_for_system_apps_summary">Allow system apps with signatures that do not match the platform signature to use hidden APIs without restriction.</string>
+    <string name="miui_usepresig_warn">Xiaomi/Redmi users must not enable this option; otherwise, the device may fail to boot.</string>
+    <string name="bypass_shared_user_summary">Allow packages with a different shared-user signature.</string>
+    <string name="disable_verification_agent_summary">For example, Google Play Protect.</string>
+    <string name="bypass_block">Bypass installation blocklist</string>
+    <string name="bypass_block_summary">Bypass blocklists on devices such as Nothing Phone.</string>
 </resources>

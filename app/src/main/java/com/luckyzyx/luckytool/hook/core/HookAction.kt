@@ -52,12 +52,9 @@ class HookAction internal constructor() {
  */
 class HookCall internal constructor(
     val method: Member,
-    private val thisObject: Any?,
+    val instance: Any?,
     internal val arguments: Array<Any?>
 ) {
-
-    /** thisObject（对齐 YukiHookAPI 的 instance<T>()） */
-    fun <T> instance(): T? = thisObject as? T
 
     /** 全部参数访问器 */
     fun args(): Args = Args(arguments, arguments.indices.toList())
@@ -103,11 +100,16 @@ class Args internal constructor(
         array[indexes[index]] = value
     }
 
-    fun first(): Any? = array[indexes.first()]
+    /** 首参访问器（链式，对齐 YukiHookAPI：first().cast<T>() / first().any()） */
+    fun first(): Args = Args(array, listOf(indexes.first()))
 
-    fun last(): Any? = array[indexes.last()]
+    /** 末参访问器（链式） */
+    fun last(): Args = Args(array, listOf(indexes.last()))
 
-    inline fun <reified T> cast(): T = get(0) as T
+    /** 裸值（同形 YukiHookAPI 的 any()） */
+    fun any(): Any? = get(0)
+
+    inline fun <reified T> cast(): T? = get(0) as? T
 
     fun string(): String = get(0) as? String ?: ""
 
@@ -116,8 +118,6 @@ class Args internal constructor(
     fun long(): Long = get(0) as? Long ?: 0L
 
     fun boolean(): Boolean = get(0) as? Boolean ?: false
-
-    fun <T> castOrNull(): T? = get(0) as? T
 }
 
 /**

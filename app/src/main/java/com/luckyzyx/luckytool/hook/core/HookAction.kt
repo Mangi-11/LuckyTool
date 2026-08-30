@@ -92,6 +92,11 @@ class HookCall internal constructor(
         result = false
     }
 
+    /** 提前返回 null（同形 YukiHookAPI 的 resultNull） */
+    fun resultNull() {
+        result = null
+    }
+
     internal var early = false
 }
 

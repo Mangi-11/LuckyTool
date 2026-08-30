@@ -57,7 +57,8 @@ class HookCall internal constructor(
     member: Member,
     instance: Any?,
     internal val arguments: Array<Any?>,
-    hookClassLoader: ClassLoader?
+    hookClassLoader: ClassLoader?,
+    hookPackageName: String?
 ) {
 
     private val memberRef: Member = member
@@ -66,9 +67,15 @@ class HookCall internal constructor(
 
     private val hookClassLoaderRef: ClassLoader? = hookClassLoader
 
+    private val hookPackageNameRef: String? = hookPackageName
+
+    /** 同形 legacy HookParam.packageName：hook 注册时刻的宿主包名快照 */
+    val packageName: String
+        get() = hookPackageNameRef ?: Env.packageName
+
     /**
-     * 同形 legacy HookParam.appClassLoader：hook 注册时刻的宿主包 CL 快照优先，
-     * 兜底 [Env.activeClassLoader]（进程 App CL）。统一 CL 解析模型见 [Env.activeClassLoader]。
+     * 同形 legacy HookParam.appClassLoader：hook 注册时刻的分发 CL 快照优先，
+     * 兜底 [Env.activeClassLoader]（进程 App CL / 当前分发包 CL）
      */
     val appClassLoader: ClassLoader
         get() = hookClassLoaderRef
@@ -178,7 +185,8 @@ class Args internal constructor(
     fun boolean(): Boolean = get(0) as? Boolean ?: false
 
     /** 同形 YukiHookAPI ArgsModifyer.array<T>()：数组参数取值 */
-    inline fun <reified T> array(): Array<T> = get(0) as? Array<T> ?: (arrayOfNulls<T>(0) as Array<T>)
+    inline fun <reified T> array(): Array<T> =
+        get(0) as? Array<T> ?: (arrayOfNulls<T>(0) as Array<T>)
 
     /** 同形 YukiHookAPI ArgsModifyer.list<T>()：List 参数取值 */
     fun <T> list(): List<T> = (get(0) as? List<T>) ?: emptyList()
@@ -223,48 +231,48 @@ fun <M : Member> MemberResolver<M, *>.hookAll(priority: Int = 50, action: HookAc
 
 /** 同形 YukiHookAPI 的 hookAll：KavaRef constructor { } 返回的构造器解析器列表全部挂动作块 */
 @JvmName("hookAllCtors")
-fun <T : Any> List<ConstructorResolver<T>>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+fun <T : Any> List<ConstructorResolver<T>>.hookAll(
+    priority: Int = 50,
+    action: HookAction.() -> Unit
+) {
     forEach { it.hook(priority, action) }
 }
 
 @JvmName("hookAllOrNullCtors")
-fun <T : Any> List<ConstructorResolver<T>>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
+fun <T : Any> List<ConstructorResolver<T>>?.hookAll(
+    priority: Int = 50,
+    action: HookAction.() -> Unit
+) {
     this?.hookAll(priority, action)
 }
 
 private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) {
     val base = Env.requireBase()
     val act = HookAction().apply(action)
-    //快照与 KavaRef 全局同源：注册发生在宿主包 dispatch 的同步期，此刻
-    //ClassLoaderProvider 已是 activeClassLoader 链的值（进程 App CL / cold-start param CL），
-    //即 onHook 内无参 toClass 正在使用的 loader。
+    //hook 注册发生在宿主包 dispatch 的同步期：此刻 Env/ClassLoaderProvider 即该宿主包的
+    //分发上下文（配合 isFirstPackage 门禁，每进程只分发一次，无漂移），快照到 HookCall
+    //（等价 legacy HookParam 按包持有的解析语义）。
     val hookClassLoader = ClassLoaderProvider.classLoader
+    val hookPackageName = Env.packageName.ifBlank { null }
     base.hook(this)
         .setPriority(priority)
         .setExceptionMode(XposedInterface.ExceptionMode.PROTECTIVE)
         .intercept { chain ->
-            //执行期把 KavaRef 全局 loader 钉在快照上，修复 before/after 内无参
-            //"x".toClass() / VariousClass.toClass() 在共享进程中的 CL 漂移
-            //（嵌套 hook 由 save/restore 维持栈语义）
-            val prevProvider = ClassLoaderProvider.classLoader
-            ClassLoaderProvider.classLoader = hookClassLoader
-            try {
-                val call = HookCall(this, chain.thisObject, chain.args.toTypedArray(), hookClassLoader)
-                if (act.intercepted) return@intercept null
-                act.beforeBlocks.forEach { it(call) }
-                if (act.replaced && !call.early) call.result = act.replacedValue
-                if (!call.early) {
-                    try {
-                        call.result = chain.proceed(call.arguments)
-                    } catch (t: Throwable) {
-                        call.throwable = t
-                    }
+            val call = HookCall(
+                this, chain.thisObject, chain.args.toTypedArray(), hookClassLoader, hookPackageName
+            )
+            if (act.intercepted) return@intercept null
+            act.beforeBlocks.forEach { it(call) }
+            if (act.replaced && !call.early) call.result = act.replacedValue
+            if (!call.early) {
+                try {
+                    call.result = chain.proceed(call.arguments)
+                } catch (t: Throwable) {
+                    call.throwable = t
                 }
-                act.afterBlocks.forEach { it(call) }
-                call.throwable?.let { throw it }
-                call.result
-            } finally {
-                ClassLoaderProvider.classLoader = prevProvider
             }
+            act.afterBlocks.forEach { it(call) }
+            call.throwable?.let { throw it }
+            call.result
         }
 }

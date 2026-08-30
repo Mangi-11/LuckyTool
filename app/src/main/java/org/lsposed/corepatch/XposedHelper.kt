@@ -19,7 +19,8 @@ object XposedHelper {
         private set
     lateinit var hostClassLoader: ClassLoader
         private set
-    val prefs by lazy { xposedModule.getRemotePreferences("conf") }
+    //LuckyTool：配置统一存 ModulePrefs 组，键名沿用上游
+    val prefs by lazy { xposedModule.getRemotePreferences("ModulePrefs") }
     private val fieldOffsetValue by lazy { getFieldOffsetOffset() }
 
     fun setXposedModule(module: XposedModule) {

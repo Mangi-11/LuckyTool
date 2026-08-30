@@ -102,9 +102,9 @@ object XposedHelper {
 
     fun log(message: String, throwable: Throwable? = null) {
         if (throwable != null) {
-            xposedModule.log(Log.ERROR, "CorePatch", message, throwable)
+            xposedModule.log(Log.ERROR, "LuckyTool-CorePatch", message, throwable)
         } else if (com.luckyzyx.luckytool.BuildConfig.DEBUG) {
-            xposedModule.log(Log.DEBUG, "CorePatch", message)
+            xposedModule.log(Log.DEBUG, "LuckyTool-CorePatch", message)
         }
     }
 

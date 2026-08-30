@@ -4,9 +4,6 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
-import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -24,9 +21,6 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
-        loadHooker(HookGlobalFeatureConfig)
-        loadHooker(HookGlobalSystemProperties)
-        loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
         loadHooker(HookFeatureOption)
 //        if (osCode >= 34) loadHooker(HookFeatureFlags)

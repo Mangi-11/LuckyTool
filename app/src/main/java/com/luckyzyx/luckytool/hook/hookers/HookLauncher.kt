@@ -1,8 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
 import com.luckyzyx.luckytool.hook.scopes.launcher.AllowLockingUnLockingOfExcludedActivity
 import com.luckyzyx.luckytool.hook.scopes.launcher.CustomDesktopDefaultHomePage
 import com.luckyzyx.luckytool.hook.scopes.launcher.DisableLongPressAppIconSecondaryMenu
@@ -39,11 +37,9 @@ object HookLauncher : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
-        loadHooker(HookGlobalFeatureConfig)
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
 
-            loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
         }
 

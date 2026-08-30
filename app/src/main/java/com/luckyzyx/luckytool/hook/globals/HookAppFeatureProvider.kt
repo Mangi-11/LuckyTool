@@ -4,8 +4,14 @@ import android.content.ContentResolver
 import android.database.Cursor
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.XLog
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
@@ -13,7 +19,7 @@ import org.luckypray.dexkit.DexKitBridge
 @Obfuscate
 class HookAppFeatureProvider(
     val dexKitBridge: DexKitBridge, private val features: Map<String, Any>
-) : YukiBaseHooker() {
+) : Hooker {
 
     private var isFeatureSupport = false
     private var isGetBoolean = false
@@ -91,7 +97,7 @@ class HookAppFeatureProvider(
                 }
             }
             if (!isFeatureSupport) {
-                YLog.debug("AppFeatureProviderUtils [$packageName] -> isFeatureSupport is null")
+                XLog.debug("AppFeatureProviderUtils [$packageName] -> isFeatureSupport is null")
             }
 
             findMethod {

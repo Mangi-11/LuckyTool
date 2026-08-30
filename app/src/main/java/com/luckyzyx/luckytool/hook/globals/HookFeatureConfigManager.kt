@@ -1,11 +1,17 @@
 package com.luckyzyx.luckytool.hook.globals
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.get
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-class HookFeatureConfigManager(private val features: Map<String, Boolean>) : YukiBaseHooker() {
+class HookFeatureConfigManager(private val features: Map<String, Boolean>) : Hooker {
     override fun onHook() {
         if (features.isEmpty()) return
 

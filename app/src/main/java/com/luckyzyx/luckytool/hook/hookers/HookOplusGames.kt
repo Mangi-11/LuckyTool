@@ -1,8 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
 import com.luckyzyx.luckytool.hook.scopes.games.CloudConditionFeature
 import com.luckyzyx.luckytool.hook.scopes.games.CompetitionModeSound
 import com.luckyzyx.luckytool.hook.scopes.games.CustomBarrageNotificationWhitelist
@@ -33,10 +31,8 @@ object HookOplusGames : YukiBaseHooker() {
         if (appVer?.versionCommit == "0") return
         val isNew = (appVer?.versionName?.substringBefore(".")?.toIntOrNull() ?: 10) >= 10
 
-        loadHooker(HookGlobalFeatureConfig)
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
-            loadHooker(HookGlobalFeatureProvider(dexKitBridge))
             //HookCloudConditionFeature
             if (!isNew) loadHooker(CloudConditionFeature(appVer, dexKitBridge))
             //游戏滤镜-->Root检测

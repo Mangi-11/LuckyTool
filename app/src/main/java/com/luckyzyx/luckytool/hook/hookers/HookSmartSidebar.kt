@@ -1,7 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.EnableRunInBackground
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.ForceEnableBuoyAutomaticallyHides
 import com.luckyzyx.luckytool.hook.scopes.smartsidebar.HookFeatureOption
@@ -19,7 +18,6 @@ object HookSmartSidebar : YukiBaseHooker() {
         val osCode = getOSVersionCode
         val appVer = prefs(ModulePrefs).getAppVerInfo(packageName)
 
-        loadHooker(HookGlobalFeatureConfig)
 
         val v14 = appVer?.versionCode?.let { it >= 14000000 } ?: false
 

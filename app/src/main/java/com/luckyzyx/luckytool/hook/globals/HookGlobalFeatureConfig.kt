@@ -2,7 +2,13 @@ package com.luckyzyx.luckytool.hook.globals
 
 import android.provider.Settings
 import android.util.ArrayMap
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.A14
@@ -13,7 +19,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookGlobalFeatureConfig : YukiBaseHooker() {
+object HookGlobalFeatureConfig : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         val list = ArrayMap<String, Boolean>().apply {

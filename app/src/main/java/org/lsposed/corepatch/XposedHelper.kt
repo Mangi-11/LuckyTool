@@ -13,6 +13,8 @@ typealias BeforeCallback = (XposedHelper.BeforeHookCallback) -> Unit
 typealias AfterCallback = (XposedHelper.AfterHookCallback) -> Unit
 
 object XposedHelper {
+    private val TAG = "LuckyTool-CorePatch"
+
     lateinit var xposedModule: XposedModule
         private set
     lateinit var hostClassLoader: ClassLoader
@@ -102,9 +104,9 @@ object XposedHelper {
 
     fun log(message: String, throwable: Throwable? = null) {
         if (throwable != null) {
-            xposedModule.log(Log.ERROR, "LuckyTool-CorePatch", message, throwable)
+            xposedModule.log(Log.ERROR, TAG, message, throwable)
         } else if (com.luckyzyx.luckytool.BuildConfig.DEBUG) {
-            xposedModule.log(Log.DEBUG, "LuckyTool-CorePatch", message)
+            xposedModule.log(Log.DEBUG, TAG, message)
         }
     }
 

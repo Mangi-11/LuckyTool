@@ -23,7 +23,7 @@ import io.github.libxposed.api.XposedModule;
 
 @SuppressLint({"PrivateApi", "BlockedPrivateApi"})
 public class DisableFlagSecure extends XposedModule {
-    private static final String TAG = "DisableFlagSecure";
+    private static final String TAG = "LuckyTool-DisableFlagSecure";
     private static final String SYSTEMUI = "com.android.systemui";
     private static final String OPLUS_APPPLATFORM = "com.oplus.appplatform";
     private static final String OPLUS_SCREENSHOT = "com.oplus.screenshot";
@@ -207,10 +207,10 @@ public class DisableFlagSecure extends XposedModule {
                 }
                 break;
             default:
-                try {
-                    hookOnResume();
-                } catch (Throwable ignored) {
-                }
+//                try {
+//                    hookOnResume();
+//                } catch (Throwable ignored) {
+//                }
         }
     }
     

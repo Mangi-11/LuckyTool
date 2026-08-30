@@ -1,13 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.mediacontroller
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.json.JSONObject
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceEnableMediaMusicFluidCloudRipple : YukiBaseHooker() {
+object ForceEnableMediaMusicFluidCloudRipple : Hooker {
     override fun onHook() {
         var isEnable =
             prefs(ModulePrefs).getBoolean("force_enable_media_music_fluid_cloud_ripple", false)

@@ -2,14 +2,16 @@ package com.luckyzyx.luckytool.hook.scopes.oshare
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
 
     override fun onHook() {
         val osCode = getOSVersionCode
@@ -19,7 +21,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : YukiBaseHooke
     }
 
     @Obfuscate
-    class HookOShareFeatureConfig(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookOShareFeatureConfig(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source OShareFeatureConfig
             dexKitBridge.findClass {
@@ -51,7 +53,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : YukiBaseHooke
     }
 
     @Obfuscate
-    class HookOShareSpUtils(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookOShareSpUtils(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source SpUtils
             dexKitBridge.findClass {

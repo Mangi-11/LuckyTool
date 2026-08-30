@@ -8,9 +8,14 @@ import androidx.core.net.toUri
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.data.AppVerInfo
+import com.luckyzyx.luckytool.hook.core.HookAction
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -20,7 +25,7 @@ import org.luckypray.dexkit.query.enums.StringMatchType
 @Obfuscate
 class WeatherAdsAndJumpBrowser(
     private val appVer: AppVerInfo?, val dexKitBridge: DexKitBridge
-) : YukiBaseHooker() {
+) : Hooker {
     override fun onHook() {
         val isNew = appVer?.versionCode?.let { it >= 13000000 } ?: return
         if (isNew) loadHooker(HookWeatherAdsAndJump)
@@ -28,7 +33,7 @@ class WeatherAdsAndJumpBrowser(
     }
 
     @Obfuscate
-    object HookWeatherAdsAndJump : YukiBaseHooker() {
+    object HookWeatherAdsAndJump : Hooker {
         private const val weatherWrapper = "com.oplus.weather.main.model.WeatherWrapper"
 //        private const val BrowserCommonUtils = "com.oplus.weather.plugin.webview.BrowserCommonUtils"
         override fun onHook() {
@@ -143,7 +148,7 @@ class WeatherAdsAndJumpBrowser(
             }
         }
 
-        private fun YukiMemberHookCreator.MemberHookCreator.hookBefore(
+        private fun HookAction.hookBefore(
             removeAds: Boolean, disableJump: Boolean
         ) {
             before {
@@ -175,7 +180,7 @@ class WeatherAdsAndJumpBrowser(
     }
 
     @Obfuscate
-    class HookWeatherAdsAndJumpC12(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookWeatherAdsAndJumpC12(val dexKitBridge: DexKitBridge) : Hooker {
         private var startWebView = ""
         override fun onHook() {
             val removeAds =
@@ -268,7 +273,7 @@ class WeatherAdsAndJumpBrowser(
             }
         }
 
-        private fun YukiMemberHookCreator.MemberHookCreator.hookBefore(
+        private fun HookAction.hookBefore(
             removeAds: Boolean, disableJump: Boolean
         ) {
             before {

@@ -3,14 +3,16 @@ package com.luckyzyx.luckytool.hook.scopes.otherapp
 import android.content.Context
 import android.content.SharedPreferences
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookKsWeb : YukiBaseHooker() {
+object HookKsWeb : Hooker {
     override fun onHook() {
         val isPro = prefs(ModulePrefs).getBoolean("ksweb_remove_check_license", false)
         if (!isPro) return

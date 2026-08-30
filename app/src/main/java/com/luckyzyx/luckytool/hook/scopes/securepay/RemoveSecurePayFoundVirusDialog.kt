@@ -6,13 +6,16 @@ import android.view.View
 import android.widget.CheckBox
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveSecurePayFoundVirusDialog : YukiBaseHooker() {
+object RemoveSecurePayFoundVirusDialog : Hooker {
     override fun onHook() {
         //Source RiskDialogWrapper
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

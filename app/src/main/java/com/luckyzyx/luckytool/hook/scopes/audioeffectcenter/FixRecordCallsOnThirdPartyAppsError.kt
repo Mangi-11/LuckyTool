@@ -2,13 +2,17 @@ package com.luckyzyx.luckytool.hook.scopes.audioeffectcenter
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 @Obfuscate
-object FixRecordCallsOnThirdPartyAppsError : YukiBaseHooker() {
+object FixRecordCallsOnThirdPartyAppsError : Hooker {
     private const val SpatializerDefine = "com.oplus.audio.effectcenter.manager.SpatializerDefine"
     override fun onHook() {
         //Source com.oplus.audio.effectcenter.manager.SpatializerManager

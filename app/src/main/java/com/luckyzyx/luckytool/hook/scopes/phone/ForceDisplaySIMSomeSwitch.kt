@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -12,7 +14,7 @@ import org.luckypray.dexkit.DexKitBridge
 import org.luckypray.dexkit.query.enums.StringMatchType
 
 @Obfuscate
-class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val volteCall = prefs(ModulePrefs).getBoolean("force_display_volte_calls", false)
         val preferredNetwork =

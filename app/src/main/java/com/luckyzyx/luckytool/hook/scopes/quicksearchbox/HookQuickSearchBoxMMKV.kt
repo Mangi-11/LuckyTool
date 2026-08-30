@@ -2,14 +2,16 @@ package com.luckyzyx.luckytool.hook.scopes.quicksearchbox
 
 import android.util.ArrayMap
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookQuickSearchBoxMMKV(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class HookQuickSearchBoxMMKV(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val map = ArrayMap<String, Any>().apply {
             if (
@@ -24,7 +26,7 @@ class HookQuickSearchBoxMMKV(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
 
     @Obfuscate
     class HookMMKVManager(val dexKitBridge: DexKitBridge, val map: ArrayMap<String, Any>) :
-        YukiBaseHooker() {
+        Hooker {
         override fun onHook() {
             //Source MMKVManager
             dexKitBridge.findClass {

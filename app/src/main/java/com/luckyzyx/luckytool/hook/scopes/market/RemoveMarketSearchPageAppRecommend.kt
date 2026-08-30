@@ -5,14 +5,17 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isSubclassOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveMarketSearchPageAppRecommend(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveMarketSearchPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val cardDto = "com.heytap.cdo.card.domain.dto.CardDto"
         val viewLayerWrapDto = "com.heytap.cdo.card.domain.dto.ViewLayerWrapDto"
@@ -58,13 +61,13 @@ class RemoveMarketSearchPageAppRecommend(val dexKitBridge: DexKitBridge) : YukiB
                         val viewGroup = firstField { type = horizontalAppItemView }.of(instance)
                             .get<ViewGroup>()
 
-                        YLog.debug("$dto")
+                        XLog.debug("$dto")
 
                         val code =
                             dto.asResolver().firstMethod { name = "getCode";superclass() }.invoke()
                         val key =
                             dto.asResolver().firstMethod { name = "getKey";superclass() }.invoke()
-                        YLog.debug("code: $code | key: $key")
+                        XLog.debug("code: $code | key: $key")
 
                         val parent = viewGroup?.parent
                         when (key) {

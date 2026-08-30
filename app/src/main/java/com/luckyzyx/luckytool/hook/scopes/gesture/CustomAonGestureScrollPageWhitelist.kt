@@ -4,14 +4,18 @@ import android.content.Context
 import android.util.ArrayMap
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class CustomAonGestureScrollPageWhitelist(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class CustomAonGestureScrollPageWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val pageSet = prefs(ModulePrefs).getStringSet(
             "custom_aon_gesture_scroll_page_whitelist_list", ArraySet()

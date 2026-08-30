@@ -2,11 +2,13 @@ package com.luckyzyx.luckytool.hook.scopes.weather
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object Enable15DayWeatherExpandList : YukiBaseHooker() {
+object Enable15DayWeatherExpandList : Hooker {
     override fun onHook() {
         //Source FutureDayWeatherItem
         "com.oplus.weather.main.view.itemview.FutureDayWeatherItem".toClass().resolve().apply {

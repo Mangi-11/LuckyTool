@@ -8,7 +8,11 @@ import android.net.wifi.WifiManager
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.preferences.PreferenceReflections
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.formatStringAuto
@@ -18,7 +22,7 @@ import java.net.Inet4Address
 import java.net.Inet6Address
 
 @Obfuscate
-class EnableWifiDetailsDisplayGateway(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class EnableWifiDetailsDisplayGateway(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //Source WifiAddressController
         val clazz = VariousClass(

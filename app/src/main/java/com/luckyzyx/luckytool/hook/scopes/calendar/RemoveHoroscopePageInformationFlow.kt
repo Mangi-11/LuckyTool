@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveHoroscopePageInformationFlow : YukiBaseHooker() {
+object RemoveHoroscopePageInformationFlow : Hooker {
     @SuppressLint("DiscouragedApi")
     override fun onHook() {
         //Source HoroscopeFragment -> H5InterfaceHelper getHoroscopeUrl

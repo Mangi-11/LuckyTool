@@ -8,14 +8,18 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
 class RemoveMarketUpdateDownloadPageAppRecommend(val dexKitBridge: DexKitBridge) :
-    YukiBaseHooker() {
+    Hooker {
     override fun onHook() {
         val cardDto = "com.heytap.cdo.card.domain.dto.CardDto"
         val imageLoader = "com.nearme.imageloader.ImageLoader"

@@ -8,8 +8,11 @@ import android.view.Menu
 import androidx.core.content.edit
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.FileUtils
 import com.luckyzyx.luckytool.utils.showToast
@@ -18,7 +21,7 @@ import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 
 @Obfuscate
-class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
 
     val packageListInfo = "com.oplus.ota.db.PackageListInfo"
 
@@ -83,7 +86,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
                                 )
                             }
                         } catch (t: Throwable) {
-                            YLog.debug("prefs state_info error: ${t.message}")
+                            XLog.debug("prefs state_info error: ${t.message}")
                         }
 
                         val uri = intent.data ?: return@before
@@ -92,7 +95,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
                                 uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                             )
                         } catch (t: Throwable) {
-                            YLog.debug("takePersistableUriPermission error: ${t.message}")
+                            XLog.debug("takePersistableUriPermission error: ${t.message}")
                         }
 
                         val name = uri.path?.substringAfterLast("/") ?: return@before
@@ -125,7 +128,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
                                 parameters(Context::class, packageListInfo, Int::class)
                                 returnType = opexCopyResultCode
                             }.invoke(activity, info, index)
-                            YLog.debug("$name -> $code")
+                            XLog.debug("$name -> $code")
                             activity.showToast("$name -> $code")
                         }
 

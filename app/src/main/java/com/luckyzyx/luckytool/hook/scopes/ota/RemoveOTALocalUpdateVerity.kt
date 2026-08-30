@@ -4,14 +4,17 @@ import android.content.Context
 import android.os.PowerManager
 import android.os.SystemProperties
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 
 @Obfuscate
-class RemoveOTALocalUpdateVerity(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveOTALocalUpdateVerity(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         loadHooker(HookABUpdateUtils(dexKitBridge))
         loadHooker(HookLocalPcakgeInfoUtil(dexKitBridge))
@@ -19,7 +22,7 @@ class RemoveOTALocalUpdateVerity(val dexKitBridge: DexKitBridge) : YukiBaseHooke
     }
 
     @Obfuscate
-    class HookABUpdateUtils(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookABUpdateUtils(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source ABUpdateUtils
             dexKitBridge.findClass {
@@ -60,7 +63,7 @@ class RemoveOTALocalUpdateVerity(val dexKitBridge: DexKitBridge) : YukiBaseHooke
     }
 
     @Obfuscate
-    class HookLocalPcakgeInfoUtil(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookLocalPcakgeInfoUtil(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source LocalPcakgeInfoUtil
             dexKitBridge.findClass {
@@ -112,7 +115,7 @@ class RemoveOTALocalUpdateVerity(val dexKitBridge: DexKitBridge) : YukiBaseHooke
     }
 
     @Obfuscate
-    class HookPayloadProperties(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookPayloadProperties(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source ABUpdateManager
             dexKitBridge.findClass {

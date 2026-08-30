@@ -5,16 +5,20 @@ import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.Modifiers
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
+import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.R
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.IntentUtils
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.startMirageWindow
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableRunInBackground : YukiBaseHooker() {
+object EnableRunInBackground : Hooker {
 
     override fun onHook() {
         val osCode = getOSVersionCode

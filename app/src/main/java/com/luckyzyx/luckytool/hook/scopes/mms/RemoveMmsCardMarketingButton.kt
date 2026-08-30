@@ -2,14 +2,16 @@ package com.luckyzyx.luckytool.hook.scopes.mms
 
 import androidx.collection.arrayMapOf
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.safeOfNull
 import org.json.JSONArray
 import org.json.JSONObject
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveMmsCardMarketingButton : YukiBaseHooker() {
+object RemoveMmsCardMarketingButton : Hooker {
 
     const val ENTITIES: String = "entities"
     const val ACTIONS: String = "actions"

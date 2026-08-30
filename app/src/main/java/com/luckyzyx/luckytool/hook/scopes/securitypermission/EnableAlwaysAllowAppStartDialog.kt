@@ -7,20 +7,23 @@ import android.content.res.Configuration
 import android.os.Bundle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class EnableAlwaysAllowAppStartDialog(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class EnableAlwaysAllowAppStartDialog(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         loadHooker(HookAlwaysAllowButton(dexKitBridge))
         loadHooker(HookValidTime(dexKitBridge))
     }
 
     @Obfuscate
-    class HookAlwaysAllowButton(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookAlwaysAllowButton(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source COUIAlertDialogBuilder
             dexKitBridge.findClass {
@@ -83,7 +86,7 @@ class EnableAlwaysAllowAppStartDialog(val dexKitBridge: DexKitBridge) : YukiBase
     }
 
     @Obfuscate
-    class HookValidTime(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookValidTime(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source OplusPermissionManager
             dexKitBridge.findClass {

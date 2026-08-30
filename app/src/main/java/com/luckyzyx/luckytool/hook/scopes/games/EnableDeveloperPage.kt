@@ -2,11 +2,14 @@ package com.luckyzyx.luckytool.hook.scopes.games
 
 import android.app.Activity
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableDeveloperPage : YukiBaseHooker() {
+object EnableDeveloperPage : Hooker {
     override fun onHook() {
         //Source GameDevelopOptionsActivity
         "business.compact.activity.GameDevelopOptionsActivity".toClass().resolve().apply {

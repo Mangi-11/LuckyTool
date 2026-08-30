@@ -3,7 +3,9 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 import android.content.Context
 import android.provider.Settings
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
@@ -11,7 +13,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 @Obfuscate
-class RemoveDpiRestartRecovery(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveDpiRestartRecovery(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //Source OplusDensityPreference
         "com.oplus.settings.widget.preference.OplusDensityPreference".toClass().resolve().apply {
@@ -39,7 +41,7 @@ class RemoveDpiRestartRecovery(val dexKitBridge: DexKitBridge) : YukiBaseHooker(
     }
 
     @Obfuscate
-    class HookSettingsUtils(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookSettingsUtils(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source SettingsUtils
             dexKitBridge.findClass {

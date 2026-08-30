@@ -1,13 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.browser
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveBrowserWindowLimitNumber(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveBrowserWindowLimitNumber(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //Source TabManager
         dexKitBridge.findClass {

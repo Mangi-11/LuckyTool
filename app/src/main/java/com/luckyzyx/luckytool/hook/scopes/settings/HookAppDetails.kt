@@ -9,10 +9,13 @@ import android.view.View
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.R
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import com.luckyzyx.luckytool.utils.AppUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.PackageUtils
@@ -24,7 +27,7 @@ import com.luckyzyx.luckytool.utils.safeOf
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAppDetails : YukiBaseHooker() {
+object HookAppDetails : Hooker {
 
     override fun onHook() {
         loadHooker(HookAppInfos)
@@ -33,7 +36,7 @@ object HookAppDetails : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookAppInfos : YukiBaseHooker() {
+    object HookAppInfos : Hooker {
 
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
@@ -136,7 +139,7 @@ object HookAppDetails : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookAppInfoDashboard : YukiBaseHooker() {
+    object HookAppInfoDashboard : Hooker {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             val osCode = getOSVersionCode
@@ -193,7 +196,7 @@ object HookAppDetails : YukiBaseHooker() {
                                     try {
                                         AppUtils(context).openMultiAppIntent(appLabel, packName)
                                     } catch (e: Throwable) {
-                                        YLog.debug("EnableAppCloneQuickJump startActivity error", e)
+                                        XLog.debug("EnableAppCloneQuickJump startActivity error", t = e)
                                     }
                                 }
                             }

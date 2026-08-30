@@ -12,21 +12,24 @@ import android.os.UserHandle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         if (getOSVersionCode >= 30) loadHooker(GoogleAutoFill)
         else loadHooker(GoogleAutoFillV13(dexKitBridge))
     }
 
     @Obfuscate
-    object GoogleAutoFill : YukiBaseHooker() {
+    object GoogleAutoFill : Hooker {
         override fun onHook() {
             //Source DefaultAppInfo
             val defaultAppInfoClazz = "com.android.settingslib.applications.DefaultAppInfo"
@@ -103,7 +106,7 @@ class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     @Obfuscate
-    class GoogleAutoFillV13(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class GoogleAutoFillV13(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source DefaultAppInfo
             val defaultAppInfoClazz = dexKitBridge.findClass {

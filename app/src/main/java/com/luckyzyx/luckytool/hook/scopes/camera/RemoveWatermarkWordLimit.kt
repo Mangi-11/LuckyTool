@@ -2,7 +2,9 @@ package com.luckyzyx.luckytool.hook.scopes.camera
 
 import android.text.Spanned
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.SDK
@@ -10,7 +12,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //Source CameraSubSettingFragment -> camera_namelength_outofrange -> filter
         //Source CameraSloganSettingFragment -> camera_namelength_outofrange -> filter

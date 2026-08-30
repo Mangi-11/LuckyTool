@@ -17,7 +17,11 @@ import androidx.core.view.isVisible
 import com.highcapable.betterandroid.ui.extension.component.startActivity
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import com.luckyzyx.luckytool.utils.getOSVersionCode
@@ -25,7 +29,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomizeDeviceOTACardBackground : YukiBaseHooker() {
+object CustomizeDeviceOTACardBackground : Hooker {
 
     @SuppressLint("DiscouragedApi")
     override fun onHook() {
@@ -95,7 +99,7 @@ object CustomizeDeviceOTACardBackground : YukiBaseHooker() {
                     }
                     firstMethod { name = "applyVideoTransform" }.hook {
                         before {
-                            args().first().setNull()
+                            args().first().set(null)
                         }
                     }
                     firstMethod { name = "getColorOSVideoPath" }.hook {

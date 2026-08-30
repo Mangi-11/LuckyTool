@@ -1,6 +1,9 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.getAppVerInfo
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
 import com.luckyzyx.luckytool.hook.scopes.games.CloudConditionFeature
 import com.luckyzyx.luckytool.hook.scopes.games.CompetitionModeSound
 import com.luckyzyx.luckytool.hook.scopes.games.CustomBarrageNotificationWhitelist
@@ -17,12 +20,11 @@ import com.luckyzyx.luckytool.hook.scopes.games.RemoveToolRecommendationCard
 import com.luckyzyx.luckytool.hook.scopes.games.RemoveWelfarePage
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.getAppVerInfo
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookOplusGames : YukiBaseHooker() {
+object HookOplusGames : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -31,8 +33,10 @@ object HookOplusGames : YukiBaseHooker() {
         if (appVer?.versionCommit == "0") return
         val isNew = (appVer?.versionName?.substringBefore(".")?.toIntOrNull() ?: 10) >= 10
 
+        loadHooker(HookGlobalFeatureConfig)
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
+            loadHooker(HookGlobalFeatureProvider(dexKitBridge))
             //HookCloudConditionFeature
             if (!isNew) loadHooker(CloudConditionFeature(appVer, dexKitBridge))
             //游戏滤镜-->Root检测
@@ -77,7 +81,7 @@ object HookOplusGames : YukiBaseHooker() {
             loadHooker(RemoveSomeVipLimit)
         }
         //移除游戏助手温度检测
-        if (prefs(ModulePrefs).getBoolean("remove_game_assistant_temperature_detection")) {
+        if (prefs(ModulePrefs).getBoolean("remove_game_assistant_temperature_detection", false)) {
             loadHooker(RemoveGameAssistantTemperatureDetection)
         }
         //自定义弹幕通知白名单

@@ -6,9 +6,12 @@ import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.injectModuleAppResources
+import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.R
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import com.luckyzyx.luckytool.utils.DeviceUtils.calcLocalHealth
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.filterNumber
@@ -16,7 +19,7 @@ import com.luckyzyx.luckytool.utils.safeOf
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DisplayModuleCalculatesBatteryHealthData : YukiBaseHooker() {
+object DisplayModuleCalculatesBatteryHealthData : Hooker {
     @SuppressLint("SetTextI18n", "DiscouragedApi")
     override fun onHook() {
         val customCalcData =

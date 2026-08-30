@@ -3,7 +3,10 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 import android.content.Context
 import android.content.Intent
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.EcmUtils
 import com.luckyzyx.luckytool.utils.getOSVersionCode
@@ -11,7 +14,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class AutoUnlockRestrictedSettings(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class AutoUnlockRestrictedSettings(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -20,7 +23,7 @@ class AutoUnlockRestrictedSettings(val dexKitBridge: DexKitBridge) : YukiBaseHoo
     }
 
     @Obfuscate
-    object RestrictedSettings : YukiBaseHooker() {
+    object RestrictedSettings : Hooker {
         override fun onHook() {
             //Source RestrictedPreferenceHelper
             "com.oplus.settings.widget.preference.RestrictedPreferenceHelper".toClass().resolve()
@@ -55,7 +58,7 @@ class AutoUnlockRestrictedSettings(val dexKitBridge: DexKitBridge) : YukiBaseHoo
     }
 
     @Obfuscate
-    class RestrictedSettingsV14(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class RestrictedSettingsV14(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             val limit = false
             //Source RestrictedPreferenceHelper

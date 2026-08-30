@@ -3,13 +3,15 @@ package com.luckyzyx.luckytool.hook.scopes.camera
 import android.util.ArrayMap
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.HookAction
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookCameraConfig : YukiBaseHooker() {
+object HookCameraConfig : Hooker {
     override fun onHook() {
         val list = ArrayMap<String, Any>().apply {
             //10亿色影像
@@ -156,7 +158,7 @@ object HookCameraConfig : YukiBaseHooker() {
     }
 
     @Obfuscate
-    private class HookCameraVendorTag(val tags: Map<String, Any>) : YukiBaseHooker() {
+    private class HookCameraVendorTag(val tags: Map<String, Any>) : Hooker {
         override fun onHook() {
             //Source CameraAdapterUtils
             "com.oplus.ocs.camera.appinterface.adapter.CameraAdapterUtils".toClassOrNull()
@@ -175,7 +177,7 @@ object HookCameraConfig : YukiBaseHooker() {
         }
 
         companion object {
-            private fun YukiMemberHookCreator.MemberHookCreator.hookVendorTag(tags: Map<String, Any>) {
+            private fun HookAction.hookVendorTag(tags: Map<String, Any>) {
                 after {
                     val key = args().first().string()
                     if (key.isBlank()) return@after

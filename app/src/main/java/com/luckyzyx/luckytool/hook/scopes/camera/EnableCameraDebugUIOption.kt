@@ -6,14 +6,17 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 import java.util.concurrent.ExecutorService
 
 @Obfuscate
-class EnableCameraDebugUIOption(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class EnableCameraDebugUIOption(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //Source ConfigSetUtils
         dexKitBridge.findMethod {

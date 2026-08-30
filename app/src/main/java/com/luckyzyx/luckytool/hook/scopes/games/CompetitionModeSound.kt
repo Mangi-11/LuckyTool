@@ -5,13 +5,15 @@ import android.media.AudioManager
 import android.media.SoundPool
 import android.util.SparseIntArray
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class CompetitionModeSound(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class CompetitionModeSound(val dexKitBridge: DexKitBridge) : Hooker {
     val key = "remove_competition_mode_sound"
     override fun onHook() {
         //Source SoundPoolPlayManager -> competition_mode_sound

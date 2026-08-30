@@ -1,14 +1,16 @@
 package com.luckyzyx.luckytool.hook.scopes.gallery
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookFunctionManager(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class HookFunctionManager(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         //姜文电影滤镜
         val jangWen = prefs(ModulePrefs).getBoolean("enable_gallery_jiangwen_filter", false)

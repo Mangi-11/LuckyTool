@@ -3,14 +3,19 @@ package com.luckyzyx.luckytool.hook.scopes.camera
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class CustomModelWaterMark(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class CustomModelWaterMark(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val waterMark = prefs(ModulePrefs).getString("custom_model_watermark", "None")
         if (waterMark.isBlank() || waterMark == "None") return

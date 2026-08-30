@@ -10,7 +10,9 @@ import androidx.core.content.edit
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.utils.appcompat.dialog.COUIAlertDialogBuilder
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
@@ -18,7 +20,7 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @SuppressLint("DiscouragedApi")
-object CustomProcessorPageIntroductionParameters : YukiBaseHooker() {
+object CustomProcessorPageIntroductionParameters : Hooker {
     override fun onHook() {
         val replaceImage =
             prefs(ModulePrefs).getBoolean("custom_processor_image_path_switch", false)
@@ -102,7 +104,7 @@ object CustomProcessorPageIntroductionParameters : YukiBaseHooker() {
         setOnClickListener {
             var editText: EditText? = null
             var dialog: Any? = null
-            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", appClassLoader).apply {
+            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", classLoader).apply {
                 setTitle(text)
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->

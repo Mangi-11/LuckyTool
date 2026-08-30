@@ -2,7 +2,9 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 
 import android.content.pm.ApplicationInfo
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -10,13 +12,13 @@ import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
-class HookSettingsFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class HookSettingsFeature(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         if (SDK < A13) loadHooker(HookExpUst(dexKitBridge))
     }
 
     @Obfuscate
-    class HookExpUst(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    class HookExpUst(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             val neverTimeout = prefs(ModulePrefs).getBoolean("enable_show_never_timeout", false)
 

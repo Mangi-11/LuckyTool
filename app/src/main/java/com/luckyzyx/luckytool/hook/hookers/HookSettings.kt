@@ -1,6 +1,9 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.hook.scopes.settings.AllowDisablingSystemApps
 import com.luckyzyx.luckytool.hook.scopes.settings.AutoJumpAccessibilitySettings
 import com.luckyzyx.luckytool.hook.scopes.settings.AutoUnlockRestrictedSettings
@@ -38,13 +41,17 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookSettings : YukiBaseHooker() {
+object HookSettings : Hooker {
     override fun onHook() {
+        loadHooker(HookGlobalFeatureConfig)
+        loadHooker(HookGlobalSystemProperties)
+
         val osCode = getOSVersionCode
 
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
             //HookAppFeatureProvider
+            loadHooker(HookGlobalFeatureProvider(dexKitBridge))
             //HookSettingsFeature
             loadHooker(HookSettingsFeature(dexKitBridge))
             //移除DPI重启恢复

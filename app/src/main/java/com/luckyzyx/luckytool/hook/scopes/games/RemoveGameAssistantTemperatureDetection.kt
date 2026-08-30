@@ -1,11 +1,13 @@
 package com.luckyzyx.luckytool.hook.scopes.games
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveGameAssistantTemperatureDetection : YukiBaseHooker() {
+object RemoveGameAssistantTemperatureDetection : Hooker {
     override fun onHook() {
         //Source CoolingBubbleTipsHelper
         "business.module.perfmode.CoolingBubbleTipsHelper".toClass().resolve().apply {

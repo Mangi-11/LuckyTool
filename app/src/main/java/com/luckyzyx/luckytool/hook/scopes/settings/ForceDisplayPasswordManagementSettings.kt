@@ -2,12 +2,14 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceDisplayPasswordManagementSettings : YukiBaseHooker() {
+object ForceDisplayPasswordManagementSettings : Hooker {
 
     override fun onHook() {
         if (getOSVersionCode >= 30) loadHooker(PasswordManagementSettings)
@@ -15,7 +17,7 @@ object ForceDisplayPasswordManagementSettings : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object PasswordManagementSettings : YukiBaseHooker() {
+    object PasswordManagementSettings : Hooker {
         override fun onHook() {
             //Source PasswordManagerPreferenceController
             "com.oplus.settings.feature.password.controller.PasswordManagerPreferenceController".toClass()
@@ -28,7 +30,7 @@ object ForceDisplayPasswordManagementSettings : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object PasswordManagementSettingsV13 : YukiBaseHooker() {
+    object PasswordManagementSettingsV13 : Hooker {
         override fun onHook() {
             //Source PasswordManagerPreferenceController
             "com.oplus.settings.feature.password.controller.PasswordManagerPreferenceController".toClass()

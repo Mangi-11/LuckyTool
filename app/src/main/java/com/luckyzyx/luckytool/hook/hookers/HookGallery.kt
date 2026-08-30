@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.scopes.camera.HookCameraConfig
 import com.luckyzyx.luckytool.hook.scopes.gallery.GalleryWaterMarkWordDialog
 import com.luckyzyx.luckytool.hook.scopes.gallery.HookFunctionManager
@@ -16,7 +16,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookGallery : YukiBaseHooker() {
+object HookGallery : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 

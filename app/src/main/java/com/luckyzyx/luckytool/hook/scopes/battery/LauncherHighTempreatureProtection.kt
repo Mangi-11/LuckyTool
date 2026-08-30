@@ -6,13 +6,15 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.PowerManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class LauncherHighTempreatureProtection(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+class LauncherHighTempreatureProtection(val dexKitBridge: DexKitBridge) : Hooker {
     val key = "LauncherHighTempreatureProtection"
     override fun onHook() {
         //Source ThermalHandler high_temperature_shutdown_message / high_temperature_dialog_auto

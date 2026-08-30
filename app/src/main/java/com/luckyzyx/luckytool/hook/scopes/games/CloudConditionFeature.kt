@@ -2,8 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.games
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.data.AppVerInfo
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -12,7 +15,7 @@ import org.luckypray.dexkit.DexKitBridge
 @Obfuscate
 class CloudConditionFeature(
     private val appVer: AppVerInfo?, val dexKitBridge: DexKitBridge
-) : YukiBaseHooker() {
+) : Hooker {
     override fun onHook() {
         val versionCode = appVer?.versionCode?.takeIf { it > 80130000 } ?: 0
 
@@ -22,7 +25,7 @@ class CloudConditionFeature(
     }
 
     @Obfuscate
-    private object HookOplusFeature : YukiBaseHooker() {
+    private object HookOplusFeature : Hooker {
         override fun onHook() {
             //Source GpuSettingHelper
             val gpuControl = prefs(ModulePrefs).getBoolean("enable_adreno_gpu_controller", false)
@@ -123,7 +126,7 @@ class CloudConditionFeature(
     }
 
     @Obfuscate
-    private object HookCloudCondition : YukiBaseHooker() {
+    private object HookCloudCondition : Hooker {
         override fun onHook() {
             //Source GpuSettingHelper
             val gpuControl = prefs(ModulePrefs).getBoolean("enable_adreno_gpu_controller", false)
@@ -200,7 +203,7 @@ class CloudConditionFeature(
     }
 
     @Obfuscate
-    private class HookCloudApiImpl(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
+    private class HookCloudApiImpl(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             //Source GpuSettingHelper
             val gpuControl = prefs(ModulePrefs).getBoolean("enable_adreno_gpu_controller", false)

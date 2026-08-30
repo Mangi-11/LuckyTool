@@ -7,13 +7,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.view.allViews
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.hook.utils.appcompat.dialog.COUIAlertDialogBuilder
 import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomizeDeviceSharingPageParameters : YukiBaseHooker() {
+object CustomizeDeviceSharingPageParameters : Hooker {
 
     @SuppressLint("DiscouragedApi")
     override fun onHook() {
@@ -44,7 +47,7 @@ object CustomizeDeviceSharingPageParameters : YukiBaseHooker() {
         setOnClickListener {
             var editText: EditText? = null
             var dialog: Any? = null
-            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", appClassLoader).apply {
+            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", classLoader).apply {
                 setTitle(text)
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->

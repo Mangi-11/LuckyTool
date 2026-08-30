@@ -2,7 +2,9 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -10,7 +12,7 @@ import com.luckyzyx.luckytool.utils.dp
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object StackedTaskLayout : YukiBaseHooker() {
+object StackedTaskLayout : Hooker {
 
     override fun onHook() {
 

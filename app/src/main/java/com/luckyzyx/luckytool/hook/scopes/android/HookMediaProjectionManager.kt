@@ -1,12 +1,14 @@
 package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookMediaProjectionManager : YukiBaseHooker() {
+object HookMediaProjectionManager : Hooker {
     override fun onHook() {
         val isEnable =
             prefs(ModulePrefs).getBoolean("enable_record_calls_on_third_party_apps", false)

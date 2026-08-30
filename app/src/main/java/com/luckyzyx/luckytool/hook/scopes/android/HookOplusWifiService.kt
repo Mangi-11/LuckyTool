@@ -7,13 +7,17 @@ import com.android.internal.os.SystemServerClassLoaderFactory
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookOplusWifiService : YukiBaseHooker() {
+object HookOplusWifiService : Hooker {
 
     private var wifiserviceClassLoader: ClassLoader? = null
     private var finalWifiServiceClassLoader: ClassLoader? = null
@@ -40,12 +44,12 @@ object HookOplusWifiService : YukiBaseHooker() {
                     Build.VERSION.SDK_INT, true, null
                 )
             } catch (t: Throwable) {
-                YLog.error("Hook Wifi Service Error!", t)
+                XLog.error("Hook Wifi Service Error!", t)
             }
         }
 
         if (finalWifiServiceClassLoader == null) {
-            YLog.error("Hook Oplus Wifi Service is null!")
+            XLog.error("Hook Oplus Wifi Service is null!")
             return
         }
     }
@@ -64,7 +68,7 @@ object HookOplusWifiService : YukiBaseHooker() {
     }
 
     @Obfuscate
-    class HookOplusSoftAp(val classLoader: ClassLoader?) : YukiBaseHooker() {
+    class HookOplusSoftAp(override val classLoader: ClassLoader?) : Hooker {
         override fun onHook() {
             //Source OplusSoftapStatistics
             "com.oplus.server.wifi.hotspot.OplusSoftapStatistics".toClass(classLoader).resolve()
@@ -77,7 +81,7 @@ object HookOplusWifiService : YukiBaseHooker() {
     }
 
     @Obfuscate
-    class HookSlaAppList(val classLoader: ClassLoader?) : YukiBaseHooker() {
+    class HookSlaAppList(override val classLoader: ClassLoader?) : Hooker {
 
         private val whitelistKey = "custom_wlan_sla_whitelist"
         private val gameWhitelistKey = "custom_wlan_sla_game_whitelist"
@@ -91,29 +95,29 @@ object HookOplusWifiService : YukiBaseHooker() {
             mode = prefs(ModulePrefs).getString("set_wlan_sla_whitelist_mode", "0")
             dataChannel.wait<String>("set_wlan_sla_whitelist_mode") {
                 mode = it
-                YLog.debug("update oplus wifi configs status -> $it")
+                XLog.debug("update oplus wifi configs status -> $it")
             }
             rmBlack = prefs(ModulePrefs).getBoolean("remove_wlan_sla_blacklist", false)
             dataChannel.wait<Boolean>("remove_wlan_sla_blacklist") { rmBlack = it }
 
             whitelist.clear()
             whitelist.addAll(prefs(ModulePrefs).getStringSet(whitelistKey, ArraySet()))
-            dataChannel.wait(whitelistKey) {
+            dataChannel.watch(whitelistKey) {
                 val new = prefs(ModulePrefs).getStringSet(whitelistKey, ArraySet())
-                YLog.debug("update oplus wifi whitelist configs -> ${whitelist.size} | ${new.size}")
+                XLog.debug("update oplus wifi whitelist configs -> ${whitelist.size} | ${new.size}")
                 whitelist.clear()
                 whitelist.addAll(new)
             }
 
             gameWhitelist.clear()
             gameWhitelist.addAll(prefs(ModulePrefs).getStringSet(gameWhitelistKey, ArraySet()))
-            dataChannel.wait(gameWhitelistKey) {
+            dataChannel.watch(gameWhitelistKey) {
                 val new = prefs(ModulePrefs).getStringSet(gameWhitelistKey, ArraySet())
-                YLog.debug("update oplus wifi game whitelist configs -> ${gameWhitelist.size} | ${new.size}")
+                XLog.debug("update oplus wifi game whitelist configs -> ${gameWhitelist.size} | ${new.size}")
                 gameWhitelist.clear()
                 gameWhitelist.addAll(new)
             }
-            YLog.debug("init oplus wifi configs success -> ${whitelist.size} | ${gameWhitelist.size}")
+            XLog.debug("init oplus wifi configs success -> ${whitelist.size} | ${gameWhitelist.size}")
         }
 
         override fun onHook() {

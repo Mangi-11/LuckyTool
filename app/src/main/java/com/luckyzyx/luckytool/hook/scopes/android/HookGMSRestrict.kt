@@ -2,13 +2,17 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import android.util.SparseArray
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookGMSRestrict : YukiBaseHooker() {
+object HookGMSRestrict : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         val isEnable = prefs(ModulePrefs).getBoolean("remove_gms_usage_restrictions", false)
@@ -21,7 +25,7 @@ object HookGMSRestrict : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object GMSRestrictCommon : YukiBaseHooker() {
+    object GMSRestrictCommon : Hooker {
         override fun onHook() {
             //Source OplusAppStartupManager -> OplusStartupStrategy -> google_restric_info
             "com.android.server.am.OplusAppStartupManager\$OplusStartupStrategy".toClass().resolve()
@@ -50,7 +54,7 @@ object HookGMSRestrict : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object GMSRestrict : YukiBaseHooker() {
+    object GMSRestrict : Hooker {
         override fun onHook() {
             //Source OplusBgSceneManager -> google_restric_info
             "com.android.server.hans.scene.OplusBgSceneManager".toClass().resolve().apply {
@@ -70,7 +74,7 @@ object HookGMSRestrict : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object GMSRestrictV13 : YukiBaseHooker() {
+    object GMSRestrictV13 : Hooker {
         override fun onHook() {
             //Source OplusHansManager -> HansConfig -> google_restric_info
             "com.android.server.am.OplusHansManager\$HansConfig".toClass().resolve().apply {

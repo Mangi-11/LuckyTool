@@ -1,12 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
-object HookLauncherFeature : YukiBaseHooker() {
+object HookLauncherFeature : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         loadHooker(HookFeatureOption)
@@ -15,7 +18,7 @@ object HookLauncherFeature : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookAppFeature : YukiBaseHooker() {
+    object HookAppFeature : Hooker {
         override fun onHook() {
             val disableAutoSwitch =
                 prefs(ModulePrefs).getBoolean("disable_auto_switch_last_task", false)
@@ -71,7 +74,7 @@ object HookLauncherFeature : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookFeatureOption : YukiBaseHooker() {
+    object HookFeatureOption : Hooker {
         override fun onHook() {
             val appUpdateDot = prefs(ModulePrefs).getBoolean("enable_display_app_update_dot", false)
             val disableDockerMax =
@@ -96,7 +99,7 @@ object HookLauncherFeature : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object HookLauncherSettings : YukiBaseHooker() {
+    object HookLauncherSettings : Hooker {
         override fun onHook() {
             val appUpdateDot = prefs(ModulePrefs).getBoolean("enable_display_app_update_dot", false)
 

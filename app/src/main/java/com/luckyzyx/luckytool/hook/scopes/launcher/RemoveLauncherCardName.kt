@@ -4,12 +4,15 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveLauncherCardName : YukiBaseHooker() {
+object RemoveLauncherCardName : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(LauncherCardName)
@@ -17,7 +20,7 @@ object RemoveLauncherCardName : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LauncherCardName : YukiBaseHooker() {
+    object LauncherCardName : Hooker {
         override fun onHook() {
             //Source CardNameHelper
             "com.android.launcher3.card.utils.CardNameHelper".toClass().resolve().apply {
@@ -41,7 +44,7 @@ object RemoveLauncherCardName : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LauncherCardNameV13 : YukiBaseHooker() {
+    object LauncherCardNameV13 : Hooker {
         override fun onHook() {
             //Source TitleCardView
             "com.android.launcher3.card.TitleCardView".toClass().resolve().apply {

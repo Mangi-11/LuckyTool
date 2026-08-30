@@ -3,13 +3,16 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 import android.util.Pair
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LauncherLayoutRowColume : YukiBaseHooker() {
+object LauncherLayoutRowColume : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 37) loadHooker(LayoutRowColume)
@@ -17,7 +20,7 @@ object LauncherLayoutRowColume : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LayoutRowColume : YukiBaseHooker() {
+    object LayoutRowColume : Hooker {
         override fun onHook() {
             val maxRows = prefs(ModulePrefs).getInt("launcher_layout_max_rows", 6)
             val maxColumns = prefs(ModulePrefs).getInt("launcher_layout_max_columns", 4)
@@ -43,7 +46,7 @@ object LauncherLayoutRowColume : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object LayoutRowColumeV15 : YukiBaseHooker() {
+    object LayoutRowColumeV15 : Hooker {
         override fun onHook() {
             //Source UiConfig
             "com.android.launcher.UiConfig".toClass().resolve().apply {

@@ -2,14 +2,16 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object MultiAppConfig : YukiBaseHooker() {
+object MultiAppConfig : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -21,7 +23,7 @@ object MultiAppConfig : YukiBaseHooker() {
     }
 
     @Obfuscate
-    class MultiAppAllowList(val osCode: Int) : YukiBaseHooker() {
+    class MultiAppAllowList(val osCode: Int) : Hooker {
 
         var mode = "0"
         val list = ArrayList<String>()
@@ -32,14 +34,14 @@ object MultiAppConfig : YukiBaseHooker() {
             mode = prefs(ModulePrefs).getString("set_multi_app_support_mode", "0")
             dataChannel.wait<String>("set_multi_app_support_mode") {
                 mode = it
-                YLog.debug("update multi app configs status -> $it")
+                XLog.debug("update multi app configs status -> $it")
             }
 
             list.clear()
             list.addAll(prefs(ModulePrefs).getStringSet("multi_app_custom_list", ArraySet()))
-            dataChannel.wait("multi_app_custom_list") {
+            dataChannel.watch("multi_app_custom_list") {
                 val new = prefs(ModulePrefs).getStringSet("multi_app_custom_list", ArraySet())
-                YLog.debug("update multi app whitelist configs -> ${list.size} | ${new.size}")
+                XLog.debug("update multi app whitelist configs -> ${list.size} | ${new.size}")
                 list.clear()
                 list.addAll(new)
             }
@@ -47,7 +49,7 @@ object MultiAppConfig : YukiBaseHooker() {
                 prefs(ModulePrefs).getBoolean("remove_multi_app_created_num_limit_for_users", false)
             limitApp =
                 prefs(ModulePrefs).getBoolean("remove_multi_app_created_num_limit_for_users", false)
-            YLog.debug("init multi app configs success -> ${list.size}")
+            XLog.debug("init multi app configs success -> ${list.size}")
         }
 
         override fun onHook() {
@@ -113,7 +115,7 @@ object MultiAppConfig : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MultiAppBlackList : YukiBaseHooker() {
+    object MultiAppBlackList : Hooker {
         override fun onHook() {
             //Source OplusMultiAppDataManager
             "com.android.server.pm.OplusMultiAppDataManager".toClass().resolve().apply {

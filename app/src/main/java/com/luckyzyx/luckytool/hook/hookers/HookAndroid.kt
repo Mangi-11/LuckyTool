@@ -1,6 +1,10 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
+import com.luckyzyx.luckytool.hook.globals.HookGlobalPmsFeature
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemConfig
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.hook.scopes.android.ADBInstallConfirm
 import com.luckyzyx.luckytool.hook.scopes.android.AllowUntrustedTouch
 import com.luckyzyx.luckytool.hook.scopes.android.AppSplashScreen
@@ -40,11 +44,15 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAndroid : YukiBaseHooker() {
+object HookAndroid : Hooker {
 
     override fun onHook() {
         val osCode = getOSVersionCode
 
+        loadHooker(HookGlobalFeatureConfig)
+        loadHooker(HookGlobalSystemProperties)
+        loadHooker(HookGlobalPmsFeature)
+        loadHooker(HookGlobalSystemConfig)
 
         //禁止App启动
 //        loadHooker(HookAppStartForbidden)

@@ -5,7 +5,12 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -13,7 +18,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object PageIndicator : YukiBaseHooker() {
+object PageIndicator : Hooker {
     override fun onHook() {
         val removeDesktop = prefs(ModulePrefs).getBoolean("remove_pagination_component", false)
         val removeFolder =

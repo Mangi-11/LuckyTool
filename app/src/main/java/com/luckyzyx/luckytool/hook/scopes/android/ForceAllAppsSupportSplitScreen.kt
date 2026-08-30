@@ -2,12 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceAllAppsSupportSplitScreen : YukiBaseHooker() {
+object ForceAllAppsSupportSplitScreen : Hooker {
     override fun onHook() {
         var isEnable = prefs(ModulePrefs).getBoolean("force_all_apps_support_split_screen", false)
         dataChannel.wait<Boolean>("force_all_apps_support_split_screen") { isEnable = it }

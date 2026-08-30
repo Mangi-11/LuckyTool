@@ -3,8 +3,10 @@ package com.luckyzyx.luckytool.hook.scopes.android
 import android.util.ArrayMap
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.data.DarkModeInfo
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.safeOfNull
@@ -13,7 +15,7 @@ import kotlinx.serialization.json.Json
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DarkModeService : YukiBaseHooker() {
+object DarkModeService : Hooker {
 
     var isEnable = false
     val list = ArraySet<DarkModeInfo>()
@@ -22,7 +24,7 @@ object DarkModeService : YukiBaseHooker() {
         isEnable = prefs(ModulePrefs).getBoolean("dark_mode_list_enable", false)
         dataChannel.wait<Boolean>("dark_mode_list_enable") {
             isEnable = it
-            YLog.debug("update dark mode service configs status -> $it")
+            XLog.debug("update dark mode service configs status -> $it")
         }
 
         list.clear()
@@ -30,15 +32,15 @@ object DarkModeService : YukiBaseHooker() {
         list.addAll(enabled.mapNotNull {
             safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
         })
-        dataChannel.wait("dark_mode_support_list") {
+        dataChannel.watch("dark_mode_support_list") {
             val new = prefs(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
-            YLog.debug("update dark mode service whitelist configs -> ${list.size} | ${new.size}")
+            XLog.debug("update dark mode service whitelist configs -> ${list.size} | ${new.size}")
             list.clear()
             list.addAll(new.mapNotNull {
                 safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
             })
         }
-        YLog.debug("init dark mode service configs success -> ${list.size}")
+        XLog.debug("init dark mode service configs success -> ${list.size}")
     }
 
     override fun onHook() {

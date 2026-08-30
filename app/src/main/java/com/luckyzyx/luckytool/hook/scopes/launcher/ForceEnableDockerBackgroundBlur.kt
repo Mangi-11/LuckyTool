@@ -4,11 +4,14 @@ import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import androidx.core.view.isEmpty
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
+object ForceEnableDockerBackgroundBlur : Hooker {
     override fun onHook() {
         //Source OplusHotseat
         "com.android.launcher3.OplusHotseat".toClass().resolve().apply {

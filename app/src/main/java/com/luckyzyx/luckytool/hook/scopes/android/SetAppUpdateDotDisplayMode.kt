@@ -2,12 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object SetAppUpdateDotDisplayMode : YukiBaseHooker() {
+object SetAppUpdateDotDisplayMode : Hooker {
 
     private const val InstallSource = "com.android.server.pm.InstallSource"
     private const val OplusPMHelper = "com.android.server.pm.OplusOsPackageManagerHelper"

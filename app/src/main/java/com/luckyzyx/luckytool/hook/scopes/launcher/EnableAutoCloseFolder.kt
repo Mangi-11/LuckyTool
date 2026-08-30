@@ -5,11 +5,14 @@ import androidx.core.view.children
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isNotSubclassOf
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableAutoCloseFolder : YukiBaseHooker() {
+object EnableAutoCloseFolder : Hooker {
     override fun onHook() {
         //Source AbstractFloatingView
         "com.android.launcher3.AbstractFloatingView".toClass().let {

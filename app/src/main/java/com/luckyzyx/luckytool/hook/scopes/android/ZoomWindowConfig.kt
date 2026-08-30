@@ -3,14 +3,17 @@ package com.luckyzyx.luckytool.hook.scopes.android
 import android.os.Bundle
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-class ZoomWindowConfig : YukiBaseHooker() {
+class ZoomWindowConfig : Hooker {
 
     var callback: ((key: String, value: Any) -> Unit)? = null
 
@@ -26,12 +29,12 @@ class ZoomWindowConfig : YukiBaseHooker() {
 
         dataChannel.wait<String>("custom_app_floating_window_display_mode") {
             mode = it
-            YLog.debug("update zoom window configs status -> $it")
+            XLog.debug("update zoom window configs status -> $it")
         }
 
-        dataChannel.wait("zoom_window_support_list") {
+        dataChannel.watch("zoom_window_support_list") {
             val new = prefs(ModulePrefs).getStringSet("zoom_window_support_list", ArraySet())
-            YLog.debug("update zoom window whitelist configs -> ${list.size} | ${new.size}")
+            XLog.debug("update zoom window whitelist configs -> ${list.size} | ${new.size}")
             list.clear()
             list.addAll(new)
         }
@@ -41,7 +44,7 @@ class ZoomWindowConfig : YukiBaseHooker() {
         multiNum = prefs(ModulePrefs).getInt("custom_multi_window_display_upper_limit", 2)
         dataChannel.wait<Int>("custom_multi_window_display_upper_limit") { multiNum = it }
 
-        YLog.debug("init zoom window configs success -> ${list.size}")
+        XLog.debug("init zoom window configs success -> ${list.size}")
     }
 
     override fun onHook() {
@@ -53,7 +56,7 @@ class ZoomWindowConfig : YukiBaseHooker() {
     }
 
     @Obfuscate
-    inner class HookZoomWindow : YukiBaseHooker() {
+    inner class HookZoomWindow : Hooker {
         override fun onHook() {
             //Source OplusZoomWindowConfig
             "com.android.server.wm.OplusZoomWindowConfig".toClass().resolve().apply {
@@ -79,7 +82,7 @@ class ZoomWindowConfig : YukiBaseHooker() {
     }
 
     @Obfuscate
-    inner class HookFlexibleWindow : YukiBaseHooker() {
+    inner class HookFlexibleWindow : Hooker {
         override fun onHook() {
             //Source FlexibleWindowUtils
             "com.android.server.wm.FlexibleWindowUtils".toClassOrNull()?.resolve()?.apply {

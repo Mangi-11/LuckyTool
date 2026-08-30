@@ -3,11 +3,14 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object UnlockTaskLocks : YukiBaseHooker() {
+object UnlockTaskLocks : Hooker {
     override fun onHook() {
         //Source AppLockModel
         "com.oplus.quickstep.applock.AppLockModel".toClassOrNull()?.resolve()?.apply {

@@ -2,20 +2,23 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import android.graphics.drawable.Drawable
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAppBadge : YukiBaseHooker() {
+object HookAppBadge : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(AppBadge) else loadHooker(AppBadgeC13)
     }
 
     @Obfuscate
-    object AppBadge : YukiBaseHooker() {
+    object AppBadge : Hooker {
         override fun onHook() {
             val isShortcut = prefs(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
             val isWork = prefs(ModulePrefs).getBoolean("remove_app_work_badge", false)
@@ -77,7 +80,7 @@ object HookAppBadge : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object AppBadgeC13 : YukiBaseHooker() {
+    object AppBadgeC13 : Hooker {
         override fun onHook() {
             val isShortcut = prefs(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
             val isWork = prefs(ModulePrefs).getBoolean("remove_app_work_badge", false)

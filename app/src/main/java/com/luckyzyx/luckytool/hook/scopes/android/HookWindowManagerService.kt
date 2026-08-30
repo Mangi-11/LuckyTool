@@ -4,14 +4,18 @@ import android.content.Context
 import android.provider.Settings
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookWindowManagerService : YukiBaseHooker() {
+object HookWindowManagerService : Hooker {
     override fun onHook() {
         //移除DPI重启恢复
         var isDpi = prefs(ModulePrefs).getBoolean("remove_dpi_restart_recovery", false)

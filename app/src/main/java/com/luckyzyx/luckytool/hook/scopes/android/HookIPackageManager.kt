@@ -5,9 +5,12 @@ import android.content.pm.ParceledListSlice
 import android.content.pm.ResolveInfo
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.core.YukiMemberHookCreator
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.log.YLog
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.HookAction
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.XLog
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.data.AppIntentInfo
 import com.luckyzyx.luckytool.enums.IntentType
 import com.luckyzyx.luckytool.utils.IntentPrefs
@@ -18,7 +21,7 @@ import kotlinx.serialization.json.Json
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-class HookIPackageManager : YukiBaseHooker() {
+class HookIPackageManager : Hooker {
 
     val allIntent = ArraySet<AppIntentInfo>()
     private val allEnabledApps = ArraySet<String>()
@@ -53,13 +56,13 @@ class HookIPackageManager : YukiBaseHooker() {
                 allIntent.add(info)
             }
         }
-        YLog.debug("init app intent configs success -> ${allEnabledApps.size}")
+        XLog.debug("init app intent configs success -> ${allEnabledApps.size}")
     }
 
     private fun initDataChannel() {
         dataChannel.wait<Boolean>("custom_config_app_intent_list") {
             isEnable = it
-            YLog.debug("update custom app intent configs status -> $it")
+            XLog.debug("update custom app intent configs status -> $it")
         }
         dataChannel.wait<String>("custom_config_app_intent_list_update_app_config") { its ->
             val old = allIntent.filter { it.packName == its }
@@ -71,15 +74,15 @@ class HookIPackageManager : YukiBaseHooker() {
                     ?: return@forEachIndexed
                 allIntent.add(info)
             }
-            YLog.debug("update $its configs -> ${old.size} | ${new.size}")
+            XLog.debug("update $its configs -> ${old.size} | ${new.size}")
         }
         dataChannel.wait<Pair<String, Boolean>>("custom_config_app_intent_list_update_apps") {
             if (it.second) allEnabledApps.add(it.first) else allEnabledApps.remove(it.first)
-            YLog.debug("update app intent enabled list -> ${it.first} | ${it.second}")
+            XLog.debug("update app intent enabled list -> ${it.first} | ${it.second}")
         }
     }
 
-    fun YukiMemberHookCreator.MemberHookCreator.hookAfter() {
+    fun HookAction.hookAfter() {
         after {
             if (!isEnable) return@after
             val intent = args().first().cast<Intent>() ?: return@after
@@ -106,7 +109,7 @@ class HookIPackageManager : YukiBaseHooker() {
     }
 
     @Obfuscate
-    inner class HookQueryIntentActivitieV12 : YukiBaseHooker() {
+    inner class HookQueryIntentActivitieV12 : Hooker {
         override fun onHook() {
             //Source PackageManagerService
             "com.android.server.pm.PackageManagerService".toClass().resolve().apply {
@@ -121,7 +124,7 @@ class HookIPackageManager : YukiBaseHooker() {
     }
 
     @Obfuscate
-    inner class HookQueryIntentActivitie : YukiBaseHooker() {
+    inner class HookQueryIntentActivitie : Hooker {
         override fun onHook() {
             //Source IPackageManagerBase
             "com.android.server.pm.IPackageManagerBase".toClass().resolve().apply {

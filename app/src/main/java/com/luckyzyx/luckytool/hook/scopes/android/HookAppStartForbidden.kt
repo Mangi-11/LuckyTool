@@ -1,7 +1,9 @@
 package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClassOrNull
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.utils.AESCrypt
 import com.luckyzyx.luckytool.utils.AESCrypt.baseDetrypt
 import com.luckyzyx.luckytool.utils.CommandUtils
@@ -12,7 +14,7 @@ import org.json.JSONArray
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAppStartForbidden : YukiBaseHooker() {
+object HookAppStartForbidden : Hooker {
     private val forbiddenApps = ArrayList<String>()
 
     private fun initList(jsonString: String) {

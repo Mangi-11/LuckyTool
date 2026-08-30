@@ -1,14 +1,17 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.SDK
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveFolderPreviewBackground : YukiBaseHooker() {
+object RemoveFolderPreviewBackground : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 34) loadHooker(FolderPreviewBackground)
@@ -16,7 +19,7 @@ object RemoveFolderPreviewBackground : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object FolderPreviewBackground : YukiBaseHooker() {
+    object FolderPreviewBackground : Hooker {
         override fun onHook() {
             //Source OplusPreviewBackground
             "com.android.launcher3.folder.OplusPreviewBackground".toClass().resolve().apply {
@@ -30,7 +33,7 @@ object RemoveFolderPreviewBackground : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object FolderPreviewBackgroundV14 : YukiBaseHooker() {
+    object FolderPreviewBackgroundV14 : Hooker {
         override fun onHook() {
             //Source OplusPreviewBackground folder_icon_bg big_folder_bg
             "com.android.launcher3.folder.OplusPreviewBackground".toClass().resolve().apply {

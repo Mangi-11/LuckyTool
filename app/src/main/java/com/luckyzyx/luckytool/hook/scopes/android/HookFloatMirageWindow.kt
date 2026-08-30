@@ -13,7 +13,10 @@ import android.os.Parcelable
 import android.os.UserHandle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.get
+import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.utils.OplusMirageDisplayManagerUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.startMirageWindow
@@ -21,7 +24,7 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @Suppress("LocalVariableName")
-object HookFloatMirageWindow : YukiBaseHooker() {
+object HookFloatMirageWindow : Hooker {
 
     override fun onHook() {
         if (prefs(ModulePrefs).getBoolean("run_floating_window_tasks_in_foreground", false)) {
@@ -31,7 +34,7 @@ object HookFloatMirageWindow : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object FloatWindowBackRun : YukiBaseHooker() {
+    object FloatWindowBackRun : Hooker {
 
         private val Task = "com.android.server.wm.Task"
         private val ActivityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService"
@@ -104,7 +107,7 @@ object HookFloatMirageWindow : YukiBaseHooker() {
     }
 
     @Obfuscate
-    object MultiAppFloatWindowBackRun : YukiBaseHooker() {
+    object MultiAppFloatWindowBackRun : Hooker {
         override fun onHook() {
             val activityTaskManagerService = "com.android.server.wm.ActivityTaskManagerService"
             val OPLUS_MIRAGE_CAR_DUMMY_ACTION = "android.intent.action.OPLUS_MIRAGE_CAR_DUMMY"

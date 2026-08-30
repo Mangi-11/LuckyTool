@@ -15,10 +15,12 @@ interface Hooker {
 
     val processName: String get() = Env.processName
 
-    val classLoader: ClassLoader? get() = Env.classLoader
+    /** 同形 YukiBaseHooker.classLoader：宿主 App CL（统一走 [Env.activeClassLoader]，进程稳定） */
+    val classLoader: ClassLoader? get() = Env.activeClassLoader()
 
-    /** 同形 YukiBaseHooker.appClassLoader：宿主应用类加载器（非空） */
-    val appClassLoader: ClassLoader get() = Env.classLoader ?: error("classLoader not attached")
+    /** 同形 YukiBaseHooker.appClassLoader：宿主 App CL 非空版（legacy 中即非空） */
+    val appClassLoader: ClassLoader
+        get() = Env.activeClassLoader() ?: error("classLoader not attached")
 
     /** 同形 YukiBaseHooker.appInfo：宿主包信息（App 分组必非空，legacy 调用点零改动） */
     val appInfo: ApplicationInfo get() = Env.appInfo ?: error("appInfo is null for non-app host")

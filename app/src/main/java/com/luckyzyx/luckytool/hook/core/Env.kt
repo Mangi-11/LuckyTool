@@ -1,10 +1,12 @@
 package com.luckyzyx.luckytool.hook.core
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.util.Log
 import com.highcapable.kavaref.extension.ClassLoaderProvider
+import com.luckyzyx.luckytool.hook.core.Env.classLoader
 import com.luckyzyx.luckytool.hook.core.Env.enter
 import io.github.libxposed.api.XposedInterface
 
@@ -29,6 +31,10 @@ object Env {
     var appInfo: ApplicationInfo? = null
         private set
 
+    /** 模块 APK 的 ApplicationInfo（sourceDir 用于宿主进程内构造模块资源） */
+    var moduleAppInfo: ApplicationInfo? = null
+        private set
+
     /** 框架能力位（XposedInterface.PROP_CAP_*），onModuleLoaded 时注入 */
     var frameworkProperties: Long = 0L
         private set
@@ -37,10 +43,16 @@ object Env {
     private var remotePrefsWarned = false
 
     /** 模块装载（每个进程一次） */
-    fun attach(base: XposedInterface, processName: String, frameworkProperties: Long = 0L) {
+    fun attach(
+        base: XposedInterface,
+        processName: String,
+        frameworkProperties: Long = 0L,
+        moduleAppInfo: ApplicationInfo? = null
+    ) {
         this.base = base
         this.processName = processName
         this.frameworkProperties = frameworkProperties
+        this.moduleAppInfo = moduleAppInfo
     }
 
     /** 进入宿主包回调：切换 KavaRef 反射 ClassLoader 与上下文 */
@@ -48,18 +60,34 @@ object Env {
         this.packageName = packageName
         this.classLoader = classLoader
         this.appInfo = appInfo
-        ClassLoaderProvider.classLoader = classLoader
+        //KavaRef 全局 loader 与 activeClassLoader 链同源：
+        //Application 已创建后，后续包的 dispatch 会把 Provider 重置回同一进程 App CL，
+        //不再被共享进程的多包回调漂移；cold-start 期（App 未建）回落本次 param CL。
+        ClassLoaderProvider.classLoader = activeClassLoader() ?: classLoader
+        //App 进程自动注入模块资源（对齐 legacy 加载 App 时的模块资源可用语义）
+        if (appInfo != null) ModuleResourcesHook.install()
     }
 
     fun requireBase(): XposedInterface =
         base ?: error("libxposed not attached, make sure LibXposedEntry is loaded")
 
-    /** 宿主进程 App Context（ActivityThread.currentApplication），替换 onAppLifecycle 类用法 */
-    fun hostContext(): Context? = runCatching {
-        Class.forName("android.app.ActivityThread")
-            .getDeclaredMethod("currentApplication").apply { isAccessible = true }
-            .invoke(null) as? Context
-    }.getOrNull()
+    /**
+     * 宿主 App 类加载器的唯一解析入口（统一 Hooker/HookCall/KavaRef 缺省 loader 的语义）：
+     * 1) 进程 Application CL（ActivityThread.currentApplication.classLoader）——进程级稳定，
+     *    共享进程里后续包 dispatch 覆盖 [classLoader] 也不会漂移；
+     * 2) 兜底当前分发宿主的包 CL（Application 未创建时的 cold-start 阶段）。
+     * system_server 无 Application，自然回落 2)。
+     */
+    fun activeClassLoader(): ClassLoader? = hostContext()?.classLoader ?: classLoader
+
+    @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
+    fun hostContext(): Context? {
+        return runCatching {
+            Class.forName("android.app.ActivityThread")
+                .getDeclaredMethod("currentApplication").apply { isAccessible = true }
+                .invoke(null) as? Context
+        }.getOrNull()
+    }
 
     /** 远程偏好：读模块 App 的同名 SharedPreferences（框架按 group 快照下发） */
     fun prefs(name: String): NonNullPrefs {

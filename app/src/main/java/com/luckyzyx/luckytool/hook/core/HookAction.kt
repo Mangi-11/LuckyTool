@@ -2,6 +2,7 @@
 
 package com.luckyzyx.luckytool.hook.core
 
+import com.highcapable.kavaref.extension.ClassLoaderProvider
 import com.highcapable.kavaref.resolver.ConstructorResolver
 import com.highcapable.kavaref.resolver.MethodResolver
 import com.highcapable.kavaref.resolver.base.MemberResolver
@@ -55,12 +56,24 @@ class HookAction internal constructor() {
 class HookCall internal constructor(
     member: Member,
     instance: Any?,
-    internal val arguments: Array<Any?>
+    internal val arguments: Array<Any?>,
+    hookClassLoader: ClassLoader?
 ) {
 
     private val memberRef: Member = member
 
     private val instanceRef: Any? = instance
+
+    private val hookClassLoaderRef: ClassLoader? = hookClassLoader
+
+    /**
+     * 同形 legacy HookParam.appClassLoader：hook 注册时刻的宿主包 CL 快照优先，
+     * 兜底 [Env.activeClassLoader]（进程 App CL）。统一 CL 解析模型见 [Env.activeClassLoader]。
+     */
+    val appClassLoader: ClassLoader
+        get() = hookClassLoaderRef
+            ?: Env.activeClassLoader()
+            ?: error("appClassLoader unavailable")
 
     /** 同形 legacy HookParam.instance：非空（静态方法 hook 访问时抛错） */
     val instance: Any get() = instanceRef ?: error("instance is null for static hook")
@@ -186,8 +199,7 @@ class Args internal constructor(
 /**
  * Hook 入口：KavaRef 查找结果直接衔接 hook 动作块（方法/构造器通用，可空接收者）
  */
-fun <M : Member> MemberResolver<M, *>?.hook(priority: Int = 50, action: HookAction.() -> Unit) {
-    this ?: return
+fun <M : Member> MemberResolver<M, *>.hook(priority: Int = 50, action: HookAction.() -> Unit) {
     when (val member = self) {
         is Method -> member.hookMethod(priority, action)
         is Constructor<*> -> member.hookMethod(priority, action)
@@ -206,7 +218,7 @@ fun <T : Any> List<MethodResolver<T>>?.hookAll(priority: Int = 50, action: HookA
 }
 
 /** 单个解析器的 hookAll 别名（本项目用法等价 hook） */
-fun <M : Member> MemberResolver<M, *>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) =
+fun <M : Member> MemberResolver<M, *>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) =
     hook(priority, action)
 
 /** 同形 YukiHookAPI 的 hookAll：KavaRef constructor { } 返回的构造器解析器列表全部挂动作块 */
@@ -223,23 +235,36 @@ fun <T : Any> List<ConstructorResolver<T>>?.hookAll(priority: Int = 50, action: 
 private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) {
     val base = Env.requireBase()
     val act = HookAction().apply(action)
+    //快照与 KavaRef 全局同源：注册发生在宿主包 dispatch 的同步期，此刻
+    //ClassLoaderProvider 已是 activeClassLoader 链的值（进程 App CL / cold-start param CL），
+    //即 onHook 内无参 toClass 正在使用的 loader。
+    val hookClassLoader = ClassLoaderProvider.classLoader
     base.hook(this)
         .setPriority(priority)
         .setExceptionMode(XposedInterface.ExceptionMode.PROTECTIVE)
         .intercept { chain ->
-            val call = HookCall(this, chain.thisObject, chain.args.toTypedArray())
-            if (act.intercepted) return@intercept null
-            act.beforeBlocks.forEach { it(call) }
-            if (act.replaced && !call.early) call.result = act.replacedValue
-            if (!call.early) {
-                try {
-                    call.result = chain.proceed(call.arguments)
-                } catch (t: Throwable) {
-                    call.throwable = t
+            //执行期把 KavaRef 全局 loader 钉在快照上，修复 before/after 内无参
+            //"x".toClass() / VariousClass.toClass() 在共享进程中的 CL 漂移
+            //（嵌套 hook 由 save/restore 维持栈语义）
+            val prevProvider = ClassLoaderProvider.classLoader
+            ClassLoaderProvider.classLoader = hookClassLoader
+            try {
+                val call = HookCall(this, chain.thisObject, chain.args.toTypedArray(), hookClassLoader)
+                if (act.intercepted) return@intercept null
+                act.beforeBlocks.forEach { it(call) }
+                if (act.replaced && !call.early) call.result = act.replacedValue
+                if (!call.early) {
+                    try {
+                        call.result = chain.proceed(call.arguments)
+                    } catch (t: Throwable) {
+                        call.throwable = t
+                    }
                 }
+                act.afterBlocks.forEach { it(call) }
+                call.throwable?.let { throw it }
+                call.result
+            } finally {
+                ClassLoaderProvider.classLoader = prevProvider
             }
-            act.afterBlocks.forEach { it(call) }
-            call.throwable?.let { throw it }
-            call.result
         }
 }

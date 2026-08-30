@@ -19,10 +19,14 @@ object CustomMusicFluidCloudWhitelist : Hooker {
         //Source OplusMediaRusUpdateManager
         "com.oplus.systemui.media.seedling.rus.OplusMediaRusUpdateManager".toClass().resolve()
             .apply {
-                firstMethod {
+                (firstMethodOrNull {
                     name = "getRusWhiteList"
                     returnType = List::class
-                }.hook {
+                } ?: firstMethod {
+                    name = "parsePackageListFromStringSet"
+                    parameters(Set::class)
+                    returnType = List::class
+                }).hook {
                     after {
                         val originalList = result<java.util.ArrayList<String>>() ?: return@after
                         if (disabled) {

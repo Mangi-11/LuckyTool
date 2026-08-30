@@ -10,7 +10,6 @@ import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.toClass
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.hook.core.toClass
@@ -31,42 +30,36 @@ object EnableNotificationAlignBothSides : Hooker {
                 firstMethod { name = "onFinishInflate" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "onLayout" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "reInflateViews" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "onConfigurationChanged" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "onUiModeChanged" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "onNotificationUpdated" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "ExpandableNotificationRow", method.name
                         )
                     }
                 }
@@ -84,7 +77,7 @@ object EnableNotificationAlignBothSides : Hooker {
                 "com.android.systemui.media.controls.ui.KeyguardMediaController", //C14
                 "com.android.systemui.media.controls.ui.controller.KeyguardMediaController" //C15
             ).toClass().resolve().apply {
-                firstMethod { name = "setVisibility";parameterCount = 2 }.hook {
+                firstMethod { name = "setVisibility"; parameterCount = 2 }.hook {
                     before {
                         if (SDK >= A15) return@before
                         val viewGroup = args().first().cast<ViewGroup>() ?: return@before
@@ -92,7 +85,6 @@ object EnableNotificationAlignBothSides : Hooker {
                         val count = viewGroup.childCount
                         if ((visible == 0) && (count > 0)) {
                             if (viewGroup.width != 0) viewGroup.setViewWidth(
-                                "KeyguardMediaController", method.name
                             )
                         }
                     }
@@ -107,21 +99,18 @@ object EnableNotificationAlignBothSides : Hooker {
                 firstMethod { name = "onFinishInflate" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "UbiquitousExpandableRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "onLayout" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "UbiquitousExpandableRow", method.name
                         )
                     }
                 }
                 firstMethod { name = "reInflateViews" }.hook {
                     after {
                         instance<ViewGroup>().setViewWidth(
-                            "UbiquitousExpandableRow", method.name
                         )
                     }
                 }
@@ -133,25 +122,25 @@ object EnableNotificationAlignBothSides : Hooker {
                     firstMethod { name = "onCreateView" }.hook {
                         after {
                             firstField { name = "parent" }.of(instance).get<ViewGroup>()
-                                ?.setViewWidth("NotificationSeedingController", method.name)
+                                ?.setViewWidth()
                         }
                     }
                     firstMethod { name = "onUpdate" }.hook {
                         after {
                             firstField { name = "parent" }.of(instance).get<ViewGroup>()
-                                ?.setViewWidth("NotificationSeedingController", method.name)
+                                ?.setViewWidth()
                         }
                     }
                     firstMethod { name = "refreshNotificationPosition" }.hook {
                         after {
                             firstField { name = "parent" }.of(instance).get<ViewGroup>()
-                                ?.setViewWidth("NotificationSeedingController", method.name)
+                                ?.setViewWidth()
                         }
                     }
                     firstMethod { name = "updateNotifSeedingViews" }.hook {
                         after {
                             firstField { name = "parent" }.of(instance).get<ViewGroup>()
-                                ?.setViewWidth("NotificationSeedingController", method.name)
+                                ?.setViewWidth()
                         }
                     }
                 }
@@ -160,13 +149,13 @@ object EnableNotificationAlignBothSides : Hooker {
             "com.oplus.systemui.statusbar.notification.customcard.OplusCustomRow".toClassOrNull()
                 ?.resolve()?.apply {
                     firstMethod { name = "onFinishInflate" }.hook {
-                        after { instance<ViewGroup>().setViewWidth("OplusCustomRow", method.name) }
+                        after { instance<ViewGroup>().setViewWidth() }
                     }
                     firstMethod { name = "onLayout" }.hook {
-                        after { instance<ViewGroup>().setViewWidth("OplusCustomRow", method.name) }
+                        after { instance<ViewGroup>().setViewWidth() }
                     }
                     firstMethod { name = "onConfigurationChanged" }.hook {
-                        after { instance<ViewGroup>().setViewWidth("OplusCustomRow", method.name) }
+                        after { instance<ViewGroup>().setViewWidth() }
                     }
                 }
         }
@@ -179,13 +168,12 @@ object EnableNotificationAlignBothSides : Hooker {
             "com.oplusos.systemui.media.OplusMediaHost".toClass().resolve().apply {
                 firstMethod { name = "updateViewVisibility" }.hook {
                     before {
-                        val hostView = firstField { name = "hostView";superclass() }.of(instance)
+                        val hostView = firstField { name = "hostView"; superclass() }.of(instance)
                             .get<ViewGroup>() ?: return@before
                         val visible = hostView.visibility
                         val count = hostView.childCount
                         if ((visible == 0) && (count > 0)) {
                             if (hostView.width != 0) hostView.setViewWidth(
-                                "OplusMediaHost", method.name
                             )
                         }
                     }
@@ -195,7 +183,7 @@ object EnableNotificationAlignBothSides : Hooker {
     }
 
     @SuppressLint("DiscouragedApi")
-    private fun View.setViewWidth(cls: String, methodName: String) {
+    private fun View.setViewWidth() {
         qsPanelPaddingPx = resources.getDimensionPixelSize(
             resources.getIdentifier("qs_header_panel_side_padding", "dimen", packageName)
         )

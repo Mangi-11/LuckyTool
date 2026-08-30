@@ -20,7 +20,7 @@ import androidx.core.view.setPadding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textview.MaterialTextView
 import com.highcapable.betterandroid.ui.extension.view.textColor
-import com.highcapable.yukihookapi.YukiHookAPI
+import com.luckyzyx.luckytool.ui.service.LxServiceBridge
 import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.IGlobalFuncController
 import com.luckyzyx.luckytool.R
@@ -233,7 +233,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), MenuProvider {
     @SuppressLint("SetTextI18n")
     fun refreshModuleStatus() {
         when {
-            YukiHookAPI.Status.isXposedModuleActive -> {
+            LxServiceBridge.isModuleActive -> {
                 binding.moduleStatusIcon.setImageResource(R.drawable.ic_round_check_24)
             }
 
@@ -243,8 +243,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), MenuProvider {
             }
         }
         binding.moduleStatus.text = when {
-            YukiHookAPI.Status.isXposedModuleActive.not() -> getString(R.string.module_is_disabled)
-            YukiHookAPI.Status.isXposedModuleActive -> getString(R.string.module_isactivated)
+            LxServiceBridge.isModuleActive.not() -> getString(R.string.module_is_disabled)
+            LxServiceBridge.isModuleActive -> getString(R.string.module_isactivated)
             else -> getString(R.string.module_notactive)
         }
 

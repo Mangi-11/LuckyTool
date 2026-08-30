@@ -6,7 +6,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.util.ArrayMap
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -28,6 +27,7 @@ import com.drake.net.utils.scopeDialog
 import com.drake.net.utils.scopeLife
 import com.drake.net.utils.withMain
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.highcapable.betterandroid.ui.extension.view.layoutInflater
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.data.FragmentItem
 import com.luckyzyx.luckytool.data.PrefsItem
@@ -237,7 +237,7 @@ class XposedFragment : BaseScopePreferenceFeagment(), MenuProvider {
         return allPrefs
     }
 
-    override fun onCreatePreferencesInModuleApp(savedInstanceState: Bundle?, rootKey: String?) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         if (loadDialog == null) {
             val binding = DialogLoadingLayoutBinding.inflate(layoutInflater)
             loadDialog = MaterialAlertDialogBuilder(requireActivity(), dialogCentered).apply {
@@ -491,7 +491,7 @@ class XposedFragment : BaseScopePreferenceFeagment(), MenuProvider {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultItemHolder {
             val binding = LayoutSearchResultItemBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
+                parent.context.layoutInflater, parent, false
             )
             return SearchResultItemHolder(binding)
         }

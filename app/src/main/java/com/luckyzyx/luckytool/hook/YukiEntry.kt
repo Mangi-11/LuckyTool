@@ -3,25 +3,19 @@ package com.luckyzyx.luckytool.hook
 import android.annotation.SuppressLint
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.hook.param.PackageParam
-import com.luckyzyx.luckytool.hook.hookers.HookAccessory
 import com.luckyzyx.luckytool.hook.hookers.HookAlarmClock
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
-import com.luckyzyx.luckytool.hook.hookers.HookAtlasService
 import com.luckyzyx.luckytool.hook.hookers.HookAudioEffectCenter
 import com.luckyzyx.luckytool.hook.hookers.HookAudioMonitor
 import com.luckyzyx.luckytool.hook.hookers.HookBattery
 import com.luckyzyx.luckytool.hook.hookers.HookBeaconLink
-import com.luckyzyx.luckytool.hook.hookers.HookBluetooth
 import com.luckyzyx.luckytool.hook.hookers.HookBrowser
 import com.luckyzyx.luckytool.hook.hookers.HookCalendar
-import com.luckyzyx.luckytool.hook.hookers.HookCallUI
 import com.luckyzyx.luckytool.hook.hookers.HookCamera
 import com.luckyzyx.luckytool.hook.hookers.HookCloudService
-import com.luckyzyx.luckytool.hook.hookers.HookContacts
 import com.luckyzyx.luckytool.hook.hookers.HookDirectUI
 import com.luckyzyx.luckytool.hook.hookers.HookEngineerMode
 import com.luckyzyx.luckytool.hook.hookers.HookExternalStorage
-import com.luckyzyx.luckytool.hook.hookers.HookEyeProtect
 import com.luckyzyx.luckytool.hook.hookers.HookFileManager
 import com.luckyzyx.luckytool.hook.hookers.HookGallery
 import com.luckyzyx.luckytool.hook.hookers.HookGesture
@@ -29,10 +23,8 @@ import com.luckyzyx.luckytool.hook.hookers.HookHealth
 import com.luckyzyx.luckytool.hook.hookers.HookKeyguardClock
 import com.luckyzyx.luckytool.hook.hookers.HookLauncher
 import com.luckyzyx.luckytool.hook.hookers.HookMarket
-import com.luckyzyx.luckytool.hook.hookers.HookMcs
 import com.luckyzyx.luckytool.hook.hookers.HookMediaController
 import com.luckyzyx.luckytool.hook.hookers.HookMultiApp
-import com.luckyzyx.luckytool.hook.hookers.HookMyDevices
 import com.luckyzyx.luckytool.hook.hookers.HookNfc
 import com.luckyzyx.luckytool.hook.hookers.HookNotificationManager
 import com.luckyzyx.luckytool.hook.hookers.HookOShare
@@ -46,7 +38,6 @@ import com.luckyzyx.luckytool.hook.hookers.HookPhone
 import com.luckyzyx.luckytool.hook.hookers.HookPhoneManager
 import com.luckyzyx.luckytool.hook.hookers.HookPictorial
 import com.luckyzyx.luckytool.hook.hookers.HookQuickSearchBox
-import com.luckyzyx.luckytool.hook.hookers.HookSAU
 import com.luckyzyx.luckytool.hook.hookers.HookSafeCenter
 import com.luckyzyx.luckytool.hook.hookers.HookScreenshot
 import com.luckyzyx.luckytool.hook.hookers.HookSecurePay
@@ -112,7 +103,6 @@ object YukiEntry {
         }
 
         //息屏
-//        loadApp("com.oplus.aod", HookAod)
         //百变引擎
         loadApp("com.oplus.uiengine", HookUIEngine)
         //截屏
@@ -151,13 +141,11 @@ object YukiEntry {
         //软件更新
         loadApp("com.oplus.ota", HookOplusOta)
         //系统升级服务
-        loadApp("com.oplus.sau", HookSAU)
         //乐划锁屏
         loadApp("com.heytap.pictorial", HookPictorial)
         //信息
         loadApp("com.android.mms", HookOplusMMS)
         //电话
-        loadApp("com.android.incallui", HookCallUI)
         //电话服务
         loadApp("com.android.phone", HookPhone)
         //浏览器
@@ -191,11 +179,9 @@ object YukiEntry {
         //三方应用通话录音 / 智慧语音
         loadApp("com.oplus.audiomonitor", HookAudioMonitor)
         //atlasService
-        loadApp("com.oplus.atlas", HookAtlasService)
         //audioEffectCenter
         loadApp("com.oplus.audio.effectcenter", HookAudioEffectCenter)
         //护眼模式
-        loadApp("com.oplus.eyeprotect", HookEyeProtect)
         //MediaController
         loadApp("com.oplus.mediacontroller", HookMediaController)
         //无网畅聊
@@ -209,9 +195,7 @@ object YukiEntry {
         //互传
         loadApp("com.coloros.oshare", HookOShare)
         //蓝牙
-        loadApp("com.android.bluetooth", HookBluetooth)
         //电话本
-        loadApp("com.android.contacts", HookContacts)
         //权限管理
         loadApp("com.oplus.securitypermission", HookSecuritypPermission)
         //文件管理
@@ -219,11 +203,8 @@ object YukiEntry {
         //工程模式
         loadApp("com.oplus.engineermode", HookEngineerMode)
         //设备空间
-        loadApp("com.heytap.mydevices", HookMyDevices)
         //设备快连
-        loadApp("com.heytap.accessory", HookAccessory)
         //系统消息
-        loadApp("com.heytap.mcs", HookMcs)
 
         //其他APP
         loadApp("com.theappninjas.fakegpsjoystick", HookFakeGpsJoyStick)

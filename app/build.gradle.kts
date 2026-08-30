@@ -111,6 +111,10 @@ dependencies {
     implementation(libs.yukihookapi)
     ksp(libs.ksp.yukihookapi)
 
+    //libxposed：原生 API（框架注入后提供）+ 模块 App 侧 service（远程偏好载体）
+    compileOnly(libs.libxposed.api)
+    implementation(libs.libxposed.service)
+
     implementation(libs.kavaref.core)
     implementation(libs.kavaref.android)
     implementation(libs.kavaref.extension)

@@ -105,3 +105,11 @@
 #-assumenosideeffects class java.util.Objects {
 #    ** requireNonNull(...);
 #}
+
+#====  libxposed 模块入口保活 ====
+-keep,allowoptimization,allowobfuscation public class * extends io.github.libxposed.api.XposedModule {
+    public <init>();
+}
+-adaptresourcefilecontents META-INF/xposed/java_init.list
+#libxposed 框架 API 为 provided，忽略缺失告警
+-dontwarn io.github.libxposed.**

@@ -10,6 +10,7 @@ import android.util.Log
 object HookRouter {
 
     private val appHookers = mutableMapOf<String, MutableList<Hooker>>()
+
     private val systemHookers = mutableListOf<Hooker>()
 
     fun app(packageName: String, hooker: Hooker) {

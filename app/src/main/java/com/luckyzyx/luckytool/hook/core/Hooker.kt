@@ -15,14 +15,14 @@ interface Hooker {
 
     val processName: String get() = Env.processName
 
-    /** 同形 YukiBaseHooker.classLoader：宿主 App CL（统一走 [Env.activeClassLoader]，进程稳定） */
+    /** 同形 YukiBaseHooker.classLoader：宿主 App CL（分发 CL 优先，currentApplication 兜底） */
     val classLoader: ClassLoader? get() = Env.activeClassLoader()
 
-    /** 同形 YukiBaseHooker.appClassLoader：宿主 App CL 非空版（legacy 中即非空） */
+    /** 同形 YukiBaseHooker.appClassLoader：非空版（legacy 中即非空） */
     val appClassLoader: ClassLoader
         get() = Env.activeClassLoader() ?: error("classLoader not attached")
 
-    /** 同形 YukiBaseHooker.appInfo：宿主包信息（App 分组必非空，legacy 调用点零改动） */
+    /** 同形 YukiBaseHooker.appInfo：宿主包信息（App 分组必非空） */
     val appInfo: ApplicationInfo get() = Env.appInfo ?: error("appInfo is null for non-app host")
 
     /** 同形 YukiBaseHooker.dataChannel：实时配置推送的远程偏好等价物 */
@@ -33,7 +33,8 @@ interface Hooker {
 
     /** 同形 loadHooker：装载子 Hooker，异常隔离 */
     fun loadHooker(hooker: Hooker) {
-        runCatching { hooker.onHook() }
-            .onFailure { Env.log(Log.ERROR, "HookRouter", "loadHooker ${hooker::class.java.name} failed", it) }
+        runCatching { hooker.onHook() }.onFailure {
+            Env.log(Log.ERROR, "HookRouter", "loadHooker ${hooker::class.java.name} failed", it)
+        }
     }
 }

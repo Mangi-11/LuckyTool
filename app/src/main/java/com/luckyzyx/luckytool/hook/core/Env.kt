@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.util.Log
 import com.highcapable.kavaref.extension.ClassLoaderProvider
-import com.luckyzyx.luckytool.hook.core.Env.classLoader
+import com.highcapable.kavaref.extension.makeAccessible
 import com.luckyzyx.luckytool.hook.core.Env.enter
 import io.github.libxposed.api.XposedInterface
 
@@ -64,27 +64,27 @@ object Env {
         //Application 已创建后，后续包的 dispatch 会把 Provider 重置回同一进程 App CL，
         //不再被共享进程的多包回调漂移；cold-start 期（App 未建）回落本次 param CL。
         ClassLoaderProvider.classLoader = activeClassLoader() ?: classLoader
-        //App 进程自动注入模块资源（对齐 legacy 加载 App 时的模块资源可用语义）
-        if (appInfo != null) ModuleResourcesHook.install()
     }
 
     fun requireBase(): XposedInterface =
         base ?: error("libxposed not attached, make sure LibXposedEntry is loaded")
 
     /**
-     * 宿主 App 类加载器的唯一解析入口（统一 Hooker/HookCall/KavaRef 缺省 loader 的语义）：
-     * 1) 进程 Application CL（ActivityThread.currentApplication.classLoader）——进程级稳定，
-     *    共享进程里后续包 dispatch 覆盖 [classLoader] 也不会漂移；
-     * 2) 兜底当前分发宿主的包 CL（Application 未创建时的 cold-start 阶段）。
-     * system_server 无 Application，自然回落 2)。
+     * 宿主 App 类加载器的唯一解析入口。
+     * 顺序对齐 legacy YukiHookAPI PackageParam.appClassLoader 链：
+     * 1) 当前分发宿主的包 CL（等价 wrapper.appClassLoader，
+     *    配合 isFirstPackage 门禁每进程只在首次分发写入，不漂移）——各 App 进程的
+     *    param CL 即 App CL；system_server 的 param CL 是 system 框架 CL，
+     *    不能退到 currentApplication（LSPosed 在 system 进程的 Application CL 不含 services 类）；
+     * 2) 兜底进程 Application CL（等价 AppParasitics.currentApplication）。
      */
-    fun activeClassLoader(): ClassLoader? = hostContext()?.classLoader ?: classLoader
+    fun activeClassLoader(): ClassLoader? = classLoader ?: hostContext()?.classLoader
 
     @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
     fun hostContext(): Context? {
         return runCatching {
             Class.forName("android.app.ActivityThread")
-                .getDeclaredMethod("currentApplication").apply { isAccessible = true }
+                .getDeclaredMethod("currentApplication").apply { makeAccessible() }
                 .invoke(null) as? Context
         }.getOrNull()
     }
@@ -142,6 +142,7 @@ object Env {
      *   单参调用点（legacy YukiHookPrefsBridge 有默认值参数）零改动
      * - 监听器与 edit 原样委托
      */
+    @Suppress("unused")
     class NonNullPrefs internal constructor(private val inner: SharedPreferences) {
 
         val all: MutableMap<String, *> get() = inner.all

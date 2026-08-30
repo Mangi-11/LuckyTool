@@ -109,7 +109,6 @@ dependencies {
     //XPosed or API
     compileOnly(libs.xposed.api)
     implementation(libs.yukihookapi)
-    ksp(libs.ksp.yukihookapi)
 
     //libxposed：原生 API（框架注入后提供）+ 模块 App 侧 service（远程偏好载体）
     compileOnly(libs.libxposed.api)

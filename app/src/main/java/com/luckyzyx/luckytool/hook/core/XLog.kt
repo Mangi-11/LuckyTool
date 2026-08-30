@@ -12,11 +12,11 @@ object XLog {
 
     fun v(msg: String, tag: String = TAG) = Env.log(Log.VERBOSE, tag, msg)
 
-    fun d(msg: String, tag: String = TAG) = Env.log(Log.DEBUG, tag, msg)
+    fun d(msg: String, tag: String = TAG, t: Throwable? = null) = Env.log(Log.DEBUG, tag, msg, t)
 
     fun i(msg: String, tag: String = TAG) = Env.log(Log.INFO, tag, msg)
 
-    fun w(msg: String, tag: String = TAG) = Env.log(Log.WARN, tag, msg)
+    fun w(msg: String, tag: String = TAG, t: Throwable? = null) = Env.log(Log.WARN, tag, msg, t)
 
     fun e(msg: String, tag: String = TAG, t: Throwable? = null) = Env.log(Log.ERROR, tag, msg, t)
 }

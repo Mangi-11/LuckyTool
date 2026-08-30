@@ -139,22 +139,6 @@
     <string name="ColorOSCorePatchTip">ColorOS orijinal yükleyicisini (Package Installer) kullanabilmek için diğer işlevlerin de açılması gerekmektedir:\nİşlev Listesi -> Uygulama İle İlgili -> Uygulama Yüklemeyle İlgili</string>
     <string name="corepatch">Çekirdek Yaması (Core Patch)</string>
     <string name="corepatch_summary">Yükleme sınırlarını kaldırır, Android %1$s sürümünü destekler</string>
-    <string name="downgr">Uygulamaları eski sürüme düşürmeye izin ver</string>
-    <string name="downgr_summary">Yeni sürümleri kurulu olsa bile, uygulamaların eski sürümlerle üstüne yazılmasına izin verir.</string>
-    <string name="authcreak">Paket yöneticisi imza doğrulamasını devre dışı bırak</string>
-    <string name="authcreak_summary">Uygulama yüklenirken oluşan imza denetimini kaldırır ve yüklemeye izin verir.</string>
-    <string name="digestCreak">APK İmza doğrulamasını devre dışı bırak</string>
-    <string name="digestCreak_summary">Önceden yüklenmiş uygulamaların üzerine farklı imzalara sahip paketlerin yazılmasına izin verir.</string>
-    <string name="exactSigCheck">Tam imza eşleşmesini devre dışı bırak</string>
-    <string name="exactSigCheck_summary">Apk bölümleri arası tam imza eşleştirmesini devre dışı bırakarak her apk bölümünün farklı bir imza ile yüklenmesine izin verir.\nYalnızca gerçekten gerektiğinde etkinleştirin!</string>
-    <string name="UsePreSig">Yükleme sırasında her zaman önceden imzalanmış uygulamayı (APP) kullan</string>
-    <string name="UsePreSig_summary">Bu normal bir durum değildir, tehlikeli olabilir! Sadece kesinlikle gerektiğinde etkinleştirin.</string>
-    <string name="usepresig_warn">!!! Yüklü uygulamaların üzerine tüm paketlerin yazılmasına yol açabilir !!\nBilinmeyen paketlerin yüklenmesine olanak tanır.</string>
-    <string name="bypassBlock">Engelleri atla (Bypass block)</string>
-    <string name="bypassBlock_summary">Nothing Phone gibi bazı cihazlardaki engelleme listelerini (blocklist) atlar</string>
-    <string name="shared_user_title">Paylaşılan kullanıcı (shared user) doğrulamasını atla</string>
-    <string name="shared_user_summary">Paylaşılan kullanıcısından farklı bir imzaya sahip olan uygulamanın yüklenmesine izin ver (<b>\'İmzaları karşılaştırmayı devre dışı bırak\' seçeneği de etkinleştirilmelidir</b>)</string>
-    <string name="disable_verification_agent_title">Paket Doğrulama Aracısını Devre Dışı Bırak</string>
     <string name="disable_verification_agent_summary">Örn. Google Play Koruması (Play Protect)</string>
     
     <!--Status Bar-->

@@ -125,20 +125,7 @@
     <string name="ColorOSCorePatchTip">ColorOS 官方安装程序需要启用其他功能来使用\n功能列表 - 应用相关 - 应用安装相关</string>
     <string name="corepatch">核心破解</string>
     <string name="corepatch_summary">解除安装限制,支持 Android %1$s</string>
-    <string name="downgr">允许降级安装应用</string>
-    <string name="downgr_summary">允许应用的旧版本覆盖安装新版本</string>
-    <string name="authcreak">禁用软件包管理器签名验证</string>
-    <string name="authcreak_summary">关闭安装应用时的签名验证, 可以安装被篡改的应用</string>
-    <string name="digestCreak">禁用 APK 签名验证</string>
-    <string name="digestCreak_summary">允许不同签名的应用程序覆盖安装</string>
-    <string name="exactSigCheck_summary">禁用多个 APK 之间的唯一签名匹配，从而允许安装应用时每个分包 APK 使用不同签名。仅在确有必要时再启用此项功能</string>
-    <string name="UsePreSig">安装时始终使用已安装应用的签名</string>
-    <string name="UsePreSig_summary">高风险操作！仅在绝对需要时启用！</string>
-    <string name="usepresig_warn">所有安装包可以覆盖已安装的App!\n安装未知的安装包时请务必小心</string>
-    <string name="bypassBlock_summary">绕过某些设备如 Nothing Phone 上的黑名单</string>
-    <string name="shared_user_title">绕过共享用户签名验证</string>
-    <string name="shared_user_summary">允许安装与其共享用户签名不同的 App(<b>需要同时打开“禁用APK签名验证”</b>)</string>
-    <string name="disable_verification_agent_title">禁用安装包验证代理</string>
+    
     <string name="disable_verification_agent_summary">例如 Google Play 商店的保护机制</string>
     <!--Status Bar-->
     <string name="StatusBar">状态栏相关</string>
@@ -1158,8 +1145,6 @@
     <string name="add_success">添加成功</string>
     <string name="add_fail">添加失败</string>
     <string name="remove_word_limit_for_compress_files">移除压缩文件字数限制</string>
-    <string name="exactSigCheck">禁用唯一签名匹配</string>
-    <string name="bypassBlock">绕过黑名单</string>
     <string name="disable_start_app_detail">禁用启动AppDetail</string>
     <string name="remove_multi_app_created_num_limit_for_users">单个应用可以分身的数量</string>
 </resources>

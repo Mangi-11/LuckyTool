@@ -123,18 +123,6 @@
     <string name="ColorOSCorePatchTip">Официальному установщику Color OS необходимо включить другие функции для использования\nСписок функций-Приложения-Установка приложений</string>
     <string name="corepatch">Патчи ядра</string>
     <string name="corepatch_summary">Убрать ограничения на установку, поддерживает Android %1$s</string>
-    <string name="downgr">Разрешить понижение версии</string>
-    <string name="downgr_summary">Разрешить приложению перезаписывать установку старой версии непосредственно в случае установки новой версии</string>
-    <string name="authcreak">Отключить проверку подписи диспетчера пакетов</string>
-    <string name="authcreak_summary">Отключить проверку подписи при установке приложений, вы можете устанавливать поддельные приложения</string>
-    <string name="digestCreak">Отключить проверку подписи APK</string>
-    <string name="digestCreak_summary">Разрешить прямое переопределение для установки приложений с разными подписями для одного и того же имени пакета</string>
-    <string name="UsePreSig">Всегда использовать подпись установленного приложения при установке</string>
-    <string name="UsePreSig_summary">Опасно! Включать только в случае крайней необходимости</string>
-    <string name="usepresig_warn">!!!Все установщики могут перезаписывать установленные приложения!!! Будьте осторожны при установке приложений из неизвестных источников</string>
-    <string name="shared_user_title">Обход проверки общего пользователя</string>
-    <string name="shared_user_summary">Разрешить установку приложения, подпись которого отличается от общего пользователя (<b>также необходимо включить \"Отключить сравнение подписей\"</b>)</string>
-    <string name="disable_verification_agent_title">Отключить сервис проверки пакетов</string>
     <string name="disable_verification_agent_summary">Например Google Play Protection</string>
     <!--Status Bar-->
     <string name="StatusBar">Статусбар и шторка</string>

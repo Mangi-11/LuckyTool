@@ -123,18 +123,6 @@
     <string name="ColorOSCorePatchTip">Офіційному інсталятору Color OS необхідно увімкнути інші функції для використання\nСписок функцій-Додатка-Встановлення додатків</string>
     <string name="corepatch">Патч ядра</string>
     <string name="corepatch_summary">Remove install limits, supports Android %1$s</string>
-    <string name="downgr">Дозволити зниження версії</string>
-    <string name="downgr_summary">Дозволяє додатку перезаписувати старіші версії, якщо встановлені нові версії.</string>
-    <string name="authcreak">Вимкнути перевірку підпису диспетчера пакетів</string>
-    <string name="authcreak_summary">Вимкнути перевірку підпису під час встановлення додатків, ви можете встановлювати підроблені додатки</string>
-    <string name="digestCreak">Вимкнути перевірку підпису APK</string>
-    <string name="digestCreak_summary">Дозволити пряме перевизначення для встановлення додатків з різними підписами для одного і того ж імені пакета</string>
-    <string name="UsePreSig">Завжди використовувати підпис встановленого додатку під час встановлення</string>
-    <string name="UsePreSig_summary">Небезпечно! Вмикати тільки у разі нагальної потреби</string>
-    <string name="usepresig_warn">!!!Всі інсталятори можуть перезаписувати встановлені програми!!! Будьте обережні під час встановлення програм з невідомих інсталяторів</string>
-    <string name="shared_user_title">Bypass shared user verify</string>
-    <string name="shared_user_summary">Allow install app with signature differ from its shared user (<b>\'Disable compare signatures\' must be enabled too</b>)</string>
-    <string name="disable_verification_agent_title">Disable Package Verification Agent</string>
     <string name="disable_verification_agent_summary">e.g. Google Play Protection</string>
     <!--Status Bar-->
     <string name="StatusBar">Статус бар</string>

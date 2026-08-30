@@ -123,18 +123,6 @@
     <string name="ColorOSCorePatchTip">Dla oficjalnego instalatora ColorOS należy włączyć dodatkowe funkcje, aby móc z tych korzystać:\nFunkcje &gt; Aplikacje &gt; Instalowanie aplikacji</string>
     <string name="corepatch">Główna łatka</string>
     <string name="corepatch_summary">Remove install limits, supports Android %1$s</string>
-    <string name="downgr">Obniżanie wersji aplikacji</string>
-    <string name="downgr_summary">Umożliwia instalowanie starszych wersji aplikacji na nowszą.</string>
-    <string name="authcreak">Wyłącz weryfikację sygnatur\nmenedżera pakietów</string>
-    <string name="authcreak_summary">Umożliwia instalację aplikacji pomimo braku podpisu.</string>
-    <string name="digestCreak">Wyłącz weryfikację podpisu aplikacji</string>
-    <string name="digestCreak_summary">Umożliwia zaktualizowanie aplikacji, gdy nowa wersja ma inny podpis.</string>
-    <string name="UsePreSig">Używaj podpisu zainstalowanej aplikacji</string>
-    <string name="UsePreSig_summary">Nie jest to bezpieczne, włącz wyłącznie wtedy, gdy musisz!</string>
-    <string name="usepresig_warn">Uwaga!\nWszystkie pakiety mogą zastąpić zainstalowaną aplikację, co może prowadzić do niebezpiecznych sytuacji.</string>
-    <string name="shared_user_title">Bypass shared user verify</string>
-    <string name="shared_user_summary">Allow install app with signature differ from its shared user (<b>\'Disable compare signatures\' must be enabled too</b>)</string>
-    <string name="disable_verification_agent_title">Disable Package Verification Agent</string>
     <string name="disable_verification_agent_summary">e.g. Google Play Protection</string>
     <!--Status Bar-->
     <string name="StatusBar">Pasek stanu</string>

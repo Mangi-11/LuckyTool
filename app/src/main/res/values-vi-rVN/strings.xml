@@ -125,18 +125,6 @@
     <string name="ColorOSCorePatchTip">Bộ cài đặt ColorOS chính thức cần kích hoạt các chức năng khác để sử dụng\nDanh sách chức năng-Ứng dụng-Cài đặt ứng dụng</string>
     <string name="corepatch">Vá lõi hệ thống</string>
     <string name="corepatch_summary">Xóa giới hạn cài đặt, hỗ trợ Android %1$s</string>
-    <string name="downgr">Cho phép hạ cấp ứng dụng</string>
-    <string name="downgr_summary">Cho phép ứng dụng ghi đè các phiên bản cũ hơn nếu các phiên bản mới được cài đặt.</string>
-    <string name="authcreak">Tắt xác thực chữ ký của trình quản lý gói</string>
-    <string name="authcreak_summary">Xác minh chữ ký khi cài đặt ứng dụng.</string>
-    <string name="digestCreak">Vô hiệu chữ ký xác thực APK</string>
-    <string name="digestCreak_summary">Cho phép ghi đè các ứng dụng được cài đặt trực tiếp có chữ ký khác nhau</string>
-    <string name="UsePreSig">Luôn sử dụng cài đặt APP có chữ ký</string>
-    <string name="UsePreSig_summary">Bất thường! Nguy hiểm! Chỉ bật khi thực sự cần thiết</string>
-    <string name="usepresig_warn">!!! Tất cả các gói có thể ghi đè ứng dụng đã cài đặt!!\nđể cài đặt các gói không xác định</string>
-    <string name="shared_user_title">Bỏ qua xác minh chữ ký người dùng được chia sẻ</string>
-    <string name="shared_user_summary">Cho phép cài đặt các ứng dụng có chữ ký khác nhau từ những người dùng chia sẻ chúng (<b>Cũng cần bật \"Tắt xác minh chữ ký Apk\"</b>)</string>
-    <string name="disable_verification_agent_title">Vô hiệu hóa xác minh gói cài đặt</string>
     <string name="disable_verification_agent_summary">Ví dụ: Google Play Protect</string>
     <!--Status Bar-->
     <string name="StatusBar">Thanh trạng thái</string>

@@ -123,18 +123,6 @@
     <string name="ColorOSCorePatchTip">The official Color OS installer needs to enable other functions to use\nFunction List-Application Related-Application Installation Related</string>
     <string name="corepatch">Patch Nucleu</string>
     <string name="corepatch_summary">Remove install limits, supports Android %1$s</string>
-    <string name="downgr">Permite downgrade aplicații</string>
-    <string name="downgr_summary">Permite aplicației să suprascrie versiunile mai vechi dacă sunt instalate versiuni noi.</string>
-    <string name="authcreak">Dezactivează validarea semnăturii managerului de pachete</string>
-    <string name="authcreak_summary">Verificarea semnăturii când instalezi aplicații poate fi instalată.</string>
-    <string name="digestCreak">Dezactivează validarea semnăturii APK</string>
-    <string name="digestCreak_summary">Permite suprascrierea aplicațiilor instalate direct cu semnături diferite ale pachetului</string>
-    <string name="UsePreSig">Utilizează întotdeauna aplicația semnată instalată în timpul instalării</string>
-    <string name="UsePreSig_summary">Nu este un pericol normal!! Activează doar atunci când este absolut necesar</string>
-    <string name="usepresig_warn">!!! Toate pachetele pot suprascrie aplicația instalată!!\npentru a instala pachete necunoscute</string>
-    <string name="shared_user_title">Bypass shared user verify</string>
-    <string name="shared_user_summary">Permite instalarea aplicației cu semnătură diferă de utilizatorul partajat (<b>\'Dezactivează compararea semnăturilor\' trebuie să fie activată de asemenea</b>)</string>
-    <string name="disable_verification_agent_title">Dezactivează Agentul de Verificare Pachet</string>
     <string name="disable_verification_agent_summary">ex. Protecție Google Play</string>
     <!--Status Bar-->
     <string name="StatusBar">Asociat cu bara de stare</string>

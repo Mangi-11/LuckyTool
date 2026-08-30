@@ -70,12 +70,4 @@ object Config {
     fun isBypassBlockEnabled(): Boolean {
         return prefs.getBoolean(BYPASS_BLOCK, false)
     }
-
-    fun getConfig(key: String): Boolean {
-        return rwPrefs?.getBoolean(key, false) ?: false
-    }
-
-    fun setConfig(key: String, value: Boolean) {
-        rwPrefs?.edit()?.putBoolean(key, value)?.apply()
-    }
 }

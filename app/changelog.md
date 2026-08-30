@@ -21,6 +21,7 @@ in [TG Channel’s associated groups](https://t.me/LuckyTool)**
 - [适配] 禁用自动切换上个任务 v16.6.17(8a73764)
 - [适配] 移除手机管家应用白名单倒计时 v17.3.10(c24156e)
 - [适配] 适配迁移libxposed api 102
+- [适配] 自定义指纹图标替换 C16.1
 
 [//]: # (- [添加] 自定义音乐歌词显示白名单)
 

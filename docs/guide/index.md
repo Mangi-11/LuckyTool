@@ -1,22 +1,22 @@
 # 简介
 
-LuckyTool 是一款面向 **ColorOS / OPPO（一加）** 设备的 Xposed 模块，运行于 [LSPosed](https://github.com/mywalkb/LSPosed_mod) 框架之上，提供数十个系统级功能增强。
+LuckyTool 是一款面向 **ColorOS** 设备的 Xposed
+模块，运行于 LSPosed 框架之上，提供数十个系统级功能增强。
 
 ## 特性
 
-- **范围广**：覆盖系统框架（`android`）、SystemUI、桌面、设置以及 40+ 个系统应用
-- **原生 libxposed**：基于官方现代 API（libxposed 101/102）开发，不依赖任何桥接层
-- **统一配置**：所有功能开关通过「远程偏好」读写，UI 修改立即同步到宿主进程
-- **宿主维度适配**：按 ColorOS 版本（C12 ~ C16）自动匹配不同的 Hook 实现
+- **范围广**：覆盖系统框架、SystemUI、桌面、设置以及 40+ 个系统应用
+- **实时生效**：功能开关修改后同步到系统进程，无需重启
+- **多版本适配**：按 ColorOS 版本（C12 ~ C16）自动匹配功能实现
 
 ## 支持环境
 
-| 项目 | 要求 |
-|---|---|
-| 系统 | ColorOS / OPPO / 一加（部分功能通用 AOSP） |
+| 项目   | 要求                                 |
+|------|------------------------------------|
+| 系统   | ColorOS / OPPO / 一加（部分功能通用）        |
 | 系统版本 | Android 13 ~ 16（ColorOS C12 ~ C16） |
-| 框架 | LSPosed（libxposed API ≥ 101） |
-| 权限 | Root（部分功能强依赖，总开关检查） |
+| 框架   | LSPosed                            |
+| 权限   | Root（部分功能依赖，总开关检查）                 |
 
 ## 免责声明
 

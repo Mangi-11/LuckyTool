@@ -9,7 +9,6 @@ import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.hook.core.toClass
@@ -20,7 +19,6 @@ import org.lsposed.lsparanoid.Obfuscate
 object FingerPrintIconAnim : Hooker {
 
     private const val TAG = "FpIcon"
-
 
     private val fpIconType = VariousClass(
         "com.oplusos.systemui.keyguard.onscreenfingerprint.OnScreenFingerprintIcon", //C12
@@ -47,10 +45,10 @@ object FingerPrintIconAnim : Hooker {
             firstMethod { name = "loadAnimDrawables" }.hook {
                 if (removeMode == "3") intercept()
                 else after {
-                    XLog.d(
-                        "loadAnimDrawables after: mode=$removeMode replace=$isReplaceIcon path=$iconPath",
-                        tag = TAG
-                    )
+//                    XLog.d(
+//                        "loadAnimDrawables after: mode=$removeMode replace=$isReplaceIcon path=$iconPath",
+//                        tag = TAG
+//                    )
                     //C16：fade 动画已无独立方法（内联为 updateOpticalUI 的 case21/22），
                     //替换图标或禁用淡入淡出时归零 fade 字段，使宿主无动画可播且不覆盖自定义图
                     if (removeMode == "1" || isReplaceIcon) instance<Any>().removeFadeAnim()
@@ -79,7 +77,6 @@ object FingerPrintIconAnim : Hooker {
             //替换模式重设自定义图，模式1保持移除，防止恢复链抹掉我们的设置
             firstMethodOrNull { name = "restoreIconDrawable" }?.hook {
                 after {
-                    XLog.d("restoreIconDrawable after", tag = TAG)
                     when {
                         isReplaceIcon -> instance<Any>().setCustomDrawable(iconPath, false)
                         removeMode == "1" -> instance<Any>().setCustomDrawable(null, false)

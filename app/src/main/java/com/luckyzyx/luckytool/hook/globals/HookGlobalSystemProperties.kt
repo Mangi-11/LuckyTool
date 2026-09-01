@@ -1,13 +1,7 @@
 package com.luckyzyx.luckytool.hook.globals
 
 import android.util.ArrayMap
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
@@ -109,7 +103,7 @@ object HookGlobalSystemProperties : Hooker {
             //Source RkpdApp Settings
             if (prefs(ModulePrefs).getBoolean("remove_gms_usage_restrictions", false)) {
                 val host = prefs(ModulePrefs).getString("custom_remote_provisioning_hostname", "")
-                if (!host.isNullOrBlank()) put("remote_provisioning.hostname", host)
+                if (host.isNotBlank()) put("remote_provisioning.hostname", host)
             }
 
             //Source FNOsUtils isSupportedFeiNiuNas
@@ -119,10 +113,9 @@ object HookGlobalSystemProperties : Hooker {
 
             //Source Mcs
             if (packageName == "com.heytap.mcs") {
-                
-                    val region =
+                val region =
                     prefs(ModulePrefs).getString("custom_system_message_region_defaults", "")
-                if (!region.isNullOrBlank()) put("ro.vendor.oplus.regionmark", region)
+                if (region.isNotBlank()) put("ro.vendor.oplus.regionmark", region)
             }
 
             //Source COSA

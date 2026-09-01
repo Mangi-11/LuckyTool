@@ -1,21 +1,20 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.annotation.SuppressLint
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.SystemProperties
 import android.util.TypedValue
 import android.widget.RemoteViews
-import androidx.core.app.NotificationCompat
+import com.highcapable.betterandroid.ui.component.notification.factory.Notification
+import com.highcapable.betterandroid.ui.component.notification.factory.NotificationChannel
+import com.highcapable.betterandroid.ui.component.notification.type.NotificationImportance
+import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.XLog
 import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import com.luckyzyx.luckytool.hook.core.onAppLifecycle
-import org.lsposed.lsparanoid.Obfuscate
-import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.utils.IChargerUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.BatteryControllerUtils
 import com.luckyzyx.luckytool.utils.DeviceUtils.calcLocalHealth
@@ -29,6 +28,7 @@ import com.luckyzyx.luckytool.utils.getIntProperty
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getStringProperty
 import com.luckyzyx.luckytool.utils.safeOf
+import org.lsposed.lsparanoid.Obfuscate
 import java.io.StringReader
 import java.util.Properties
 import kotlin.math.abs
@@ -80,9 +80,16 @@ object StatusBarBatteryInfoNotify : Hooker {
     private var isSimple: Boolean = false
     private var fontSize: Int = 11
 
-    private const val channelNotifyId = 112233
-    private const val channelId = "luckytool_notify"
-    private const val channelName = "LuckyTool"
+    private const val NOTIFY_ID = 112233
+    private const val CHANNEL_ID = "luckytool_notify"
+    private const val CHANNEL_NAME = "LuckyTool"
+
+    private val channel = NotificationChannel(
+        channelId = CHANNEL_ID, importance = NotificationImportance.DEFAULT
+    ) {
+        name = CHANNEL_NAME
+        sound(null)
+    }
 
     override fun onHook() {
         var thisContext: Context? = null
@@ -131,22 +138,32 @@ object StatusBarBatteryInfoNotify : Hooker {
         }
 
         onAppLifecycle {
-            onCreate { injectModuleAppResources() }
+            onCreate {
+                XLog.debug("onCreate is Receiver")
+
+                injectModuleAppResources()
+            }
             //BatteryService
             registerReceiver(Intent.ACTION_BATTERY_CHANGED) { context: Context, _: Intent ->
+                XLog.debug("ACTION_BATTERY_CHANGED is Receiver")
+
                 thisContext = context
                 context.injectModuleAppResources()
+
                 initInfo(context)
                 initSend(context)
             }
             //OplusBatteryService
             registerReceiver("android.intent.action.ADDITIONAL_BATTERY_CHANGED") { context: Context, intent: Intent ->
+                XLog.debug("ADDITIONAL_BATTERY_CHANGED is Receiver")
+
                 thisContext = context
                 context.injectModuleAppResources()
-                chargerTechnology = (intent.getIntExtra("chargertechnology", 0))
-                chargeWattage = (intent.getIntExtra("chargewattage", 0))
-                ppsMode = (intent.getIntExtra("pps_chg_mode", 0))
+                chargerTechnology = intent.getIntExtra("chargertechnology", 0)
+                chargeWattage = intent.getIntExtra("chargewattage", 0)
+                ppsMode = intent.getIntExtra("pps_chg_mode", 0)
                 chargerWattageCpa = intent.getIntExtra("cpa_charge_wattage", 0)
+                XLog.debug("tech: $chargerTechnology | chargeWattage: $chargeWattage | chargerWattageCpa: $chargerWattageCpa | ppsMode: $ppsMode")
 
                 initInfo(context)
                 initSend(context)
@@ -212,15 +229,6 @@ object StatusBarBatteryInfoNotify : Hooker {
         }
     }
 
-    private fun createChannel(context: Context) {
-        val channel = NotificationChannel(
-            channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT
-        ).apply {
-            setSound(null, null)
-        }
-        NotifyUtils.createChannel(context, channel)
-    }
-
     private fun initSend(context: Context?) {
         if (context == null) return
         when (displayMode) {
@@ -241,7 +249,6 @@ object StatusBarBatteryInfoNotify : Hooker {
         context: Context, isCharging: Boolean, isUpdateTime: Boolean,
         isSimple: Boolean, showVolMode: String
     ) {
-        createChannel(context)
         //com.oplusos.systemui.keyguard.charginganim.ChargingTypeConstants C14.1-
         val technology = BatteryControllerUtils(appClassLoader).let {
             if (getOSVersionCode >= 34) it.getTechnologyName(
@@ -249,7 +256,8 @@ object StatusBarBatteryInfoNotify : Hooker {
             )
             else it.getTechnologyNameOld(chargerTechnology, ppsMode, isWireless)
         }
-//        YLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
+        XLog.debug("getOSVersionCode: $getOSVersionCode")
+        XLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
 
         val powerCalc = if (isSeriesDual || isParallelDual) {
             (voltage + voltage2) * electricCurrent / 1000.0
@@ -279,11 +287,9 @@ object StatusBarBatteryInfoNotify : Hooker {
         val updateTimeStr = safeOf("UpdateTime") { context.getString(R.string.battery_update_time) }
 
         val power = abs(powerCalc).formatDecimals(2) + "W"
-        val wattage = when {
-            chargeWattage == 0 && chargerWattageCpa == 0 -> ""
-            chargeWattage == 0 && chargerWattageCpa != 0 -> "${chargerWattageCpa}W"
-            else -> "${chargeWattage}W"
-        }
+        val wattage = if (chargeWattage == 0) {
+            if (chargerWattageCpa == 0) "" else "${chargerWattageCpa}W"
+        } else "${chargeWattage}W"
 
         val finalTemp = if (temperature < 0) "NaN" else "$temperature℃"
         val tem = if (isSimple) finalTemp else "${tempStr}: $finalTemp"
@@ -372,20 +378,18 @@ object StatusBarBatteryInfoNotify : Hooker {
         remoteViews.setTextViewTextSize(
             R.id.battery_notify_tv, TypedValue.COMPLEX_UNIT_SP, fontSize.toFloat()
         )
-
-        val notify = NotificationCompat.Builder(context, channelId).apply {
-            setAutoCancel(false)
-            setOngoing(true)
-            setSmallIcon(batteryIcon)
-            setCustomContentView(remoteViews)
-            setCustomBigContentView(remoteViews)
-            priority = NotificationCompat.PRIORITY_DEFAULT
-        }.build()
-        NotifyUtils.sendNotification(context, channelNotifyId, notify)
+        val notify = Notification(context = context, channel = channel) {
+            smallIconResId = batteryIcon
+            customContentView = remoteViews
+            customBigContentView = remoteViews
+            autoCancel(false)
+            ongoing(true)
+        }
+        NotifyUtils.sendNotification(context, NOTIFY_ID, notify.instance)
     }
 
     private fun clearNotification(context: Context) {
-        NotifyUtils.clearNotification(context, channelNotifyId)
+        NotifyUtils.clearNotification(context, NOTIFY_ID)
     }
 
     private fun getChargeInfo(): Properties {
@@ -394,7 +398,7 @@ object StatusBarBatteryInfoNotify : Hooker {
                 if (oplusCharger == null) oplusCharger = it.getInstance()
                 it.queryChargeInfo(oplusCharger)
             } ?: ""
-//        LogUtils.d("getChargeInfo", "queryChargeInfo", queryChargeInfo.toString(), true)
+            XLog.d("getChargeInfo -> queryChargeInfo : $queryChargeInfo")
             Properties().apply {
                 if (queryChargeInfo.isNotBlank()) load(StringReader(queryChargeInfo))
             }

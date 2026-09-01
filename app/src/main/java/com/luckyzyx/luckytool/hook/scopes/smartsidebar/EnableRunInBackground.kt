@@ -8,7 +8,6 @@ import com.highcapable.kavaref.extension.createInstance
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import com.luckyzyx.luckytool.hook.core.toClass

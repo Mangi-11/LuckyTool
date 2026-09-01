@@ -6,6 +6,7 @@ import androidx.annotation.DeprecatedSinceApi
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
@@ -17,7 +18,7 @@ class BatteryControllerUtils(val classLoader: ClassLoader?) {
     val clazz = VariousClass(
         "com.oplusos.systemui.keyguard.charginganim.ChargingAnimationImpl", //C12 C13
         "com.oplusos.systemui.common.battery.OplusBatteryController" //C14
-    ).load(classLoader)
+    ).toClass(classLoader)
 
     fun getInstance(context: Context): Any? {
         return clazz.resolve().firstMethod { name = "getInstance" }.let {
@@ -28,7 +29,8 @@ class BatteryControllerUtils(val classLoader: ClassLoader?) {
 
     @DeprecatedSinceApi(Build.VERSION_CODES.TIRAMISU, "仅在A13中使用")
     fun getChargerTechnology(instance: Any): Int {
-        return instance.asResolver().firstMethod { name = "getChargerTechnology" }.invoke<Int>() ?: 0
+        return instance.asResolver().firstMethod { name = "getChargerTechnology" }.invoke<Int>()
+            ?: 0
     }
 
     @DeprecatedSinceApi(Build.VERSION_CODES.TIRAMISU, "仅在A13中使用")

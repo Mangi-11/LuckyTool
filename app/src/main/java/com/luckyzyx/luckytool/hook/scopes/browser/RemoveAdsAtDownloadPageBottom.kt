@@ -7,8 +7,8 @@ import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
@@ -19,7 +19,7 @@ class RemoveAdsAtDownloadPageBottom(val dexKitBridge: DexKitBridge) : Hooker {
         val recommendConfig = VariousClass(
             "com.heytap.browser.downloads.entity.RecommendConfig",  //v40.8.24.1
             "com.heytap.browser.download.ui.downloadlist.model.RecommendConfig"  //v40.8.25.1
-        ).load()
+        ).toClass()
 
         //Source AppRecommendManager -> LinearLayout setVisibility 0/8 500L
         dexKitBridge.findMethod {

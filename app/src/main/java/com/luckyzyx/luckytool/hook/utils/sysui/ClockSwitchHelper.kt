@@ -3,6 +3,7 @@ package com.luckyzyx.luckytool.hook.utils.sysui
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
+import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
@@ -12,7 +13,7 @@ class ClockSwitchHelper(val classLoader: ClassLoader?) {
     val clazz = VariousClass(
         "com.oplusos.systemui.keyguard.clock.ClockSwitchHelper",  //C12 C13
         "com.oplus.systemui.keyguard.clock.ClockSwitchHelper"  //C14
-    ).load(classLoader)
+    ).toClass(classLoader)
 
     fun getInstance(context: Context): Any? {
         return clazz.resolve().firstMethod {

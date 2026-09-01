@@ -6,6 +6,7 @@ import android.view.Display
 import android.view.DisplayAddress
 import android.view.DisplayInfo
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -17,11 +18,11 @@ class DisplayManagerUtils(val classLoader: ClassLoader?) {
     val displayInfoClazz = "android.view.DisplayInfo".toClass(classLoader)
 
     fun getDisplayManagerService(context: Context): DisplayManager {
-        return context.getSystemService(DisplayManager::class.java)
+        return context.getSystemService(classOf<DisplayManager>())
     }
 
     fun Display.getDisplayInfo(outDisplayInfo: DisplayInfo?): Boolean {
-        return asResolver<Display>().firstMethod {
+        return asResolver().firstMethod {
             name = "getDisplayInfo"
             parameters(displayInfoClazz)
         }.invoke<Boolean>(outDisplayInfo) ?: false

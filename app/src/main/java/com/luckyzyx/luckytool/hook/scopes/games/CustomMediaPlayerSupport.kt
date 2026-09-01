@@ -6,6 +6,7 @@ import com.highcapable.kavaref.extension.VariousClass
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.result
+import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -17,7 +18,7 @@ object CustomMediaPlayerSupport : Hooker {
         VariousClass(
             "business.module.media.MediaSessionHelper", //V8 V9
             "com.oplus.games.musicplayer.main.MediaSessionHelper" //V10
-        ).load().resolve().apply {
+        ).toClass().resolve().apply {
             firstMethod {
                 emptyParameters()
                 returnType = List::class

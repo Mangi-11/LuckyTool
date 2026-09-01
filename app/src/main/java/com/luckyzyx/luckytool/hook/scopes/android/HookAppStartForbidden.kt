@@ -90,7 +90,7 @@ object HookAppStartForbidden : Hooker {
 
     private fun isAppForbidden(packName: String): Boolean {
         forbiddenApps.forEach {
-            if (it.lowercase() == packName.lowercase()) return true
+            if (it.equals(packName, ignoreCase = true)) return true
         }
         return false
     }

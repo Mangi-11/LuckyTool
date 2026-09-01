@@ -9,7 +9,6 @@ import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.hook.utils.FlowUtils
@@ -157,7 +156,7 @@ object MobileDataIconRelated : Hooker {
                     }).hook {
                         before {
                             if (!hideNoSS) return@before
-                            val keys = args.filter { it is String }
+                            val keys = args.filterIsInstance<String>()
                             if (keys.contains("nosim_all")) {
                                 args(args.indexOfFirst { it is Int }).set(0)
                             }

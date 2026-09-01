@@ -32,7 +32,6 @@ import android.text.SpannableString
 import android.text.TextPaint
 import android.text.style.ForegroundColorSpan
 import android.util.ArrayMap
-import android.util.ArraySet
 import android.util.Base64
 import android.util.TypedValue
 import android.view.Menu
@@ -71,7 +70,6 @@ import com.oplus.miragewindow.OplusMirageWindowManager
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.ShellUtils
 import com.topjohnwu.superuser.ipc.RootService
-import kotlinx.serialization.json.Json
 import org.json.JSONArray
 import java.io.File
 import java.util.regex.Pattern

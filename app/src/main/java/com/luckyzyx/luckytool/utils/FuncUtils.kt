@@ -3,8 +3,6 @@
 package com.luckyzyx.luckytool.utils
 
 import android.annotation.SuppressLint
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.ComponentName
 import android.content.ContentValues
 import android.content.Context
@@ -15,7 +13,6 @@ import android.content.pm.PackageInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -40,7 +37,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.MenuRes
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.edit
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
@@ -59,7 +56,14 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import com.drake.net.utils.withDefault
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.highcapable.betterandroid.system.extension.component.clipboardManager
+import com.highcapable.betterandroid.system.extension.component.copy
+import com.highcapable.betterandroid.system.extension.component.sendBroadcast
+import com.highcapable.betterandroid.ui.extension.component.base.getDrawableCompat
+import com.highcapable.betterandroid.ui.extension.graphics.decodeToBitmapOrNull
+import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.IGlobalFuncController
 import com.luckyzyx.luckytool.R
@@ -186,9 +190,9 @@ fun Context.showToast(id: Int, long: Boolean? = false) {
 }
 
 fun Context.showToast(msg: String, long: Boolean? = false) = if (long == true) {
-    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    toast(msg, Toast.LENGTH_LONG)
 } else {
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    toast(msg)
 }
 
 /**
@@ -312,7 +316,7 @@ fun getProp(key: String, def: String): String =
 @SuppressLint("StartActivityAndCollapseDeprecated")
 fun TileService.closeCollapse() {
     try {
-        sendBroadcast(Intent("LuckyTool_CloseCollapse"))
+        sendBroadcast { action = "LuckyTool_CloseCollapse" }
     } catch (_: Exception) {
         try {
             @Suppress("DEPRECATION")
@@ -359,9 +363,7 @@ val Int.sp: Int
  * @param string CharSequence
  */
 fun Context.copyStr(string: CharSequence) {
-    val clipboard = getSystemService(ClipboardManager::class.java)
-    val clipData = ClipData.newPlainText(null, string)
-    clipboard.setPrimaryClip(clipData)
+    clipboardManager.copy(string, null)
 }
 
 /**
@@ -371,7 +373,7 @@ fun Context.copyStr(string: CharSequence) {
  */
 fun base64ToBitmap(code: String): Bitmap? {
     val decode: ByteArray = Base64.decode(code.split(",")[1], Base64.DEFAULT)
-    return BitmapFactory.decodeByteArray(decode, 0, decode.size)
+    return decode.decodeToBitmapOrNull(0, decode.size)
 }
 
 /**
@@ -391,14 +393,14 @@ fun Preference.setPrefsIconRes(resource: Any?, result: (Drawable?, Boolean) -> U
         return
     }
     val image: Drawable? = when (resource) {
-        is Int -> ResourcesCompat.getDrawable(context.resources, resource, null)
+        is Int -> context.resources.getDrawableCompat(resource, null)
         is Drawable -> resource
         is String -> AppUtils(context).getAppIcon(resource)
         else -> null
     }
     if (image == null || image.intrinsicWidth <= 0 || image.intrinsicHeight <= 0) {
         val icon =
-            ResourcesCompat.getDrawable(context.resources, android.R.mipmap.sym_def_app_icon, null)
+            context.resources.getDrawableCompat(android.R.mipmap.sym_def_app_icon, null)
         result(icon, true)
         return
     }
@@ -752,7 +754,7 @@ suspend fun getUsers(): Array<String> {
  */
 fun getCharColor(char: CharSequence): Int? {
     val sp = SpannableString(char)
-    val colorSpan = sp.getSpans(0, sp.length, ForegroundColorSpan::class.java)
+    val colorSpan = sp.getSpans(0, sp.length, classOf<ForegroundColorSpan>())
     return if (colorSpan != null && colorSpan.isNotEmpty()) colorSpan[0].foregroundColor else null
 }
 
@@ -762,7 +764,7 @@ fun getCharColor(char: CharSequence): Int? {
  * @return Array<out ForegroundColorSpan>?
  */
 fun getCharSpans(char: CharSequence): Array<out ForegroundColorSpan>? {
-    val colorSpans = SpannableString(char).getSpans(0, char.length, ForegroundColorSpan::class.java)
+    val colorSpans = SpannableString(char).getSpans(0, char.length, classOf<ForegroundColorSpan>())
     return if (colorSpans == null || colorSpans.isEmpty()) null else colorSpans
 }
 
@@ -808,7 +810,7 @@ val Context.is24
  * @param context Context
  */
 fun closeScreen(context: Context) {
-    val service = context.getSystemService(PowerManager::class.java)
+    val service = context.getSystemService(classOf<PowerManager>())
     service.asResolver().firstMethod {
         name = "goToSleep"
         parameters(Long::class)
@@ -855,7 +857,7 @@ fun logcatToFile(file: File): Boolean {
  * @param packName 原 dataChannel 目标包，现仅作兼容保留（不再按包路由）
  */
 fun Context.sendPrefsValue(packName: String, key: String, newValue: Any) {
-    appPrefs(ModulePrefs).edit().apply {
+    appPrefs(ModulePrefs).edit(true) {
         when (newValue) {
             is String -> putString(key, newValue)
             is Int -> putInt(key, newValue)
@@ -865,7 +867,7 @@ fun Context.sendPrefsValue(packName: String, key: String, newValue: Any) {
             is Set<*> -> putStringSet(key, newValue.filterIsInstance<String>().toSet())
             else -> putString(key, newValue.toString())
         }
-    }.apply()
+    }
 }
 
 /**

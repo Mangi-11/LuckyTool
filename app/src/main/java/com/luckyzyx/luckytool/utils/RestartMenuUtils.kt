@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Process
-import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.collection.ArrayMap
 import androidx.collection.arrayMapOf
 import com.drake.net.utils.scope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.highcapable.betterandroid.ui.extension.view.layoutInflater
 import com.luckyzyx.luckytool.IPackageServiceController
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.databinding.DialogReoptimizeDexLayoutBinding
@@ -194,7 +194,7 @@ object RestartMenuUtils {
         context: Context, controller: IPackageServiceController?,
         scopes: ArrayMap<String, CharSequence>
     ) {
-        val binding = DialogReoptimizeDexLayoutBinding.inflate(LayoutInflater.from(context))
+        val binding = DialogReoptimizeDexLayoutBinding.inflate(context.layoutInflater)
         val progressDialog = MaterialAlertDialogBuilder(context, dialogCentered).apply {
             setTitle(context.getString(R.string.re_optimize_dex_optimizing))
             setView(binding.root)

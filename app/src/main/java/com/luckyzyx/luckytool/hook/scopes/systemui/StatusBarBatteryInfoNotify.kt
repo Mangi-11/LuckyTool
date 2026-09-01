@@ -139,14 +139,10 @@ object StatusBarBatteryInfoNotify : Hooker {
 
         onAppLifecycle {
             onCreate {
-                XLog.debug("onCreate is Receiver")
-
                 injectModuleAppResources()
             }
             //BatteryService
             registerReceiver(Intent.ACTION_BATTERY_CHANGED) { context: Context, _: Intent ->
-                XLog.debug("ACTION_BATTERY_CHANGED is Receiver")
-
                 thisContext = context
                 context.injectModuleAppResources()
 
@@ -155,15 +151,12 @@ object StatusBarBatteryInfoNotify : Hooker {
             }
             //OplusBatteryService
             registerReceiver("android.intent.action.ADDITIONAL_BATTERY_CHANGED") { context: Context, intent: Intent ->
-                XLog.debug("ADDITIONAL_BATTERY_CHANGED is Receiver")
-
                 thisContext = context
                 context.injectModuleAppResources()
                 chargerTechnology = intent.getIntExtra("chargertechnology", 0)
                 chargeWattage = intent.getIntExtra("chargewattage", 0)
                 ppsMode = intent.getIntExtra("pps_chg_mode", 0)
                 chargerWattageCpa = intent.getIntExtra("cpa_charge_wattage", 0)
-                XLog.debug("tech: $chargerTechnology | chargeWattage: $chargeWattage | chargerWattageCpa: $chargerWattageCpa | ppsMode: $ppsMode")
 
                 initInfo(context)
                 initSend(context)
@@ -256,8 +249,7 @@ object StatusBarBatteryInfoNotify : Hooker {
             )
             else it.getTechnologyNameOld(chargerTechnology, ppsMode, isWireless)
         }
-        XLog.debug("getOSVersionCode: $getOSVersionCode")
-        XLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
+//        XLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
 
         val powerCalc = if (isSeriesDual || isParallelDual) {
             (voltage + voltage2) * electricCurrent / 1000.0
@@ -398,7 +390,7 @@ object StatusBarBatteryInfoNotify : Hooker {
                 if (oplusCharger == null) oplusCharger = it.getInstance()
                 it.queryChargeInfo(oplusCharger)
             } ?: ""
-            XLog.d("getChargeInfo -> queryChargeInfo : $queryChargeInfo")
+//            XLog.d("getChargeInfo -> queryChargeInfo : $queryChargeInfo")
             Properties().apply {
                 if (queryChargeInfo.isNotBlank()) load(StringReader(queryChargeInfo))
             }

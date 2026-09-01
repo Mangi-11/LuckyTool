@@ -9,6 +9,7 @@ import android.telephony.TelephonyManager
 import com.android.internal.telephony.ITelephony
 import com.android.internal.telephony.RILConstants
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.ITileServiceController
 import com.luckyzyx.luckytool.hook.utils.IColorDisplayUtils
 import com.luckyzyx.luckytool.service.base.BaseControllerService
@@ -30,7 +31,7 @@ import java.io.FileReader
 object TilesService : BaseControllerService<ITileServiceController>() {
     override val TAG = "TileService"
 
-    override var controllerService: Class<*> = TileControllerService::class.java
+    override var controllerService: Class<*> = classOf<TileControllerService>()
 
     override fun getController(iBinder: IBinder?): ITileServiceController? {
         return ITileServiceController.Stub.asInterface(iBinder)

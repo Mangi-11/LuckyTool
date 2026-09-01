@@ -29,7 +29,7 @@ import com.luckyzyx.luckytool.service.TilesService
 import com.luckyzyx.luckytool.service.UserService
 import com.luckyzyx.luckytool.ui.activity.base.BaseActivity
 import com.luckyzyx.luckytool.ui.fragment.home.HomeFragment
-import com.luckyzyx.luckytool.ui.service.LxServiceBridge
+import com.luckyzyx.luckytool.ui.service.XposedServiceBridge
 import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.BiometricUtils
 import com.luckyzyx.luckytool.utils.DeviceUtils
@@ -88,8 +88,8 @@ open class MainActivity : BaseActivity<ActivityMainBinding>() {
     }
 
     private fun checkXposed() {
-        LxServiceBridge.awaitReady()
-        if (!LxServiceBridge.isModuleActive) {
+        XposedServiceBridge.awaitReady()
+        if (!XposedServiceBridge.isModuleActive) {
             MaterialAlertDialogBuilder(this).apply {
                 setCancelable(false)
                 setMessage(getString(R.string.unsupported_xposed))

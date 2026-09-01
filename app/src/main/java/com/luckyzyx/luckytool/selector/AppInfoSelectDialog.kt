@@ -112,7 +112,7 @@ class AppInfoSelectDialog(context: Context, val multiMode: Boolean = false) :
                     if (multiMode) {
                         view.findViewById<MaterialCheckBox>(R.id.checkbox_view)?.toggle()
                     } else {
-                        dialog?.dismiss()
+                        dialog.dismiss()
                         onSelectAppInfoListener?.resultSelectAppInfos(arrayListOf(info))
                     }
                 }

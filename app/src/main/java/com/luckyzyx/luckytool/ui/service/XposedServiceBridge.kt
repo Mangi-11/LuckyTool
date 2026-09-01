@@ -1,7 +1,7 @@
 package com.luckyzyx.luckytool.ui.service
 
 import android.content.SharedPreferences
-import com.luckyzyx.luckytool.ui.service.LxServiceBridge.preferences
+import com.luckyzyx.luckytool.ui.service.XposedServiceBridge.preferences
 import com.luckyzyx.luckytool.utils.LogUtils
 import io.github.libxposed.service.XposedService
 import io.github.libxposed.service.XposedServiceHelper
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * - [preferences] 返回 remote prefs（宿主进程 Env.prefs 的同一数据源），
  *   绑定不可用（未激活/无框架）时回落 null，由调用方走本地 prefs
  */
-object LxServiceBridge {
+object XposedServiceBridge {
 
     private val bindSignal = CountDownLatch(1)
 

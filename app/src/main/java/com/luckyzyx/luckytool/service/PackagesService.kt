@@ -6,6 +6,7 @@ import android.os.IBinder
 import android.os.RemoteException
 import android.os.ServiceManager
 import android.os.SystemProperties
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.IPackageServiceController
 import com.luckyzyx.luckytool.service.base.BaseControllerService
 import com.luckyzyx.luckytool.utils.LogUtils
@@ -15,7 +16,7 @@ import org.lsposed.lsparanoid.Obfuscate
 @Obfuscate
 object PackagesService : BaseControllerService<IPackageServiceController>() {
     override val TAG = "PackageService"
-    override var controllerService: Class<*> = PackageControllerService::class.java
+    override var controllerService: Class<*> = classOf<PackageControllerService>()
 
     private var pm: IPackageManager? = null
     private var binder: IBinder? = null

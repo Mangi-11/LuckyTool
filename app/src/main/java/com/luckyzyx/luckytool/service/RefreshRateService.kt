@@ -6,6 +6,7 @@ import android.os.Parcel
 import android.os.RemoteException
 import android.os.ServiceManager
 import android.view.DisplayInfo
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.IRefreshRateController
 import com.luckyzyx.luckytool.data.DisplayMode
 import com.luckyzyx.luckytool.hook.utils.DisplayManagerUtils
@@ -18,7 +19,7 @@ import org.lsposed.lsparanoid.Obfuscate
 @Obfuscate
 object RefreshRateService : BaseControllerService<IRefreshRateController>() {
     override val TAG = "RefreshRateService"
-    override var controllerService: Class<*> = RefreshRateControllerService::class.java
+    override var controllerService: Class<*> = classOf<RefreshRateControllerService>()
 
     override fun getController(iBinder: IBinder?): IRefreshRateController? {
         return IRefreshRateController.Stub.asInterface(iBinder)

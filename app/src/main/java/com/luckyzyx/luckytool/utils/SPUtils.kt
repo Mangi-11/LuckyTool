@@ -7,7 +7,7 @@ import android.util.ArrayMap
 import android.util.ArraySet
 import androidx.collection.arrayMapOf
 import androidx.collection.arraySetOf
-import com.luckyzyx.luckytool.ui.service.LxServiceBridge
+import com.luckyzyx.luckytool.ui.service.XposedServiceBridge
 
 const val ModulePrefs: String = "ModulePrefs"
 const val IntentPrefs: String = "IntentPrefs"
@@ -19,7 +19,7 @@ const val OtherPrefs: String = "OtherPrefs"
  * （与宿主进程 Env.prefs 同一数据源），未绑定时回落本地 prefs。
  */
 internal fun Context.appPrefs(prefsName: String): android.content.SharedPreferences =
-    LxServiceBridge.preferences(prefsName)
+    XposedServiceBridge.preferences(prefsName)
         ?: getSharedPreferences(prefsName, Context.MODE_PRIVATE)
 
 

@@ -1,8 +1,8 @@
 package com.luckyzyx.luckytool.ui.application
 
-import com.google.android.material.color.DynamicColors
 import android.app.Application
-import com.luckyzyx.luckytool.ui.service.LxServiceBridge
+import com.google.android.material.color.DynamicColors
+import com.luckyzyx.luckytool.ui.service.XposedServiceBridge
 import com.luckyzyx.luckytool.utils.ThemeUtils
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -11,7 +11,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        LxServiceBridge.init()
+        XposedServiceBridge.init()
 
         applyThemeBasedOnPreferences()
     }

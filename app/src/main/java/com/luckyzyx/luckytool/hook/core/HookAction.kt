@@ -250,29 +250,41 @@ private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) 
     val base = Env.requireBase()
     val act = HookAction().apply(action)
     //hook 注册发生在宿主包 dispatch 的同步期：此刻 Env/ClassLoaderProvider 即该宿主包的
-    //分发上下文（配合 isFirstPackage 门禁，每进程只分发一次，无漂移），快照到 HookCall
-    //（等价 legacy HookParam 按包持有的解析语义）。
+    //分发上下文，快照到 HookCall（等价 legacy HookParam 按包持有的解析语义）。
     val hookClassLoader = ClassLoaderProvider.classLoader
     val hookPackageName = Env.packageName.ifBlank { null }
     base.hook(this)
         .setPriority(priority)
         .setExceptionMode(XposedInterface.ExceptionMode.PROTECTIVE)
         .intercept { chain ->
-            val call = HookCall(
-                this, chain.thisObject, chain.args.toTypedArray(), hookClassLoader, hookPackageName
-            )
-            if (act.intercepted) return@intercept null
-            act.beforeBlocks.forEach { it(call) }
-            if (act.replaced && !call.early) call.result = act.replacedValue
-            if (!call.early) {
-                try {
-                    call.result = chain.proceed(call.arguments)
-                } catch (t: Throwable) {
-                    call.throwable = t
+            //执行期把 KavaRef 全局 loader 钉在快照上：无 isFirstPackage 门禁后，
+            //共享进程内后续包的 dispatch 会覆盖 Provider，异步回调里的无参
+            //toClass()/toClassOrNull() 会漂移到别的包 CL（save/restore 保持嵌套栈语义）
+            val prevProvider = ClassLoaderProvider.classLoader
+            ClassLoaderProvider.classLoader = hookClassLoader
+            try {
+                val call = HookCall(
+                    this,
+                    chain.thisObject,
+                    chain.args.toTypedArray(),
+                    hookClassLoader,
+                    hookPackageName
+                )
+                if (act.intercepted) return@intercept null
+                act.beforeBlocks.forEach { it(call) }
+                if (act.replaced && !call.early) call.result = act.replacedValue
+                if (!call.early) {
+                    try {
+                        call.result = chain.proceed(call.arguments)
+                    } catch (t: Throwable) {
+                        call.throwable = t
+                    }
                 }
+                act.afterBlocks.forEach { it(call) }
+                call.throwable?.let { throw it }
+                call.result
+            } finally {
+                ClassLoaderProvider.classLoader = prevProvider
             }
-            act.afterBlocks.forEach { it(call) }
-            call.throwable?.let { throw it }
-            call.result
         }
 }

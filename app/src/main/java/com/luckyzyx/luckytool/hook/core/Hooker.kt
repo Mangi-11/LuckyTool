@@ -11,19 +11,26 @@ interface Hooker {
 
     fun onHook()
 
-    val packageName: String get() = Env.packageName
+    /** 同形 YukiBaseHooker.packageName：该 Hooker 分发时的宿主包名（wrapper 语义，不随共享进程漂移） */
+    val packageName: String get() = HookRouter.contextOf(this)?.packageName ?: Env.packageName
 
     val processName: String get() = Env.processName
 
-    /** 同形 YukiBaseHooker.classLoader：宿主 App CL（分发 CL 优先，currentApplication 兜底） */
-    val classLoader: ClassLoader? get() = Env.activeClassLoader()
+    /** 同形 YukiBaseHooker.classLoader：该 Hooker 分发上下文的 appClassLoader */
+    val classLoader: ClassLoader?
+        get() = HookRouter.contextOf(this)?.appClassLoader ?: Env.activeClassLoader()
 
     /** 同形 YukiBaseHooker.appClassLoader：非空版（legacy 中即非空） */
     val appClassLoader: ClassLoader
-        get() = Env.activeClassLoader() ?: error("classLoader not attached")
+        get() = HookRouter.contextOf(this)?.appClassLoader
+            ?: Env.activeClassLoader()
+            ?: error("classLoader not attached")
 
-    /** 同形 YukiBaseHooker.appInfo：宿主包信息（App 分组必非空） */
-    val appInfo: ApplicationInfo get() = Env.appInfo ?: error("appInfo is null for non-app host")
+    /** 同形 YukiBaseHooker.appInfo：该 Hooker 分发时的宿主包信息（App 分组必非空） */
+    val appInfo: ApplicationInfo
+        get() = HookRouter.contextOf(this)?.appInfo
+            ?: Env.appInfo
+            ?: error("appInfo is null for non-app host")
 
     /** 同形 YukiBaseHooker.dataChannel：实时配置推送的远程偏好等价物 */
     val dataChannel: Channel get() = Channel
@@ -31,9 +38,12 @@ interface Hooker {
     /** 同形 prefs(ModulePrefs)：远程偏好读取（非空 getter 包装，对齐 legacy YukiHookPrefsBridge） */
     fun prefs(name: String): Env.NonNullPrefs = Env.prefs(name)
 
-    /** 同形 loadHooker：装载子 Hooker，异常隔离 */
+    /** 同形 loadHooker：装载子 Hooker（继承父 Hooker 的分发上下文，异常隔离） */
     fun loadHooker(hooker: Hooker) {
-        runCatching { hooker.onHook() }.onFailure {
+        runCatching {
+            HookRouter.assignContext(hooker, HookRouter.contextOf(this))
+            hooker.onHook()
+        }.onFailure {
             Env.log(Log.ERROR, "HookRouter", "loadHooker ${hooker::class.java.name} failed", it)
         }
     }

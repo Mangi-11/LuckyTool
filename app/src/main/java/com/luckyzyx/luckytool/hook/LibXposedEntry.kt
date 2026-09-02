@@ -30,7 +30,6 @@ class LibXposedEntry : XposedModule() {
     }
 
     override fun onPackageReady(param: XposedModuleInterface.PackageReadyParam) {
-        if (!param.isFirstPackage) return
         if (!isMasterEnabled()) return
         HookRouter.dispatch(param.packageName, param.classLoader, param.applicationInfo)
     }

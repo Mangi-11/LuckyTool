@@ -6,6 +6,7 @@ import com.highcapable.kavaref.extension.ArrayClass
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
@@ -38,6 +39,19 @@ object LauncherLayoutRowColume : Hooker {
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            //Source IconFallenUtils
+            "com.android.launcher.iconfallen.IconFallenUtils".toClass().resolve().apply {
+                firstMethod {
+                    name = "getLogicCellX"
+                    returnType = Int::class
+                }.hook {
+                    after {
+                        val res = result<Int>() ?: return@after
+                        if (res > 4) result = 4
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.luckyzyx.luckytool.hook.scopes.keyguardclock
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
@@ -16,14 +17,14 @@ class KeyGuardcLockRedMode(val dexKitBridge: DexKitBridge) : Hooker {
         //Source CustomizedTextView -> BrandUtils
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(Boolean::class.java)
+                addFieldForType(classOf<Boolean>())
                 usingStrings("ro.oplus.image.system_ext.brand", "ro.oplus.image.system_ext.area")
             }
         }.apply {
             checkDataList("KeyGuardcLockRedMode Clazz")
             findField {
                 matcher {
-                    type(Boolean::class.java)
+                    type(classOf<Boolean>())
                     addReadMethod {
                         paramCount(1)
                         returnType(Void.TYPE)

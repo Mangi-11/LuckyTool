@@ -38,8 +38,8 @@ object HookRouter {
 
     fun dispatch(packageName: String, classLoader: ClassLoader, appInfo: ApplicationInfo?) {
         Env.enter(packageName, classLoader, appInfo)
-        val hookers = if (packageName == "android") {
-            systemHookers + (appHookers["android"] ?: emptyList())
+        val hookers = if (packageName == "system") {
+            systemHookers + (appHookers["system"] ?: emptyList())
         } else {
             appHookers[packageName] ?: emptyList()
         }

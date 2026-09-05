@@ -36,7 +36,7 @@ class LibXposedEntry : XposedModule() {
 
     override fun onSystemServerStarting(param: XposedModuleInterface.SystemServerStartingParam) {
         if (!isMasterEnabled()) return
-        HookRouter.dispatch("android", param.classLoader, null)
+        HookRouter.dispatch("system", param.classLoader, null)
     }
 
     /** 同形 YukiEntry.onHookEntry 的前置门禁：总开关 + /sdcard/disable_lt 应急开关 */

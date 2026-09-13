@@ -56,7 +56,7 @@ object HookSettings : Hooker {
             loadHooker(HookSettingsFeature(dexKitBridge))
             //移除DPI重启恢复
             if (prefs(ModulePrefs).getBoolean("remove_dpi_restart_recovery", false)) {
-                loadHooker(RemoveDpiRestartRecovery(dexKitBridge))
+                if (osCode >= 24) loadHooker(RemoveDpiRestartRecovery(dexKitBridge))
             }
             //暗色模式列表
             if (prefs(ModulePrefs).getBoolean("dark_mode_list_enable", false)) {

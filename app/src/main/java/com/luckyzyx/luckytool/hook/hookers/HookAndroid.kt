@@ -67,7 +67,7 @@ object HookAndroid : Hooker {
         loadHooker(HookOplusWifiService)
 
         //Hook HookWindowManagerService
-        loadHooker(HookWindowManagerService)
+        if (osCode >= 23) loadHooker(HookWindowManagerService)
 
         //音量阶数
         loadHooker(MediaVolumeLevel)

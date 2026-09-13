@@ -22,43 +22,30 @@ object HookWindowManagerService : Hooker {
 
         val windowManagerService = "com.android.server.wm.WindowManagerService"
 
-        //Source OplusWindowManagerService
-        "com.android.server.wm.OplusWindowManagerService".toClass().resolve().apply {
-            firstMethod {
-                name = "clearForcedDisplayDensityForUser"
-                parameterCount = 2
-                superclass()
-            }.hook {
-                before {
-//                    val displayId = args().first().int()
-//                    val userId = args().last().int()
-//                    YLog.debug("clearForcedDisplayDensityForUser ($displayId | $userId)")
-                    if (isDpi) resultNull()
-                }
-            }
-        }
-
         //Source DisplayWindowSettings
-        "com.android.server.wm.DisplayWindowSettings".toClass().resolve().apply {
-            method {
-                name = "setForcedDensity"
-                parameterCount { it in 2..3 }
-            }.hookAll {
-                before {
-                    if (!isDpi) return@before
-                    val density = args(1).int()
+        //分辨率切换时 density==初始密度会传 0 清空持久化值，替换为用户强制密度
+        if (SDK >= A14) {
+            "com.android.server.wm.DisplayWindowSettings".toClass().resolve().apply {
+                method {
+                    name = "setForcedDensity"
+                    parameterCount { it in 2..3 }
+                }.hookAll {
+                    before {
+                        if (!isDpi) return@before
+                        val density = args(1).int()
 //                    val userId = if (method.parameterCount == 3) args().last().int() else null
 //                    YLog.debug("${method.name} is call -> $density | $userId")
 
-                    val service = firstField { type = windowManagerService }.of(instance).get()
-                        ?: return@before
-                    val context = service.asResolver().firstField { type = Context::class }
-                        .get<Context>() ?: return@before
-                    val resolver = context.contentResolver
-                    val forcedDensity = Settings.Secure.getString(
-                        resolver, "display_density_forced"
-                    )?.toIntOrNull() ?: return@before
-                    if (density == 0) args(1).set(forcedDensity)
+                        val service = firstField { type = windowManagerService }.of(instance).get()
+                            ?: return@before
+                        val context = service.asResolver().firstField { type = Context::class }
+                            .get<Context>() ?: return@before
+                        val resolver = context.contentResolver
+                        val forcedDensity = Settings.Secure.getString(
+                            resolver, "display_density_forced"
+                        )?.toIntOrNull() ?: return@before
+                        if (density == 0) args(1).set(forcedDensity)
+                    }
                 }
             }
         }
@@ -98,7 +85,7 @@ object HookWindowManagerService : Hooker {
                     if (isDpi) resultNull()
                 }
             } ?: run {
-                firstMethod { name = "onResolutionSettingsChange";parameterCount = 1 }.hook {
+                firstMethod { name = "onResolutionSettingsChange"; parameterCount = 1 }.hook {
                     before {
                         if (isDpi) args().first().setFalse()
                     }

@@ -446,7 +446,8 @@ class OplusSettings : BaseScopePreferenceFeagment() {
                                 isCopyingEnabled = true
                             }
                             setOnPreferenceClickListener {
-                                val cacheImageFile = FileUtils.createCacheFile(requireActivity(), "png")
+                                val cacheImageFile =
+                                    FileUtils.createCacheFile(requireActivity(), "png")
                                 val cacheImageUri = FileProvider.getUriForFile(
                                     context, "${BuildConfig.APPLICATION_ID}.FileProvider",
                                     cacheImageFile

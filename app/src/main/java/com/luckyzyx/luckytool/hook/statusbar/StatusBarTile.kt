@@ -47,7 +47,7 @@ class StatusBarTile(val dexKitBridge: DexKitBridge) : Hooker {
         if (osCode in 26..37) loadHooker(MediaPlayerPanel)
 
         //磁贴布局
-        loadHooker(ControlCenterTiles)
+        if (osCode < 40) loadHooker(ControlCenterTiles)
 
         //经典控制中心 横屏磁贴两侧对齐
         if (prefs(ModulePrefs).getBoolean("fix_tile_align_both_sides", false)) {

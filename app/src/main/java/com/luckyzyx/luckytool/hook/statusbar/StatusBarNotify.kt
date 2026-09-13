@@ -40,7 +40,7 @@ object StatusBarNotify : Hooker {
         }
         //移除GT模式通知
         if (prefs(ModulePrefs).getBoolean("remove_gt_mode_notification", false)) {
-            loadHooker(RemoveGTModeNotification)
+            if (osCode < 40) loadHooker(RemoveGTModeNotification)
         }
         //浮窗回复白名单
         if (prefs(ModulePrefs).getBoolean("remove_small_window_reply_whitelist", false)) {

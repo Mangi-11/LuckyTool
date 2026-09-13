@@ -13,10 +13,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.DropDownPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import androidx.preference.PreferenceFragmentCompat
+import com.highcapable.kavaref.extension.classOf
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.ui.activity.MainActivity
 import com.luckyzyx.luckytool.ui.application.MyApplication
@@ -28,10 +29,10 @@ import com.luckyzyx.luckytool.utils.IntentPrefs
 import com.luckyzyx.luckytool.utils.IntentUtils
 import com.luckyzyx.luckytool.utils.LogUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
-import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.utils.OtherPrefs
+import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
 import com.luckyzyx.luckytool.utils.SettingsPrefs
+import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.utils.backupAllPrefs
 import com.luckyzyx.luckytool.utils.base64Decode
 import com.luckyzyx.luckytool.utils.base64Encode
@@ -220,7 +221,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 title = getString(R.string.enable_biometric_unlock_verification)
                 setDefaultValue(false)
                 isVisible =
-                    requireActivity().getSystemService(KeyguardManager::class.java).isDeviceSecure
+                    requireActivity().getSystemService(classOf<KeyguardManager>()).isDeviceSecure
                 isIconSpaceReserved = false
                 setOnPreferenceChangeListener { _, any ->
                     val enable = any as Boolean

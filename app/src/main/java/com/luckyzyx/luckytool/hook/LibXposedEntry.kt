@@ -1,6 +1,7 @@
 package com.luckyzyx.luckytool.hook
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.luckyzyx.luckytool.hook.core.Env
 import com.luckyzyx.luckytool.hook.core.HookRouter
 import io.github.libxposed.api.XposedModule
@@ -19,10 +20,14 @@ import java.io.File
 @Obfuscate
 class LibXposedEntry : XposedModule() {
 
+    companion object {
+        val TAG = "LuckyTool"
+    }
+
     override fun onModuleLoaded(param: XposedModuleInterface.ModuleLoadedParam) {
         Env.attach(this, param.processName, frameworkProperties, getModuleApplicationInfo())
         Env.log(
-            android.util.Log.INFO, "LuckyTool",
+            Log.INFO, TAG,
             "loaded in ${param.processName}: framework $frameworkName" +
                     "($frameworkVersionCode) API $apiVersion"
         )

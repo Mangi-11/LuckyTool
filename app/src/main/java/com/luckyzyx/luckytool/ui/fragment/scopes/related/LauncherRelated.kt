@@ -523,7 +523,7 @@ class LauncherRelated : BaseScopePreferenceFeagment() {
                         getString(R.string.launcher_layout_max_columns_summary)
                     key = "launcher_layout_max_columns"
                     setDefaultValue(4)
-                    max = 6
+                    max = 9
                     min = 4
                     showSeekBarValue = true
                     updatesContinuously = false

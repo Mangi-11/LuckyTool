@@ -228,6 +228,8 @@ class XposedFragment : BaseScopePreferenceFeagment(), MenuProvider {
         addFragmentPreference(this, allPrefs, OplusMyDevices())
         //Mcs
         addFragmentPreference(this, allPrefs, OplusMcs())
+        //Claw
+        addFragmentPreference(this, allPrefs, Claw())
 
         //Other App
         addFragmentPreference(this, allPrefs, AlphaBackupPro())
@@ -319,13 +321,12 @@ class XposedFragment : BaseScopePreferenceFeagment(), MenuProvider {
         addFragmentItem(context, allFragmentItem, OplusEngineerMode())
         addFragmentItem(context, allFragmentItem, OplusMyDevices())
         addFragmentItem(context, allFragmentItem, OplusMcs())
+        addFragmentItem(context, allFragmentItem, Claw())
 
         addFragmentItem(context, allFragmentItem, ADM())
         addFragmentItem(context, allFragmentItem, AlphaBackupPro())
         addFragmentItem(context, allFragmentItem, KsWeb())
         addFragmentItem(context, allFragmentItem, GpsJoyStick())
-        addFragmentItem(context, allFragmentItem, Claw())
-
     }
 
     private fun addFragmentPreference(

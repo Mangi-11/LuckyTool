@@ -76,6 +76,7 @@ import com.luckyzyx.luckytool.ui.fragment.scopes.apps.OplusWeather
 import com.luckyzyx.luckytool.ui.fragment.scopes.apps.OplusWirelessSettings
 import com.luckyzyx.luckytool.ui.fragment.scopes.others.ADM
 import com.luckyzyx.luckytool.ui.fragment.scopes.others.AlphaBackupPro
+import com.luckyzyx.luckytool.ui.fragment.scopes.others.Claw
 import com.luckyzyx.luckytool.ui.fragment.scopes.others.GpsJoyStick
 import com.luckyzyx.luckytool.ui.fragment.scopes.others.KsWeb
 import com.luckyzyx.luckytool.ui.fragment.scopes.related.AndroidRelated
@@ -323,6 +324,7 @@ class XposedFragment : BaseScopePreferenceFeagment(), MenuProvider {
         addFragmentItem(context, allFragmentItem, AlphaBackupPro())
         addFragmentItem(context, allFragmentItem, KsWeb())
         addFragmentItem(context, allFragmentItem, GpsJoyStick())
+        addFragmentItem(context, allFragmentItem, Claw())
 
     }
 

@@ -1,6 +1,8 @@
 package com.luckyzyx.luckytool.hook
 
 import com.luckyzyx.luckytool.hook.core.HookRouter
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.hook.hookers.HookAlarmClock
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
 import com.luckyzyx.luckytool.hook.hookers.HookAudioEffectCenter
@@ -49,10 +51,13 @@ import com.luckyzyx.luckytool.hook.hookers.HookThemeStore
 import com.luckyzyx.luckytool.hook.hookers.HookUIEngine
 import com.luckyzyx.luckytool.hook.hookers.HookWeather
 import com.luckyzyx.luckytool.hook.hookers.HookWirelessSettings
+import com.luckyzyx.luckytool.hook.scopes.claw.RemoveRootDetection
 import com.luckyzyx.luckytool.hook.scopes.otherapp.HookADM
 import com.luckyzyx.luckytool.hook.scopes.otherapp.HookAlphaBackupPro
 import com.luckyzyx.luckytool.hook.scopes.otherapp.HookFakeGpsJoyStick
 import com.luckyzyx.luckytool.hook.scopes.otherapp.HookKsWeb
+import com.luckyzyx.luckytool.utils.DexkitUtils
+import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 /**
@@ -211,10 +216,27 @@ object HookRouterInit {
         //工程模式
         HookRouter.app("com.oplus.engineermode", HookEngineerMode)
 
+        HookRouter.app("com.oplus.claw", Hookclaw)
+
+
         //其他APP
         HookRouter.app("com.theappninjas.fakegpsjoystick", HookFakeGpsJoyStick)
         HookRouter.app("com.ruet_cse_1503050.ragib.appbackup.pro", HookAlphaBackupPro)
         HookRouter.app("ru.kslabs.ksweb", HookKsWeb)
         HookRouter.app("com.dv.adm", HookADM)
     }
+}
+
+object Hookclaw : Hooker {
+    override fun onHook() {
+        loadHooker(HookGlobalSystemProperties)
+
+        DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
+            //移除Root检测
+            if (prefs(ModulePrefs).getBoolean("remove_root_detection", false)) {
+                loadHooker(RemoveRootDetection(dexKitBridge))
+            }
+        }
+    }
+
 }

@@ -943,6 +943,9 @@
     <!--ADM-->
     <string name="adm_unlock_pro">解锁 Pro</string>
     <string name="adm_unlock_more_threads">解锁更多下载线程</string>
+    <!--Claw-->
+    <string name="remove_root_detection">移除Root检测</string>
+    <string name="remove_root_detection_summary">绕过招募页面的Root设备限制</string>
     <!--Home-->
     <string name="fps_title">强制刷新率</string>
     <string name="fps_summary">与其他动态刷新率进程冲突，例如 dfps</string>

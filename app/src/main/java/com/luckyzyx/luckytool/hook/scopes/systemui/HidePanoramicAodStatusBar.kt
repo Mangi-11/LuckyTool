@@ -12,20 +12,31 @@ object HidePanoramicAodStatusBar : YukiBaseHooker() {
             .toClassOrNull() ?: return
         val aodData = "com.oplus.systemui.aod.aodclock.constant.AodData"
             .toClassOrNull() ?: return
-        val getInstance = aodData.getDeclaredMethod("getInstance", Context::class.java)
-        val isPanoramicAod = aodData.getDeclaredMethod("isPanoramicAod")
-        val context = statusBar.getDeclaredField("context").apply { isAccessible = true }
+        val getInstance = aodData.resolve().optional().firstMethodOrNull {
+            name = "getInstance"
+            parameters(Context::class)
+        } ?: return
+        val isPanoramicAod = aodData.resolve().optional().firstMethodOrNull {
+            name = "isPanoramicAod"
+            parameters()
+            returnType = Boolean::class
+        } ?: return
+        val context = statusBar.resolve().optional().firstFieldOrNull {
+            name = "context"
+            type = Context::class
+        } ?: return
+        val hookDozingState = statusBar.resolve().optional().firstMethodOrNull {
+            name = "hookDozingState"
+            parameters(Boolean::class)
+            returnType = Boolean::class
+        } ?: return
 
-        statusBar.resolve().apply {
-            firstMethod {
-                name = "hookDozingState"
-                parameters(Boolean::class)
-            }.hook {
-                before {
-                    if (args(0).boolean()) {
-                        val data = getInstance.invoke(null, context.get(instance))
-                        if (isPanoramicAod.invoke(data) == true) resultFalse()
-                    }
+        hookDozingState.hook {
+            before {
+                if (args(0).boolean()) {
+                    val ctx = context.of(instance).get<Context>() ?: return@before
+                    val data = getInstance.invoke<Any>(ctx) ?: return@before
+                    if (isPanoramicAod.of(data).invoke<Boolean>() == true) resultFalse()
                 }
             }
         }

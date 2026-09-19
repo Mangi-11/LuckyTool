@@ -4,6 +4,7 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.AutoWakeUpFaceUnlockNotification
 import com.luckyzyx.luckytool.hook.scopes.systemui.ForceEnableScreenOffMusicSupport
 import com.luckyzyx.luckytool.hook.scopes.systemui.HideLockScreenStatusBarDisplay
+import com.luckyzyx.luckytool.hook.scopes.systemui.HidePanoramicAodStatusBar
 import com.luckyzyx.luckytool.hook.scopes.systemui.LockScreenBottomButton
 import com.luckyzyx.luckytool.hook.scopes.systemui.LockScreenCarriers
 import com.luckyzyx.luckytool.hook.scopes.systemui.LockScreenChargingComponent
@@ -42,6 +43,9 @@ object HookSystemUILockScreen : YukiBaseHooker() {
         //隐藏锁屏状态栏显示
         if (prefs(ModulePrefs).getBoolean("hide_lock_screen_status_bar_display", false)) {
             loadHooker(HideLockScreenStatusBarDisplay)
+        }
+        if (prefs(ModulePrefs).getBoolean("hide_panoramic_aod_status_bar", false)) {
+            loadHooker(HidePanoramicAodStatusBar)
         }
         //移除SOS紧急联络按钮
         if (prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_sos_button", false)) {

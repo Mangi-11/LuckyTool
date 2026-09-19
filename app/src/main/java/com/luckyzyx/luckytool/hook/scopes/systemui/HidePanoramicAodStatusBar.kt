@@ -34,9 +34,9 @@ object HidePanoramicAodStatusBar : YukiBaseHooker() {
         hookDozingState.hook {
             before {
                 if (args(0).boolean()) {
-                    val ctx = context.of(instance).get<Context>() ?: return@before
+                    val ctx = context.copy().of(instance).get<Context>() ?: return@before
                     val data = getInstance.invoke<Any>(ctx) ?: return@before
-                    if (isPanoramicAod.of(data).invoke<Boolean>() == true) resultFalse()
+                    if (isPanoramicAod.copy().of(data).invoke<Boolean>() == true) resultFalse()
                 }
             }
         }

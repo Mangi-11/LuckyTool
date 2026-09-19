@@ -66,6 +66,13 @@ class LockScreenRelated : BaseScopePreferenceFeagment() {
                 isIconSpaceReserved = false
             })
             add(SwitchPreference(this@loadPreferences).apply {
+                title = getString(R.string.hide_panoramic_aod_status_bar)
+                summary = getString(R.string.hide_panoramic_aod_status_bar_summary)
+                key = "hide_panoramic_aod_status_bar"
+                setDefaultValue(false)
+                isIconSpaceReserved = false
+            })
+            add(SwitchPreference(this@loadPreferences).apply {
                 title = getString(R.string.remove_statusbar_carriers)
                 key = "remove_statusbar_carriers"
                 setDefaultValue(false)

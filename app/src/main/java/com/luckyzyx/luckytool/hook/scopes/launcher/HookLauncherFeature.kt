@@ -5,15 +5,17 @@ import com.highcapable.kavaref.extension.toClass
 import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
+import org.luckypray.dexkit.DexKitBridge
 
-object HookLauncherFeature : Hooker {
+class HookLauncherFeature(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
         loadHooker(HookFeatureOption)
-        loadHooker(HookLauncherSettings)
+        loadHooker(HookLauncherSettings(dexKitBridge))
         if (osCode >= 34) loadHooker(HookAppFeature)
     }
 
@@ -99,15 +101,23 @@ object HookLauncherFeature : Hooker {
     }
 
     @Obfuscate
-    object HookLauncherSettings : Hooker {
+    class HookLauncherSettings(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             val appUpdateDot = prefs(ModulePrefs).getBoolean("enable_display_app_update_dot", false)
 
             //Source LauncherSettingsUtils
-            "com.android.launcher.settings.LauncherSettingsUtils".toClass().resolve().apply {
-                if (appUpdateDot) {
-                    firstMethodOrNull { name = "isSupportAppUpdateDot" }?.hook {
-                        replaceToTrue()
+            dexKitBridge.findClass {
+                matcher {
+                    usingStrings("content://com.android.launcher.settings", "LauncherSettingsUtils")
+                }
+            }.apply {
+                checkDataList("find clazz LauncherSettingsUtils")
+
+                single().name.toClass().resolve().apply {
+                    if (appUpdateDot) {
+                        firstMethodOrNull { name = "isSupportAppUpdateDot" }?.hook {
+                            replaceToTrue()
+                        }
                     }
                 }
             }

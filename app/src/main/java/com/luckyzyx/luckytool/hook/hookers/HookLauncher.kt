@@ -45,10 +45,9 @@ object HookLauncher : Hooker {
 
             loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
+            //HookLauncherFeature
+            loadHooker(HookLauncherFeature(dexKitBridge))
         }
-
-        //HookLauncherFeature
-        loadHooker(HookLauncherFeature)
 
         //HookLauncherFeatureFlags
 //        if (osCode >= 27) loadHooker(HookLauncherFeatureFlags)

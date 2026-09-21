@@ -81,6 +81,8 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : Hooker {
             val appUpdateDot = prefs(ModulePrefs).getBoolean("enable_display_app_update_dot", false)
             val disableDockerMax =
                 prefs(ModulePrefs).getBoolean("remove_docker_max_number_limit", false)
+            val allowWidget =
+                prefs(ModulePrefs).getBoolean("remove_widgets_add_request_whitelist", false)
 
             //Source FeatureOption
             "com.android.common.config.FeatureOption".toClass().resolve().apply {
@@ -94,6 +96,11 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : Hooker {
                 if (disableDockerMax) {
                     firstMethodOrNull { name = "isDockerMax5" }?.hook {
                         replaceToFalse()
+                    }
+                }
+                if (allowWidget) {
+                    firstMethodOrNull { name = "isSupportWhiteListControl" }?.hook {
+                        replaceToTrue()
                     }
                 }
             }

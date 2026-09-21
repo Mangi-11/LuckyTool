@@ -7,11 +7,14 @@ import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.hookAll
 import com.luckyzyx.luckytool.utils.ModulePrefs
+import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 object HookDeviceProfileOption : Hooker {
     override fun onHook() {
+        val osCode = getOSVersionCode
+
         val enableFolder = prefs(ModulePrefs).getBoolean("enable_folder_layout_adjustment", false)
         val folderRow = prefs(ModulePrefs).getInt("set_icon_rows_in_folder", 4)
         val folderColumn = prefs(ModulePrefs).getInt("set_icon_columns_in_folder", 3)
@@ -56,7 +59,8 @@ object HookDeviceProfileOption : Hooker {
 
         //Source OplusInvariantDeviceProfile
         "com.android.launcher3.OplusInvariantDeviceProfile".toClass().resolve().apply {
-            method { name { it.startsWith("injectInitGrid") } }.hookAll {
+            (if (osCode >= 40) method { name { it.startsWith("initGrid") } }
+            else method { name { it.startsWith("injectInitGrid") } }).hookAll {
                 after {
                     if (enableFolder) {
 //                        field { name = "numFolderRows" }.get(instance).set(3)

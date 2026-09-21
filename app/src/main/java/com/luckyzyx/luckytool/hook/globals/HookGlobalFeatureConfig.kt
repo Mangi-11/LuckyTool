@@ -2,13 +2,7 @@ package com.luckyzyx.luckytool.hook.globals
 
 import android.provider.Settings
 import android.util.ArrayMap
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
 import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
-import com.luckyzyx.luckytool.hook.core.get
 import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.A14
@@ -45,7 +39,11 @@ object HookGlobalFeatureConfig : Hooker {
             }
 
             //Source Android OplusMultiAppDataManager getMaxCreatedNum 分身创建数量限制
-            if (prefs(ModulePrefs).getBoolean("remove_multi_app_created_num_limit_for_users", false)) {
+            if (prefs(ModulePrefs).getBoolean(
+                    "remove_multi_app_created_num_limit_for_users",
+                    false
+                )
+            ) {
                 put("oplus.software.multiapp_max_open_number_limited", false)
             }
 

@@ -25,6 +25,7 @@ in [TG Channel’s associated groups](https://t.me/LuckyTool)**
 - [修复] 桌面布局列数导致图标下沉崩溃 C16
 - [添加] 移除小布Next Root检测 C17
 - [适配] 移除个人热点耗电通知 C17
+- [适配] 强制显示最近任务内存占用 C17
 
 ### 1.3.4
 

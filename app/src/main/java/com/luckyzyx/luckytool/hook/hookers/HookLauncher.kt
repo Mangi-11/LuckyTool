@@ -47,6 +47,11 @@ object HookLauncher : Hooker {
 
             //HookLauncherFeature
             loadHooker(HookLauncherFeature(dexKitBridge))
+
+            //强制启用最近任务内存显示
+            if (prefs(ModulePrefs).getBoolean("force_enable_recent_task_memory_display", false)) {
+                if (osCode >= 30) loadHooker(ForceEnableRecentTaskMemoryDisplay(dexKitBridge))
+            }
         }
 
         //HookLauncherFeatureFlags
@@ -109,10 +114,7 @@ object HookLauncher : Hooker {
         }
         //移除App更新圆点
         if (osCode >= 33) loadHooker(RemoveAppUpdateGreenDot)
-        //强制启用最近任务内存显示
-        if (prefs(ModulePrefs).getBoolean("force_enable_recent_task_memory_display", false)) {
-            if (osCode >= 30) loadHooker(ForceEnableRecentTaskMemoryDisplay)
-        }
+
         //启用自动关闭文件夹
         if (prefs(ModulePrefs).getBoolean("enable_auto_close_folder", false)) {
             if (osCode >= 34) loadHooker(EnableAutoCloseFolder)

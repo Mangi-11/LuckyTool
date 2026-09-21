@@ -18,12 +18,8 @@ class PackageContext internal constructor(
     val appInfo: ApplicationInfo?
 ) {
 
-    /** 手动覆盖的 CL（等价 legacy currentClassLoader 的 setter 语义） */
-    var currentClassLoader: ClassLoader? = null
-
     val appClassLoader: ClassLoader
-        get() = currentClassLoader
-            ?: classLoader
+        get() = classLoader
             ?: Env.hostContext()?.classLoader
             ?: error("appClassLoader unavailable")
 }

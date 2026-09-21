@@ -7,13 +7,6 @@ import com.highcapable.kavaref.extension.ClassLoaderProvider
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.makeAccessible
-import com.highcapable.kavaref.resolver.FieldResolver
-
-/**
- * KavaRef 字段解析器的泛型取值（同形 YukiHookAPI 的 get<T>()）。
- * 调用点带类型参数时优先本扩展，裸 get() 仍走 KavaRef 成员。
- */
-fun <R> FieldResolver<*>.get(): R? = (get() as? R)
 
 /**
  * 同形 YukiHookAPI 的 instance<T>()：非空强转（legacy 语义，as T）。

@@ -207,46 +207,44 @@ class Args internal constructor(
 /**
  * Hook 入口：KavaRef 查找结果直接衔接 hook 动作块（方法/构造器通用，可空接收者）
  */
-fun <M : Member> MemberResolver<M, *>.hook(priority: Int = 50, action: HookAction.() -> Unit) {
-    when (val member = self) {
-        is Method -> member.hookMethod(priority, action)
-        is Constructor<*> -> member.hookMethod(priority, action)
-        else -> Unit
-    }
+fun <M : Member> MemberResolver<M, *>.hook(
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) = when (val member = self) {
+    is Method -> member.hookMethod(priority, action)
+    is Constructor<*> -> member.hookMethod(priority, action)
+    else -> Unit
 }
 
 /** 同形 YukiHookAPI 的 hookAll：KavaRef method { } 返回的解析器列表全部挂动作块 */
-fun <T : Any> List<MethodResolver<T>>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
-    forEach { it.hook(priority, action) }
-}
+fun <T : Any> List<MethodResolver<T>>.hookAll(
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) = forEach { it.hook(priority, action) }
 
 @JvmName("hookAllOrNull")
-fun <T : Any> List<MethodResolver<T>>?.hookAll(priority: Int = 50, action: HookAction.() -> Unit) {
-    this?.hookAll(priority, action)
-}
+fun <T : Any> List<MethodResolver<T>>?.hookAll(
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) = this?.hookAll(priority, action)
 
 /** 单个解析器的 hookAll 别名（本项目用法等价 hook） */
-fun <M : Member> MemberResolver<M, *>.hookAll(priority: Int = 50, action: HookAction.() -> Unit) =
-    hook(priority, action)
+fun <M : Member> MemberResolver<M, *>.hookAll(
+    priority: Int = XposedInterface.PRIORITY_DEFAULT,
+    action: HookAction.() -> Unit
+) = hook(priority, action)
 
 /** 同形 YukiHookAPI 的 hookAll：KavaRef constructor { } 返回的构造器解析器列表全部挂动作块 */
 @JvmName("hookAllCtors")
 fun <T : Any> List<ConstructorResolver<T>>.hookAll(
-    priority: Int = 50,
-    action: HookAction.() -> Unit
-) {
-    forEach { it.hook(priority, action) }
-}
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) = forEach { it.hook(priority, action) }
 
 @JvmName("hookAllOrNullCtors")
 fun <T : Any> List<ConstructorResolver<T>>?.hookAll(
-    priority: Int = 50,
-    action: HookAction.() -> Unit
-) {
-    this?.hookAll(priority, action)
-}
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) = this?.hookAll(priority, action)
 
-private fun Executable.hookMethod(priority: Int, action: HookAction.() -> Unit) {
+fun Executable.hookMethod(
+    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
+) {
     val base = Env.requireBase()
     val act = HookAction().apply(action)
     //hook 注册发生在宿主包 dispatch 的同步期：此刻 Env/ClassLoaderProvider 即该宿主包的

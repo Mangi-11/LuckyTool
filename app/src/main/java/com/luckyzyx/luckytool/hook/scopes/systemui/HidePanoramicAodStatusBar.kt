@@ -1,42 +1,37 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.content.Context
+import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.core.hook
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HidePanoramicAodStatusBar : YukiBaseHooker() {
+object HidePanoramicAodStatusBar : Hooker {
     override fun onHook() {
-        val statusBar = "com.oplus.systemui.statusbar.phone.KeyguardStatusBarViewExImpl"
-            .toClassOrNull() ?: return
-        val aodData = "com.oplus.systemui.aod.aodclock.constant.AodData"
-            .toClassOrNull() ?: return
-        val getInstance = aodData.resolve().optional().firstMethodOrNull {
-            name = "getInstance"
-            parameters(Context::class)
-        } ?: return
-        val isPanoramicAod = aodData.resolve().optional().firstMethodOrNull {
-            name = "isPanoramicAod"
-            parameters()
-            returnType = Boolean::class
-        } ?: return
-        val context = statusBar.resolve().optional().firstFieldOrNull {
-            name = "context"
-            type = Context::class
-        } ?: return
-        val hookDozingState = statusBar.resolve().optional().firstMethodOrNull {
-            name = "hookDozingState"
-            parameters(Boolean::class)
-            returnType = Boolean::class
-        } ?: return
+        //Source AodData
+        val aodData = "com.oplus.systemui.aod.aodclock.constant.AodData".toClass()
 
-        hookDozingState.hook {
-            before {
-                if (args(0).boolean()) {
-                    val ctx = context.copy().of(instance).get<Context>() ?: return@before
-                    val data = getInstance.invoke<Any>(ctx) ?: return@before
-                    if (isPanoramicAod.copy().of(data).invoke<Boolean>() == true) resultFalse()
+        //Source KeyguardStatusBarViewExImpl
+        "com.oplus.systemui.statusbar.phone.KeyguardStatusBarViewExImpl".toClass().resolve().apply {
+            firstMethod {
+                name = "hookDozingState"
+                parameters(Boolean::class)
+                returnType = Boolean::class
+            }.hook {
+                before {
+                    val context = firstField { type = Context::class }.of(instance).get<Context>()
+                        ?: return@before
+                    val aodDataInstance = aodData.asResolver().firstMethod {
+                        name = "getInstance"
+                        parameters(Context::class)
+                    }.invoke(context) ?: return@before
+                    val isPanoramicAod = aodDataInstance.asResolver().firstMethod {
+                        name = "isPanoramicAod"
+                    }.invoke<Boolean>() ?: return@before
+                    if (args(0).boolean() && isPanoramicAod) resultFalse()
                 }
             }
         }

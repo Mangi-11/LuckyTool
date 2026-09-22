@@ -44,8 +44,9 @@ object HookSystemUILockScreen : Hooker {
         if (prefs(ModulePrefs).getBoolean("hide_lock_screen_status_bar_display", false)) {
             loadHooker(HideLockScreenStatusBarDisplay)
         }
+        //隐藏全景息屏状态栏
         if (prefs(ModulePrefs).getBoolean("hide_panoramic_aod_status_bar", false)) {
-            loadHooker(HidePanoramicAodStatusBar)
+            if (osCode >= 37) loadHooker(HidePanoramicAodStatusBar)
         }
         //移除SOS紧急联络按钮
         if (prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_sos_button", false)) {

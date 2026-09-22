@@ -31,6 +31,7 @@ import com.luckyzyx.luckytool.hook.hookers.HookOplusCosa
 import com.luckyzyx.luckytool.hook.hookers.HookOplusGames
 import com.luckyzyx.luckytool.hook.hookers.HookOplusMMS
 import com.luckyzyx.luckytool.hook.hookers.HookOplusOta
+import com.luckyzyx.luckytool.hook.hookers.HookAppDetail
 import com.luckyzyx.luckytool.hook.hookers.HookPackageInstaller
 import com.luckyzyx.luckytool.hook.hookers.HookPermissionController
 import com.luckyzyx.luckytool.hook.hookers.HookPhone
@@ -95,6 +96,7 @@ object HookRouterInit {
 
         //应用安装器
         HookRouter.app("com.android.packageinstaller", HookPackageInstaller)
+        HookRouter.app("com.oplus.appdetail", HookAppDetail)
 
         //外部存储设备
         HookRouter.app("com.android.externalstorage", HookExternalStorage)

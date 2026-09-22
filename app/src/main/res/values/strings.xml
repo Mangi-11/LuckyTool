@@ -1348,4 +1348,15 @@
     <string name="net_error">Unknown network error</string>
     <string name="net_other_error">Unknown error</string>
     <string name="no_error_message">No error message</string>
+    <string name="apk_details_versions">Version comparison</string>
+    <string name="apk_details_installed">Installed</string>
+    <string name="apk_details_incoming">Installing</string>
+    <string name="apk_details_not_installed">Not installed</string>
+    <string name="apk_details_version_code">Build %1$s</string>
+    <string name="apk_details_information">Package information</string>
+    <string name="apk_details_package">Package name</string>
+    <string name="apk_details_size">Package size</string>
+    <string name="apk_details_min_sdk">Minimum SDK</string>
+    <string name="apk_details_target_sdk">Target SDK</string>
+    <string name="apk_details_unknown">Unavailable</string>
 </resources>

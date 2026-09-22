@@ -3,6 +3,7 @@ com.android.systemui
 com.oplus.battery
 com.android.settings
 com.android.packageinstaller
+com.oplus.appdetail
 com.android.launcher
 com.oppo.launcher
 com.oneplus.camera

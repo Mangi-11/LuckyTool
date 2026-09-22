@@ -1,6 +1,7 @@
 package com.luckyzyx.luckytool.hook.hookers
 
 import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.scopes.packageinstaller.KeepAppDetailInstaller
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.DisableStartAppDetail
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.FixInstallButtonDisplayException
 import com.luckyzyx.luckytool.hook.scopes.packageinstaller.HookInstallAppProgress
@@ -43,6 +44,8 @@ object HookPackageInstaller : Hooker {
             //禁止启动AppDetail
             if (prefs(ModulePrefs).getBoolean("disable_start_app_detail", false)) {
                 loadHooker(DisableStartAppDetail(dexKitBridge))
+            } else if (android.os.Build.VERSION.SDK_INT >= 37) {
+                loadHooker(KeepAppDetailInstaller(dexKitBridge))
             }
             //修复App安装页面底部按钮异常
             if (prefs(ModulePrefs).getBoolean("fix_install_button_display_exception", false)) {

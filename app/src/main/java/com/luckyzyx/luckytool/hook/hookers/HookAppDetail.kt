@@ -6,12 +6,13 @@ import android.content.ContextWrapper
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.TextView
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Env
 import com.luckyzyx.luckytool.hook.core.Hooker
+import com.luckyzyx.luckytool.hook.scopes.appdetail.PendingInstallerAction
+import com.luckyzyx.luckytool.hook.scopes.appdetail.InstallFinishPage
 import com.luckyzyx.luckytool.hook.scopes.appdetail.CancelInstallPage
 import com.luckyzyx.luckytool.hook.scopes.appdetail.ApkDetailsView
 import com.luckyzyx.luckytool.hook.core.hookMethod
@@ -26,7 +27,7 @@ object HookAppDetail : Hooker {
         DexkitUtils.create(appInfo.sourceDir) { bridge ->
             val allowDowngrade = prefs(ModulePrefs).getBoolean("allow_downgrade_install", false)
             val skipScan = prefs(ModulePrefs).getBoolean("skip_apk_scan", false)
-            if (allowDowngrade || skipScan) {
+            register("install_preflight", allowDowngrade || skipScan) {
                 val check = bridge.findMethod {
                     matcher { usingStrings("installedVerName", "installedUnionGameVerName") }
                 }.single().getMethodInstance(appClassLoader)
@@ -65,19 +66,44 @@ object HookAppDetail : Hooker {
                             before { if (firstVersionQuery.get() != null) resultTrue() }
                         }
                 }
+                if (allowDowngrade) {
+                    // The market-version promotion is independent of the installed-version check.
+                    "com.heytap.cdo.security.domain.safeguide.GuideContent".toClass(appClassLoader)
+                        .getDeclaredMethod("getVersionGuidePopupInfo").hookMethod {
+                            before { if (firstVersionQuery.get() != null) resultNull() }
+                        }
+                }
                 api.deoptimize(check)
             }
             feature("skip_apk_scan") {
                 val repositoryClass = "com.oplus.appdetail.model.guide.repository.riskScan.RiskRepository".toClass(appClassLoader)
-                val parseResult = repositoryClass.declaredMethods.single {
-                    !Modifier.isStatic(it.modifiers) && it.parameterTypes.contentEquals(arrayOf(Bundle::class.java)) &&
-                        it.returnType != Void.TYPE
+                val modelClass = "com.oplus.appdetail.modelv2.guide.viewmodel.RiskScanViewModel".toClass(appClassLoader)
+                val paramClass = "com.oplus.appdetail.model.guide.repository.ExtJumpParam".toClass(appClassLoader)
+                val guideClass = "com.heytap.cdo.security.domain.safeguide.GuideResult".toClass(appClassLoader)
+                val parse = bridge.findMethod {
+                    matcher { declaredClass(repositoryClass); paramTypes(Bundle::class.java) }
+                }.single()
+                val stateType = parse.getMethodInstance(appClassLoader).returnType
+                val doneField = parse.usingFields.map { it.field.getFieldInstance(appClassLoader) }.single {
+                    Modifier.isStatic(it.modifiers) && stateType.isAssignableFrom(it.type)
                 }.apply { isAccessible = true }
-                // 替换一次扫描任务的结果，保留外层 Flow 的结果派发和界面生命周期。
-                val task = "com.oplus.appdetail.model.guide.repository.riskScan.RiskRepository\$scanRiskFlow\$2\$result\$1".toClass(appClassLoader)
-                val repository = task.declaredFields.single { it.type == repositoryClass }.apply { isAccessible = true }
-                task.getDeclaredMethod("invokeSuspend", Any::class.java).hookMethod {
-                    before { result = parseResult.invoke(repository.get(instance), Bundle()) }
+                val stateField = bridge.findMethod {
+                    matcher { declaredClass(modelClass); paramCount(0); returnType(List::class.java) }
+                }.single().usingFields.map { it.field.getFieldInstance(appClassLoader) }.single {
+                    it.type.name == "androidx.lifecycle.MutableLiveData"
+                }.apply { isAccessible = true }
+                val paramField = modelClass.declaredFields.single { it.type == paramClass }.apply { isAccessible = true }
+                val postValue = stateField.type.getMethod("postValue", Any::class.java)
+                // Complete the ViewModel state itself, not just the remote worker: the original
+                // coroutine also runs scan animations, minimum-duration timers and security checks.
+                modelClass.declaredMethods.single {
+                    it.parameterTypes.contentEquals(arrayOf(paramClass, guideClass, Long::class.javaPrimitiveType))
+                }.hookMethod {
+                    before {
+                        paramField.set(instance, args[0])
+                        postValue.invoke(stateField.get(instance), doneField.get(null))
+                        resultNull()
+                    }
                 }
                 val scanContainer = "com.oplus.appdetail.modelv2.guide.view.ScanContentFrameLayout".toClass(appClassLoader)
                 scanContainer.declaredConstructors.forEach { constructor ->
@@ -104,6 +130,12 @@ object HookAppDetail : Hooker {
                         after { CancelInstallPage.simplify(instance as Activity) }
                     }
             }
+            feature("remove_install_ads") {
+                "com.oplus.appdetail.model.finish.InstallFinishActivity".toClass(appClassLoader)
+                    .getDeclaredMethod("onCreate", Bundle::class.java).hookMethod {
+                        after { InstallFinishPage.hideStorePromotion(instance as Activity) }
+                    }
+            }
             feature("show_more_apk_package_information") {
                 val paramClass = "com.oplus.appdetail.model.guide.repository.ExtJumpParam".toClass(appClassLoader)
                 val headerClass = "com.oplus.appdetail.modelv2.guide.view.HeaderAppInfoView".toClass(appClassLoader)
@@ -124,22 +156,22 @@ object HookAppDetail : Hooker {
             }
             feature("auto_click_install_button") {
                 val bottom = "com.oplus.appdetail.modelv2.guide.view.GuideBottomView".toClass(appClassLoader)
-                val clicked = java.util.Collections.newSetFromMap(java.util.WeakHashMap<View, Boolean>())
+                val watched = java.util.Collections.newSetFromMap(java.util.WeakHashMap<View, Boolean>())
                 bottom.declaredMethods.single {
                     !Modifier.isStatic(it.modifiers) && it.parameterTypes.size == 3 &&
                         it.parameterTypes[0] == List::class.java
                 }.hookMethod {
                     after {
                         val view = instance as View
-                        view.post {
-                            if (!view.isAttachedToWindow || clicked.contains(view)) return@post
-                            val id = view.resources.getIdentifier("ad_continue_install", "string", packageName)
-                            val label = view.resources.getString(id)
-                            descendants(view).filterIsInstance<Button>().firstOrNull {
-                                it.isShown && it.isEnabled && it.text.toString() == label
-                            }?.let {
-                                clicked.add(view)
-                                it.performClick()
+                        if (!watched.add(view)) return@after
+                        PendingInstallerAction.watch(view) {
+                            if (view.context.activity()?.isFinishing == true) true
+                            else {
+                                val id = view.resources.getIdentifier("ad_continue_install", "string", packageName)
+                                val label = view.resources.getString(id)
+                                descendants(view).filterIsInstance<Button>().firstOrNull {
+                                    PendingInstallerAction.ready(it) && it.text.toString() == label
+                                }?.performClick() == true
                             }
                         }
                     }
@@ -157,44 +189,72 @@ object HookAppDetail : Hooker {
                 }
             }
             feature("auto_click_uninstall_button") {
+                val activityClass = "com.oplus.appdetail.model.uninstall.UninstallPackageActivity".toClass(appClassLoader)
+                val modelClass = "com.oplus.appdetail.model.uninstall.viewmodel.UninstallViewModel".toClass(appClassLoader)
+                val presenterClass = bridge.findClass {
+                    matcher { usingStrings("activityBinding.btnUninstall") }
+                }.single().name.toClass(appClassLoader)
+                val activityField = presenterClass.declaredFields.single { it.type == activityClass }.apply { isAccessible = true }
+                val modelField = presenterClass.declaredFields.single { it.type == modelClass }.apply { isAccessible = true }
+                val uninstall = modelClass.declaredMethods.single {
+                    it.returnType == Void.TYPE && it.parameterTypes.contentEquals(arrayOf(Activity::class.java))
+                }.apply { isAccessible = true }
+                // Only the selected app's retain/uninstall confirmation. Keep the host's own
+                // uninstall operation and options instead of starting a separate package operation.
+                presenterClass.declaredMethods.single {
+                    !Modifier.isStatic(it.modifiers) && it.returnType == Void.TYPE &&
+                        it.parameterTypes.contentEquals(arrayOf(String::class.java))
+                }.hookMethod {
+                    before {
+                        uninstall.invoke(modelField.get(instance), activityField.get(instance))
+                        resultNull()
+                    }
+                }
                 "com.oplus.appdetail.model.uninstall.UninstallPackageActivity".toClass(appClassLoader)
                     .getDeclaredMethod("onCreate", Bundle::class.java).hookMethod {
                         after {
                             val activity = instance as Activity
                             val root = activity.window.decorView
                             var clicked = false
-                            val listener = ViewTreeObserver.OnGlobalLayoutListener {
-                                if (!activity.isFinishing) {
+                            PendingInstallerAction.watch(root) {
+                                if (activity.isFinishing) true
+                                else {
                                     val done = root.resources.getIdentifier("uninstall_success_hint", "string", packageName)
                                     if (descendants(root).filterIsInstance<TextView>().any {
                                             it.isShown && it.text.toString() == root.resources.getString(done)
-                                        }) activity.finish()
-                                    else if (!clicked) {
-                                        val id = root.resources.getIdentifier("btn_uninstall", "id", packageName)
-                                        root.findViewById<View>(id)?.takeIf { it.isShown && it.isEnabled }?.let {
-                                            clicked = true
-                                            it.post { if (!activity.isFinishing) it.performClick() }
+                                        }) {
+                                        activity.finish()
+                                        true
+                                    } else {
+                                        if (!clicked) {
+                                            val id = root.resources.getIdentifier("btn_uninstall", "id", packageName)
+                                            val button = root.findViewById<View>(id)
+                                            val promptId = root.resources.getIdentifier("uninstall_consult_hint", "string", packageName)
+                                            val ready = descendants(root).filterIsInstance<TextView>().any {
+                                                it.isShown && it.text.toString() == root.resources.getString(promptId)
+                                            }
+                                            if (ready && button != null && PendingInstallerAction.ready(button)) {
+                                                clicked = button.performClick()
+                                            }
                                         }
+                                        false
                                     }
                                 }
                             }
-                            root.viewTreeObserver.addOnGlobalLayoutListener(listener)
-                            root.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-                                override fun onViewAttachedToWindow(v: View) = Unit
-                                override fun onViewDetachedFromWindow(v: View) {
-                                    v.viewTreeObserver.removeOnGlobalLayoutListener(listener)
-                                    v.removeOnAttachStateChangeListener(this)
-                                }
-                            })
                         }
                     }
             }
         }
     }
 
-    private inline fun feature(key: String, install: () -> Unit) {
-        if (!prefs(ModulePrefs).getBoolean(key, false)) return
-        runCatching(install).onFailure { Env.log(android.util.Log.ERROR, "AppDetail", "Cannot hook $key", it) }
+    private inline fun feature(key: String, install: () -> Unit) =
+        register(key, prefs(ModulePrefs).getBoolean(key, false), install)
+
+    private inline fun register(name: String, enabled: Boolean, install: () -> Unit) {
+        if (!enabled) return
+        runCatching(install).onFailure {
+            Env.log(android.util.Log.ERROR, "AppDetail", "Cannot hook $name", it)
+        }
     }
 
     private fun descendants(view: View): Sequence<View> = sequence {

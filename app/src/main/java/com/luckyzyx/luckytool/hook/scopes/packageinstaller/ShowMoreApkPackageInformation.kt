@@ -14,6 +14,7 @@ import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.hook.scopes.appdetail.ApkDetailsView
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.instance
@@ -31,8 +32,8 @@ class ShowMoreApkPackageInformation(val dexKitBridge: DexKitBridge) : Hooker {
 
     lateinit var loadApkInfo: MethodData
 
-    var cacheApkInfoMap = ArrayMap<Any, ArrayMap<String, Any>>()
-    var cacheSourceInfoMap = ArrayMap<Any, ArrayMap<String, Any>>()
+    private val cacheApkInfoMap = java.util.WeakHashMap<Any, ArrayMap<String, Any>>()
+    private val cacheSourceInfoMap = java.util.WeakHashMap<Any, ArrayMap<String, Any>>()
 
     @SuppressLint("SetTextI18n")
     override fun onHook() {
@@ -118,7 +119,10 @@ class ShowMoreApkPackageInformation(val dexKitBridge: DexKitBridge) : Hooker {
                     val apkSize = cacheApkInfo["size"] as? Long ?: -1
 
                     val packInfo = PackageUtils(pm).getPackageArchiveInfo(apkFilePath, 1)
-                    val newIcon = packInfo?.applicationInfo?.loadIcon(pm)
+                    val newIcon = packInfo?.applicationInfo?.apply {
+                        sourceDir = apkFilePath
+                        publicSourceDir = apkFilePath
+                    }?.loadIcon(pm)
                     val newMin = packInfo?.applicationInfo?.minSdkVersion
                     val newTarget = packInfo?.applicationInfo?.targetSdkVersion
 
@@ -132,6 +136,37 @@ class ShowMoreApkPackageInformation(val dexKitBridge: DexKitBridge) : Hooker {
                     val isInstalled = curPackInfo != null
                     val isInstall = actionType == 0
                     val isUninstall = actionType == 1
+
+                    if (isInstall && android.os.Build.VERSION.SDK_INT >= 37) {
+                        // Reuse the same information cards as AppDetail, but use LinearLayout's
+                        // normal measurement here instead of its ConstraintLayout integration.
+                        val tag = "LuckyTool.ClassicApkDetails"
+                        val panel = apkInfoView.findViewWithTag<ApkDetailsView>(tag)
+                            ?: ApkDetailsView(context).also {
+                                it.tag = tag
+                                apkInfoView.addView(it, LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                                ))
+                            }
+                        for (i in 0 until apkInfoView.childCount) {
+                            val child = apkInfoView.getChildAt(i)
+                            child.visibility = if (child === panel) android.view.View.VISIBLE else android.view.View.GONE
+                        }
+                        apkInfoView.orientation = LinearLayout.VERTICAL
+                        apkInfoView.gravity = Gravity.TOP or Gravity.START
+                        val padding = (16 * context.resources.displayMetrics.density).toInt()
+                        apkInfoView.setPadding(padding, padding, padding, padding)
+                        apkInfoView.layoutParams = apkInfoView.layoutParams.apply {
+                            height = LinearLayout.LayoutParams.WRAP_CONTENT
+                        }
+                        panel.bind(packName, versionName, versionCode.toString(), apkFilePath, packInfo, curPackInfo)
+                        panel.addAppHeader(
+                            appName, newIcon ?: curIcon ?: pm.defaultActivityIcon,
+                            getInstallSourceText(context, installSource), versionName,
+                            getApkSizeFormat(context, curPackInfo, apkSize, false)
+                        )
+                        return@after
+                    }
 
                     val hikageLayout = Hikageable {
                         LinearLayout(

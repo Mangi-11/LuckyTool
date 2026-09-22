@@ -5,6 +5,8 @@ import android.content.pm.PackageInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
+import android.widget.ImageView
 import android.graphics.drawable.GradientDrawable
 import android.text.format.Formatter
 import android.util.TypedValue
@@ -62,6 +64,28 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
         info.addView(row(R.string.apk_details_min_sdk, incoming?.applicationInfo?.minSdkVersion?.toString() ?: unknown))
         info.addView(row(R.string.apk_details_target_sdk, incoming?.applicationInfo?.targetSdkVersion?.toString() ?: unknown))
         addView(info, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(12) })
+    }
+
+    fun addAppHeader(name: String, icon: Drawable?, source: String, version: String, size: String) {
+        val header = LinearLayout(context).apply {
+            orientation = HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(ImageView(context).apply {
+                setImageDrawable(icon)
+                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                scaleType = ImageView.ScaleType.FIT_CENTER
+            }, LayoutParams(dp(72), dp(72)))
+            addView(LinearLayout(context).apply {
+                orientation = VERTICAL
+                addView(text(name, 22f, primary, true))
+                addView(text(listOf(version, size).filter { it.isNotBlank() }.joinToString(" · "), 13f, secondary),
+                    LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
+                if (source.isNotBlank()) addView(text(source, 13f, secondary),
+                    LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { topMargin = dp(6) })
+            }, LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f).apply { marginStart = dp(16) })
+        }
+        setPadding(0, dp(12), 0, dp(8))
+        addView(header, 0, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(24) })
     }
 
     private fun card() = LinearLayout(context).apply {

@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.collection.ArrayMap
 import androidx.collection.arrayMapOf
+import com.highcapable.betterandroid.ui.extension.view.child
 import com.highcapable.betterandroid.ui.extension.view.updatePadding
 import com.highcapable.hikage.core.base.Hikageable
 import com.highcapable.hikage.widget.android.widget.ImageView
@@ -14,10 +15,10 @@ import com.highcapable.hikage.widget.android.widget.LinearLayout
 import com.highcapable.hikage.widget.android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.scopes.appdetail.ApkDetailsView
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.instance
+import com.luckyzyx.luckytool.hook.scopes.appdetail.ApkDetailsView
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.PackageUtils
 import com.luckyzyx.luckytool.utils.safeOf
@@ -141,16 +142,20 @@ class ShowMoreApkPackageInformation(val dexKitBridge: DexKitBridge) : Hooker {
                         // Reuse the same information cards as AppDetail, but use LinearLayout's
                         // normal measurement here instead of its ConstraintLayout integration.
                         val tag = "LuckyTool.ClassicApkDetails"
-                        val panel = apkInfoView.findViewWithTag<ApkDetailsView>(tag)
+                        val panel = apkInfoView.findViewWithTag(tag)
                             ?: ApkDetailsView(context).also {
                                 it.tag = tag
-                                apkInfoView.addView(it, LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                                ))
+                                apkInfoView.addView(
+                                    it, LinearLayout.LayoutParams(
+                                        LinearLayout.LayoutParams.MATCH_PARENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT
+                                    )
+                                )
                             }
                         for (i in 0 until apkInfoView.childCount) {
-                            val child = apkInfoView.getChildAt(i)
-                            child.visibility = if (child === panel) android.view.View.VISIBLE else android.view.View.GONE
+                            val child = apkInfoView.child(i)
+                            child.visibility =
+                                if (child === panel) android.view.View.VISIBLE else android.view.View.GONE
                         }
                         apkInfoView.orientation = LinearLayout.VERTICAL
                         apkInfoView.gravity = Gravity.TOP or Gravity.START
@@ -159,7 +164,14 @@ class ShowMoreApkPackageInformation(val dexKitBridge: DexKitBridge) : Hooker {
                         apkInfoView.layoutParams = apkInfoView.layoutParams.apply {
                             height = LinearLayout.LayoutParams.WRAP_CONTENT
                         }
-                        panel.bind(packName, versionName, versionCode.toString(), apkFilePath, packInfo, curPackInfo)
+                        panel.bind(
+                            packName,
+                            versionName,
+                            versionCode.toString(),
+                            apkFilePath,
+                            packInfo,
+                            curPackInfo
+                        )
                         panel.addAppHeader(
                             appName, newIcon ?: curIcon ?: pm.defaultActivityIcon,
                             getInstallSourceText(context, installSource), versionName,

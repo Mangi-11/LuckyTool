@@ -1,25 +1,29 @@
 package com.luckyzyx.luckytool.hook.scopes.appdetail
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.widget.ImageView
 import android.graphics.drawable.GradientDrawable
 import android.text.format.Formatter
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.highcapable.betterandroid.ui.extension.view.child
+import com.highcapable.betterandroid.ui.extension.view.textColor
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
+import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
 
-/** Uses framework views inside the host; does not mix module and host ConstraintLayout classes. */
+@Obfuscate
 internal class ApkDetailsView(context: Context) : LinearLayout(context) {
     private val dark = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
         Configuration.UI_MODE_NIGHT_YES
@@ -72,7 +76,7 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
             gravity = Gravity.CENTER_VERTICAL
             addView(ImageView(context).apply {
                 setImageDrawable(icon)
-                importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
                 scaleType = ImageView.ScaleType.FIT_CENTER
             }, LayoutParams(dp(72), dp(72)))
             addView(LinearLayout(context).apply {
@@ -118,12 +122,13 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
     private fun text(value: String, size: Float, color: Int, medium: Boolean = false) = TextView(context).apply {
         text = value
         textSize = size
-        setTextColor(color)
+        textColor = color
         includeFontPadding = false
-        textDirection = View.TEXT_DIRECTION_FIRST_STRONG
+        textDirection = TEXT_DIRECTION_FIRST_STRONG
         if (medium) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
     }
 
+    @SuppressLint("DiscouragedApi")
     private fun themeColor(name: String, fallback: Int): Int {
         val id = resources.getIdentifier(name, "attr", context.packageName)
         val value = TypedValue()
@@ -145,7 +150,7 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
             if (existing != null && existing !is ApkDetailsView) header.removeView(existing)
             val panel = (existing as? ApkDetailsView) ?: ApkDetailsView(header.context).also { panel ->
                 panel.tag = TAG
-                header.addView(panel, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
+                header.addView(panel, ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT))
                 // Host ConstraintLayout measures the native header. Place the extra content below it
                 // and remeasure when width/font scale changes, without depending on obfuscated fields.
                 header.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> resize(header, panel) }
@@ -156,11 +161,12 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
 
         private fun resize(header: ViewGroup, panel: ApkDetailsView) {
             if (header.width <= 0) return
-            val bottom = (0 until header.childCount).map { header.getChildAt(it) }
-                .filter { it !== panel && it.visibility != View.GONE }.maxOfOrNull { it.bottom } ?: 0
+            val bottom = (0 until header.childCount).map { header.child(it) }
+                .filter { it !== panel && it.visibility != GONE }.maxOfOrNull { it.bottom } ?: 0
             val width = (header.width - header.paddingLeft - header.paddingRight).coerceAtLeast(0)
-            panel.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+            panel.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED))
             panel.translationY = (bottom - panel.top).toFloat()
             val height = bottom + panel.measuredHeight + header.paddingBottom
             if (header.layoutParams.height != height) header.layoutParams = header.layoutParams.apply { this.height = height }

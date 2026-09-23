@@ -1,6 +1,7 @@
 package com.luckyzyx.luckytool.hook.scopes.packageinstaller
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
@@ -23,7 +24,7 @@ class DisableStartAppDetail(val dexKitBridge: DexKitBridge) : Hooker {
             findMethod {
                 matcher {
 //                    paramTypes(Context::class.java, String::class.java)
-                    returnType(Int::class.java)
+                    returnType(classOf<Int>())
                     usingStrings("count_canceled_by_app_detail", "com.oplus.appdetail")
                 }
             }.apply {

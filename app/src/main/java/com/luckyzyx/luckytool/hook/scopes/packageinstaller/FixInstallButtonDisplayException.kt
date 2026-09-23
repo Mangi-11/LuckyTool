@@ -11,7 +11,7 @@ import java.security.SecureRandom
 object FixInstallButtonDisplayException : Hooker {
     override fun onHook() {
         //Source ConfusedButton
-        "com.android.packageinstaller.oplus.view.ConfusedButton".toClass().resolve().optional(true).apply {
+        "com.android.packageinstaller.oplus.view.ConfusedButton".toClass().resolve().apply {
             firstMethod { name = "getAccessibilityViewId" }.hook {
                 before {
                     firstMethod { name = "setCts" }.of(instance).invoke(true)
@@ -26,7 +26,7 @@ object FixInstallButtonDisplayException : Hooker {
             }
         }
         //Source ConfusedTextView
-        "com.android.packageinstaller.oplus.view.ConfusedTextView".toClass().resolve().optional(true).apply {
+        "com.android.packageinstaller.oplus.view.ConfusedTextView".toClass().resolve().apply {
             firstMethod { name = "getAccessibilityViewId" }.hook {
                 before {
                     firstMethod { name = "setCts" }.of(instance).invoke(true)

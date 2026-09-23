@@ -220,27 +220,11 @@ fun <T : Any> List<MethodResolver<T>>.hookAll(
     priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
 ) = forEach { it.hook(priority, action) }
 
-@JvmName("hookAllOrNull")
-fun <T : Any> List<MethodResolver<T>>?.hookAll(
-    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
-) = this?.hookAll(priority, action)
-
-/** 单个解析器的 hookAll 别名（本项目用法等价 hook） */
-fun <M : Member> MemberResolver<M, *>.hookAll(
-    priority: Int = XposedInterface.PRIORITY_DEFAULT,
-    action: HookAction.() -> Unit
-) = hook(priority, action)
-
 /** 同形 YukiHookAPI 的 hookAll：KavaRef constructor { } 返回的构造器解析器列表全部挂动作块 */
 @JvmName("hookAllCtors")
 fun <T : Any> List<ConstructorResolver<T>>.hookAll(
     priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
 ) = forEach { it.hook(priority, action) }
-
-@JvmName("hookAllOrNullCtors")
-fun <T : Any> List<ConstructorResolver<T>>?.hookAll(
-    priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit
-) = this?.hookAll(priority, action)
 
 fun Executable.hookMethod(
     priority: Int = XposedInterface.PRIORITY_DEFAULT, action: HookAction.() -> Unit

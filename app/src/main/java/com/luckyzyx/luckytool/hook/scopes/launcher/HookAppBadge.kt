@@ -1,23 +1,28 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import android.graphics.drawable.Drawable
+import android.os.UserHandle
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
+import com.luckyzyx.luckytool.hook.core.hookMethod
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
+import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-object HookAppBadge : Hooker {
+class HookAppBadge(val dexKitBridge: DexKitBridge) : Hooker {
     override fun onHook() {
         val osCode = getOSVersionCode
-        if (osCode >= 30) loadHooker(AppBadge) else loadHooker(AppBadgeC13)
+        if (osCode >= 30) loadHooker(AppBadge(dexKitBridge))
+        else loadHooker(AppBadgeC13)
     }
 
     @Obfuscate
-    object AppBadge : Hooker {
+    class AppBadge(val dexKitBridge: DexKitBridge) : Hooker {
         override fun onHook() {
             val isShortcut = prefs(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
             val isWork = prefs(ModulePrefs).getBoolean("remove_app_work_badge", false)
@@ -64,15 +69,17 @@ object HookAppBadge : Hooker {
                 }
             }
 
-            //Source CacheUtils
-            "com.android.common.util.CacheUtils".toClass().resolve().apply {
-                firstMethod {
-                    name = "getCloneAppDrawable"
-                    returnType = Drawable::class
-                }.hook {
-                    after {
-                        if (isClone) resultNull()
-                    }
+            // CacheUtils.getCloneAppDrawable 在 C16 为公开类名、C17 混淆类中为
+            // b(UserHandle)，两版签名一致且各自全库唯一；统一经 DexKit 定位，
+            // 不依赖类名与版本，查找失败时静默降级。
+            dexKitBridge.findMethod {
+                matcher {
+                    paramTypes(classOf<UserHandle>())
+                    returnType(classOf<Drawable>())
+                }
+            }.single().getMethodInstance(appClassLoader).hookMethod {
+                after {
+                    if (isClone) resultNull()
                 }
             }
         }

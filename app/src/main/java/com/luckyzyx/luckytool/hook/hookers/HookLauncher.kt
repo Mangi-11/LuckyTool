@@ -52,6 +52,9 @@ object HookLauncher : Hooker {
             if (prefs(ModulePrefs).getBoolean("force_enable_recent_task_memory_display", false)) {
                 if (osCode >= 30) loadHooker(ForceEnableRecentTaskMemoryDisplay(dexKitBridge))
             }
+
+            //应用徽章
+            if (SDK >= A13) loadHooker(HookAppBadge(dexKitBridge))
         }
 
         //HookLauncherFeatureFlags
@@ -69,8 +72,6 @@ object HookLauncher : Hooker {
         //桌面图标相关
         loadHooker(HookOplusBubbleTextView)
 
-        //应用徽章
-        if (SDK >= A13) loadHooker(HookAppBadge)
 
         //设置桌面布局行列数
         if (prefs(ModulePrefs).getBoolean("launcher_layout_enable", false)) {

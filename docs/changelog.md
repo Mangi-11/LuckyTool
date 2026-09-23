@@ -30,6 +30,7 @@ in [TG Channel’s associated groups](https://t.me/LuckyTool)**
 - [修复] 修复因优化作用域导致的崩溃 (@蛮吉)
 - [添加] 隐藏全景息屏状态栏 C16+ (@ShellWen)
 - [添加] 优化应用安装界面样式 (@蛮吉)
+- [适配] 长按最近任务图标跳转应用详情 C17
 
 ### 1.3.4
 

@@ -3,18 +3,18 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 import android.annotation.SuppressLint
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.toClass
+import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.hook.core.Hooker
 import com.luckyzyx.luckytool.hook.core.hook
 import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
-import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 import org.luckypray.dexkit.query.enums.StringMatchType
 import java.io.InputStream
-import java.lang.reflect.Method
 
 @Obfuscate
 class FixAppSpecificMediaVolumePage(val dexKitBridge: DexKitBridge) : Hooker {
@@ -27,7 +27,7 @@ class FixAppSpecificMediaVolumePage(val dexKitBridge: DexKitBridge) : Hooker {
             }
         }.findMethod {
             matcher {
-                paramTypes(Context::class.java, String::class.java, String::class.java)
+                paramTypes(classOf<Context>(), classOf<String>(), classOf<String>())
                 usingStrings(".zip", ".lottie")
             }
         }.apply {
@@ -60,7 +60,7 @@ class FixAppSpecificMediaVolumePage(val dexKitBridge: DexKitBridge) : Hooker {
                             result = firstMethod {
 //                                name = "fromJsonInputStreamSync"
                                 parameters(InputStream::class, String::class)
-                                returnType = (method as Method).returnType
+                                returnType = method.returnType
                             }.invoke(rawInputStream, key) ?: return@before
                         }
                     }

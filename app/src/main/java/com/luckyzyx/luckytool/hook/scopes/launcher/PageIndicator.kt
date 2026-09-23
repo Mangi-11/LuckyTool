@@ -52,13 +52,17 @@ object PageIndicator : Hooker {
 
         if (SDK < A13) return
 
-        //Source PageIndicatorTouchHelper
-        "com.android.launcher.pageindicators.PageIndicatorTouchHelper".toClass().resolve().apply {
+        // C17 起 PageIndicatorTouchHelper 混淆为 pageindicators/p，onActionMove 内联进
+        // 其 a(MotionEvent) 入口；两版共用的滑动切换点是
+        // OplusPageIndicator.getSwitchTargetPage，返回 -1 时新旧版均跳过页面切换，
+        // 且不影响按压反馈动画与统计。
+        //Source OplusPageIndicator getSwitchTargetPage
+        "com.android.launcher.pageindicators.OplusPageIndicator".toClass().resolve().apply {
             firstMethod {
-                name = "onActionMove"
+                name = "getSwitchTargetPage"
                 parameters(MotionEvent::class)
             }.hook {
-                if (disableSliding) intercept()
+                if (disableSliding) replaceTo(-1)
             }
         }
 

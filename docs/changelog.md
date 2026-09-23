@@ -32,6 +32,7 @@ in [TG Channel’s associated groups](https://t.me/LuckyTool)**
 - [添加] 优化应用安装界面样式 (@蛮吉)
 - [适配] 长按最近任务图标跳转应用详情 C17
 - [适配] 桌面Docker背景模糊效果 C17
+- [适配] 桌面分页指示器组件滑动 C17
 
 ### 1.3.4
 

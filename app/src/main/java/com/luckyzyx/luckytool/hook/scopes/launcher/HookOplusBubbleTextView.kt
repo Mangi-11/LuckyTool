@@ -46,9 +46,16 @@ object HookOplusBubbleTextView : Hooker {
             }
         }
 
-        //Source IconParam
-        "com.android.launcher.layoutparam.IconParam".toClass().resolve().apply {
-            firstMethod { name = "getIconSizePx" }.hook {
+        // C17 起 IconParam 混淆为 j4.j、getIconSizePx 混淆为 d()，旧 hook 无法命中；
+        // 两版图标尺寸的构造源头都是 LauncherIconConfig.calculateIconSizeByUxDesign()
+        // 无参版本，hook 源头等价于替换 getIconSizePx 的读取结果。
+        //（secondary 分支不经过该方法，C16 走 SecondaryLauncherUtils、C17 固定 72）
+        //Source LauncherIconConfig
+        "com.android.launcher.theme.LauncherIconConfig".toClass().resolve().apply {
+            firstMethod {
+                name = "calculateIconSizeByUxDesign"
+                emptyParameters()
+            }.hook {
                 before {
                     if (iconSize > 0) result = iconSize.dp
                 }

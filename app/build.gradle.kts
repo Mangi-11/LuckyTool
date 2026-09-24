@@ -106,7 +106,15 @@ dependencies {
     compileOnly(projects.hiddenApiStub)
     implementation(projects.colorpicker)
 
-    //libxposed：原生 API（框架注入后提供）+ 模块 App 侧 service（远程偏好载体）
+    @Suppress("AvoidDuplicateDependencies")
+    platform(libs.yukihook.bom).apply {
+        implementation(this)
+        ksp(this)
+    }
+    implementation(libs.yukihook.core)
+    ksp(libs.yukihook.compiler)
+    implementation(libs.yukihook.runtime.libxposed)
+
     compileOnly(libs.libxposed.api)
     implementation(libs.libxposed.service)
 

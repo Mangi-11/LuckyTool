@@ -80,7 +80,7 @@ class AppInfoSelectDialog(context: Context, val multiMode: Boolean = false) :
         binding.btnOk.apply {
             isVisible = multiMode
             setOnClickListener {
-                dialog?.dismiss()
+                dialog.dismiss()
                 onSelectAppInfoListener?.resultSelectAppInfos(allEnabledInfos)
             }
         }

@@ -8,11 +8,9 @@ import android.view.Menu
 import androidx.core.content.edit
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.FileUtils
 import com.luckyzyx.luckytool.utils.showToast
@@ -21,7 +19,7 @@ import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 
 @Obfuscate
-class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
+class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     val packageListInfo = "com.oplus.ota.db.PackageListInfo"
 
@@ -35,7 +33,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
         val opexPackageHelper = dexKitBridge.findClass {
             matcher {
                 addMethod {
-                    paramTypes(Context::class.java, packageListInfo.toClass(), Int::class.java)
+                paramTypes(classOf<Context>(), packageListInfo.toClass(), classOf<Int>())
                     returnType(opexCopyResultCode)
                 }
                 usingStrings("OpexPackageHelper")
@@ -53,7 +51,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
             }.hook {
                 after {
                     val activity = instance<Activity>()
-                    val menu = args().first().cast<Menu>() ?: return@after
+                    val menu = firstArg().get<Menu>() ?: return@after
                     menu.add(0, OpexMenuItemCode, 0, "Opex")
                     menu.findItem(OpexMenuItemCode)?.setOnMenuItemClickListener {
                         val intent = Intent("android.intent.action.OPEN_DOCUMENT")
@@ -72,9 +70,9 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
             }.hook {
                 before {
                     val activity = instance<Activity>()
-                    val requestCode = args().first().int()
-                    val resultCode = args(1).int()
-                    val intent = args().last().cast<Intent>() ?: return@before
+                    val requestCode = firstArg().get<Int>() ?: 0
+                    val resultCode = arg(1).get<Int>() ?: 0
+                    val intent = lastArg().get<Intent>() ?: return@before
                     if (requestCode == OpexMenuItemCode && resultCode == Activity.RESULT_OK) {
                         try {
                             val sp =
@@ -86,7 +84,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
                                 )
                             }
                         } catch (t: Throwable) {
-                            XLog.debug("prefs state_info error: ${t.message}")
+                            YLog.debug("prefs state_info error: ${t.message}")
                         }
 
                         val uri = intent.data ?: return@before
@@ -95,7 +93,7 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
                                 uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                             )
                         } catch (t: Throwable) {
-                            XLog.debug("takePersistableUriPermission error: ${t.message}")
+                            YLog.debug("takePersistableUriPermission error: ${t.message}")
                         }
 
                         val name = uri.path?.substringAfterLast("/") ?: return@before
@@ -128,12 +126,12 @@ class EnableOpexLocalInstall(val dexKitBridge: DexKitBridge) : Hooker {
                                 parameters(Context::class, packageListInfo, Int::class)
                                 returnType = opexCopyResultCode
                             }.invoke(activity, info, index)
-                            XLog.debug("$name -> $code")
+                            YLog.debug("$name -> $code")
                             activity.showToast("$name -> $code")
                         }
 
                         FileUtils.deleteFile(opexDir)
-                        resultNull()
+                        result = null
                     }
                 }
             }

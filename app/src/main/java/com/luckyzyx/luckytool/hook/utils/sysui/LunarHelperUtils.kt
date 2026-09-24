@@ -4,7 +4,6 @@ import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.createInstance
-import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.LogUtils
 import com.luckyzyx.luckytool.utils.formatDate
 import com.luckyzyx.luckytool.utils.safeOf
@@ -20,7 +19,7 @@ class LunarHelperUtils(val classLoader: ClassLoader?) {
     val clazz = VariousClass(
         "com.oplusos.systemui.keyguard.clock.LunarHelper",  //C13
         "com.oplus.systemui.keyguard.clock.LunarHelper"  //C14 C15
-    ).toClass(classLoader)
+    ).load(classLoader)
 
     companion object {
         val mLeapMonth = arrayOf("闰", "月")

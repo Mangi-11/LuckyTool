@@ -7,18 +7,14 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.android.internal.graphics.drawable.BackgroundBlurDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object NotificationBackgroundBlurAlpha : Hooker {
+object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 34) loadHooker(NotificationBackgroundBlurAlphaV15)
@@ -26,15 +22,15 @@ object NotificationBackgroundBlurAlpha : Hooker {
     }
 
     @Obfuscate
-    object NotificationBackgroundBlurAlphaV15 : Hooker {
+    object NotificationBackgroundBlurAlphaV15 : YukiBaseHooker() {
         override fun onHook() {
             var customAlpha =
-                prefs(ModulePrefs).getInt("custom_notification_background_transparency", -1)
+                preferences(ModulePrefs).getInt("custom_notification_background_transparency", -1)
             dataChannel.wait<Int>("custom_notification_background_transparency") {
                 customAlpha = it
             }
             var enableBlur =
-                prefs(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
+                preferences(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
             dataChannel.wait<Boolean>("enable_notification_background_blur_effect") {
                 enableBlur = it
             }
@@ -46,7 +42,7 @@ object NotificationBackgroundBlurAlpha : Hooker {
                         before {
                             if (customAlpha < 0 || enableBlur) return@before
                             val alphaValue = customAlpha * 25
-                            val mBackground = args().last().cast<Drawable>() ?: return@before
+                            val mBackground = lastArg().get<Drawable>() ?: return@before
                             mBackground.alpha = alphaValue
                         }
                     }
@@ -58,7 +54,7 @@ object NotificationBackgroundBlurAlpha : Hooker {
                     firstMethod { name = "getOplusStyle";superclass() }.hook {
                         before {
                             if (customAlpha < 0) return@before
-                            if (enableBlur) resultTrue() else resultFalse()
+                            result = if (enableBlur) true else false
                         }
                     }
                 }
@@ -78,18 +74,18 @@ object NotificationBackgroundBlurAlpha : Hooker {
     }
 
     @Obfuscate
-    object NotificationBackgroundBlurAlphaV14 : Hooker {
+    object NotificationBackgroundBlurAlphaV14 : YukiBaseHooker() {
         private var disableBlur = false
 
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             var customAlpha =
-                prefs(ModulePrefs).getInt("custom_notification_background_transparency", -1)
+                preferences(ModulePrefs).getInt("custom_notification_background_transparency", -1)
             dataChannel.wait<Int>("custom_notification_background_transparency") {
                 customAlpha = it
             }
             var enableBlur =
-                prefs(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
+                preferences(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
             dataChannel.wait<Boolean>("enable_notification_background_blur_effect") {
                 enableBlur = it
             }
@@ -101,7 +97,7 @@ object NotificationBackgroundBlurAlpha : Hooker {
                         before {
                             if (customAlpha < 0 || enableBlur) return@before
                             val alphaValue = customAlpha * 25
-                            val mBackground = args().last().cast<Drawable>() ?: return@before
+                            val mBackground = lastArg().get<Drawable>() ?: return@before
                             mBackground.alpha = alphaValue
                         }
                     }
@@ -113,13 +109,13 @@ object NotificationBackgroundBlurAlpha : Hooker {
                     firstMethod { name = "getOplusStyle";superclass() }.hook {
                         before {
                             if (customAlpha < 0) return@before
-                            if (enableBlur) resultTrue() else resultFalse()
+                            result = if (enableBlur) true else false
                         }
                     }
                     firstMethod { name = "drawBlur";superclass() }.hook {
                         before {
                             if (customAlpha < 0) return@before
-                            if (enableBlur) resultTrue() else resultFalse()
+                            result = if (enableBlur) true else false
                         }
                     }
                     firstMethod { name = "decideBlurDrawable" }.hook {
@@ -150,7 +146,7 @@ object NotificationBackgroundBlurAlpha : Hooker {
                 firstMethod { name = "blurMediaPanel" }.hook {
                     before {
                         if (customAlpha < 0) return@before
-                        disableBlur = args().first().boolean()
+                        disableBlur = firstArg().get<Boolean>() ?: false
                     }
                 }
             }

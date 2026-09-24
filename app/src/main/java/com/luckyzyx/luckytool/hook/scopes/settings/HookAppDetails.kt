@@ -9,12 +9,10 @@ import android.view.View
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import com.luckyzyx.luckytool.utils.AppUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.PackageUtils
@@ -26,7 +24,7 @@ import com.luckyzyx.luckytool.utils.safeOf
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAppDetails : Hooker {
+object HookAppDetails : YukiBaseHooker() {
 
     override fun onHook() {
         loadHooker(HookAppInfos)
@@ -35,21 +33,21 @@ object HookAppDetails : Hooker {
     }
 
     @Obfuscate
-    object HookAppInfos : Hooker {
+    object HookAppInfos : YukiBaseHooker() {
 
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             val isPackName =
-                prefs(ModulePrefs).getBoolean("show_package_name_in_app_details", false)
-            val isSdk = prefs(ModulePrefs).getBoolean("show_sdk_in_app_details", false)
+                preferences(ModulePrefs).getBoolean("show_package_name_in_app_details", false)
+            val isSdk = preferences(ModulePrefs).getBoolean("show_sdk_in_app_details", false)
             val isFirstInstallTime =
-                prefs(ModulePrefs).getBoolean("show_first_install_time_in_app_details", false)
+                preferences(ModulePrefs).getBoolean("show_first_install_time_in_app_details", false)
             val isLastUpdateTime =
-                prefs(ModulePrefs).getBoolean("show_last_update_time_in_app_details", false)
+                preferences(ModulePrefs).getBoolean("show_last_update_time_in_app_details", false)
             val isInstallSource =
-                prefs(ModulePrefs).getBoolean("show_install_source_in_app_details", false)
+                preferences(ModulePrefs).getBoolean("show_install_source_in_app_details", false)
             val isEnableCopy =
-                prefs(ModulePrefs).getBoolean("enable_long_press_to_copy_in_app_details", false)
+                preferences(ModulePrefs).getBoolean("enable_long_press_to_copy_in_app_details", false)
 
             //Source AppInfoFeature
             "com.oplus.settings.feature.appmanager.AppInfoFeature".toClass().resolve().apply {
@@ -60,7 +58,7 @@ object HookAppDetails : Hooker {
                     after {
                         val mRootView = firstField { name = "mRootView" }.of(instance).get<View>()
                             ?: return@after
-                        val appButtonsPreferenceController = args().first().any() ?: return@after
+                        val appButtonsPreferenceController = firstArg().get() ?: return@after
                         val instrumentedPreferenceFragment = appButtonsPreferenceController
                             .asResolver().firstField { name = "mFragment" }.get() ?: return@after
                         val packageInfo = instrumentedPreferenceFragment.asResolver().firstField {
@@ -69,7 +67,7 @@ object HookAppDetails : Hooker {
                         val appInfo = packageInfo.applicationInfo
 
                         val context = mRootView.context
-                        context.injectModuleAppResources()
+                        context.injectModuleResources()
 
                         val appSize = mRootView.findViewById<TextView>(
                             context.resources.getIdentifier(
@@ -138,20 +136,20 @@ object HookAppDetails : Hooker {
     }
 
     @Obfuscate
-    object HookAppInfoDashboard : Hooker {
+    object HookAppInfoDashboard : YukiBaseHooker() {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             val osCode = getOSVersionCode
-            val quickMarket = prefs(ModulePrefs).getBoolean("enable_quick_open_market_page", false)
-            val quickClone = prefs(ModulePrefs).getBoolean("enable_app_clone_quick_jump", false)
+            val quickMarket = preferences(ModulePrefs).getBoolean("enable_quick_open_market_page", false)
+            val quickClone = preferences(ModulePrefs).getBoolean("enable_app_clone_quick_jump", false)
 
             //Source AppInfoDashboardFragment
             "com.android.settings.applications.appinfo.AppInfoDashboardFragment".toClass().resolve()
                 .apply {
                     firstMethod { name = "onCreateOptionsMenu" }.hook {
                         after {
-                            val menu = args().first().cast<Menu>() ?: return@after
-//                        val menuInflater = args().last().cast<MenuInflater>() ?: return@after
+                            val menu = firstArg().get<Menu>() ?: return@after
+//                        val menuInflater = lastArg().get<MenuInflater>() ?: return@after
                             val context = firstMethod {
                                 name = "getContext"
                                 superclass()
@@ -161,7 +159,7 @@ object HookAppDetails : Hooker {
                                 .get<PackageInfo>() ?: return@after
 
                             if (quickMarket) {
-                                context.injectModuleAppResources()
+                                context.injectModuleResources()
                                 val openMarketLabel = safeOf("Open Market") {
                                     context.getString(R.string.open_market)
                                 }
@@ -179,7 +177,7 @@ object HookAppDetails : Hooker {
                     }
                     firstMethod { name = "onOptionsItemSelected" }.hook {
                         before {
-                            val menuItem = args().first().cast<MenuItem>() ?: return@before
+                            val menuItem = firstArg().get<MenuItem>() ?: return@before
                             val context = firstMethod {
                                 name = "getContext"
                                 superclass()
@@ -195,7 +193,7 @@ object HookAppDetails : Hooker {
                                     try {
                                         AppUtils(context).openMultiAppIntent(appLabel, packName)
                                     } catch (e: Throwable) {
-                                        XLog.debug("EnableAppCloneQuickJump startActivity error", t = e)
+                                        YLog.debug("EnableAppCloneQuickJump startActivity error", e = e)
                                     }
                                 }
                             }

@@ -5,12 +5,9 @@ import android.content.pm.ParceledListSlice
 import android.content.pm.ResolveInfo
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.HookAction
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.core.YukiHookCreator
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.data.AppIntentInfo
 import com.luckyzyx.luckytool.enums.IntentType
 import com.luckyzyx.luckytool.utils.IntentPrefs
@@ -21,12 +18,12 @@ import kotlinx.serialization.json.Json
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-class HookIPackageManager : Hooker {
+class HookIPackageManager : YukiBaseHooker() {
 
     val allIntent = ArraySet<AppIntentInfo>()
     private val allEnabledApps = ArraySet<String>()
 
-    var isEnable = prefs(IntentPrefs).getBoolean("custom_config_app_intent_list", false)
+    var isEnable = preferences(IntentPrefs).getBoolean("custom_config_app_intent_list", false)
 
     val types = arrayOf(
         IntentType.SINGLE_SHARE, IntentType.MULTI_SHARE, IntentType.PROCESS_TEXT,
@@ -48,25 +45,25 @@ class HookIPackageManager : Hooker {
         allIntent.clear()
         allEnabledApps.clear()
 
-        allEnabledApps.addAll(prefs(IntentPrefs).getStringSet("enable_app_hide_list", ArraySet()))
+        allEnabledApps.addAll(preferences(IntentPrefs).getStringSet("enable_app_hide_list", ArraySet()))
         allEnabledApps.forEachIndexed { _, packName ->
-            prefs(IntentPrefs).getStringSet(packName, ArraySet()).forEachIndexed { _, js ->
+            preferences(IntentPrefs).getStringSet(packName, ArraySet()).forEachIndexed { _, js ->
                 val info = safeOfNull { Json.decodeFromString<AppIntentInfo>(js) }
                     ?: return@forEachIndexed
                 allIntent.add(info)
             }
         }
-        XLog.debug("init app intent configs success -> ${allEnabledApps.size}")
+        YLog.debug("init app intent configs success -> ${allEnabledApps.size}")
     }
 
     private fun initDataChannel() {
         dataChannel.wait<Boolean>("custom_config_app_intent_list") {
             isEnable = it
-            XLog.debug("update custom app intent configs status -> $it")
+            YLog.debug("update custom app intent configs status -> $it")
         }
         dataChannel.wait<String>("custom_config_app_intent_list_update_app_config") { its ->
             val old = allIntent.filter { it.packName == its }
-            val new = prefs(IntentPrefs).getStringSet(its, ArraySet())
+            val new = preferences(IntentPrefs).getStringSet(its, ArraySet())
 
             allIntent.removeIf { it.packName == its }
             new.forEachIndexed { _, js ->
@@ -74,18 +71,18 @@ class HookIPackageManager : Hooker {
                     ?: return@forEachIndexed
                 allIntent.add(info)
             }
-            XLog.debug("update $its configs -> ${old.size} | ${new.size}")
+            YLog.debug("update $its configs -> ${old.size} | ${new.size}")
         }
         dataChannel.wait<Pair<String, Boolean>>("custom_config_app_intent_list_update_apps") {
             if (it.second) allEnabledApps.add(it.first) else allEnabledApps.remove(it.first)
-            XLog.debug("update app intent enabled list -> ${it.first} | ${it.second}")
+            YLog.debug("update app intent enabled list -> ${it.first} | ${it.second}")
         }
     }
 
-    fun HookAction.hookAfter() {
+    fun YukiHookCreator.ClassicMemberHooker.hookAfter() {
         after {
             if (!isEnable) return@after
-            val intent = args().first().cast<Intent>() ?: return@after
+            val intent = firstArg().get<Intent>() ?: return@after
             val action = intent.action ?: return@after
 //            val data = if (action == Intent.ACTION_VIEW)
 
@@ -109,7 +106,7 @@ class HookIPackageManager : Hooker {
     }
 
     @Obfuscate
-    inner class HookQueryIntentActivitieV12 : Hooker {
+    inner class HookQueryIntentActivitieV12 : YukiBaseHooker() {
         override fun onHook() {
             //Source PackageManagerService
             "com.android.server.pm.PackageManagerService".toClass().resolve().apply {
@@ -124,7 +121,7 @@ class HookIPackageManager : Hooker {
     }
 
     @Obfuscate
-    inner class HookQueryIntentActivitie : Hooker {
+    inner class HookQueryIntentActivitie : YukiBaseHooker() {
         override fun onHook() {
             //Source IPackageManagerBase
             "com.android.server.pm.IPackageManagerBase".toClass().resolve().apply {

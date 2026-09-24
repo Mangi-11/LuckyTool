@@ -16,7 +16,7 @@ const val OtherPrefs: String = "OtherPrefs"
 
 /**
  * UI 侧 prefs 访问统一入口：绑定 libxposed service 时走 remote prefs
- * （与宿主进程 Env.prefs 同一数据源），未绑定时回落本地 prefs。
+ * （与宿主进程 YukiHookPreferences 同一数据源），未绑定时回落本地 prefs。
  */
 internal fun Context.appPrefs(prefsName: String): android.content.SharedPreferences =
     XposedServiceBridge.preferences(prefsName)

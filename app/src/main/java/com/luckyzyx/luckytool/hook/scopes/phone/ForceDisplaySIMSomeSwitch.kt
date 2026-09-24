@@ -4,9 +4,7 @@ import android.content.Context
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -14,11 +12,11 @@ import org.luckypray.dexkit.DexKitBridge
 import org.luckypray.dexkit.query.enums.StringMatchType
 
 @Obfuscate
-class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
+class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        val volteCall = prefs(ModulePrefs).getBoolean("force_display_volte_calls", false)
+        val volteCall = preferences(ModulePrefs).getBoolean("force_display_volte_calls", false)
         val preferredNetwork =
-            prefs(ModulePrefs).getBoolean("force_display_preferred_network_type", false)
+            preferences(ModulePrefs).getBoolean("force_display_preferred_network_type", false)
 
         //Source OplusSimInfoActivity
         dexKitBridge.findClass {
@@ -27,10 +25,10 @@ class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
                     "com.android.simsettings.activity.OplusSimInfoActivity",
                     StringMatchType.StartsWith
                 )
-                addFieldForType(Context::class.java)
-                addFieldForType(String::class.java)
-                addFieldForType(Boolean::class.java)
-                addFieldForType(View::class.java)
+                addFieldForType(classOf<Context>())
+                addFieldForType(classOf<String>())
+                addFieldForType(classOf<Boolean>())
+                addFieldForType(classOf<View>())
             }
         }.apply {
             checkDataList("ForceDisplaySIMSomeSwitch Clazz")
@@ -38,7 +36,7 @@ class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
             //Source OplusSimInfoActivity changeVolteSwitchConfig
             findMethod {
                 matcher {
-                    paramTypes(Int::class.java, null, null)
+                    paramTypes(classOf<Int>(), null, null)
                     returnType(Void.TYPE)
                     usingNumbers(1, 2, 3, 4, 7)
                     usingStrings("changeVolteSwitchConfig", "SIMS_OplusSimInfoActivity")
@@ -60,10 +58,10 @@ class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
                     }.hook {
                         before {
                             if (!volteCall) return@before
-                            val type = args().first().int()
+                            val type = firstArg().get<Int>() ?: 0
                             val bool = args.find { it is Boolean } ?: return@before
                             val index = args.indexOf(bool).takeIf { it != -1 } ?: return@before
-                            if (type == 1) args(index).setTrue()
+                            if (type == 1) arg(index).set(true)
                         }
                     }
                 }
@@ -72,7 +70,7 @@ class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
             //Source OplusSimInfoActivity changeNetworkModeConfig
             findMethod {
                 matcher {
-                    paramTypes(Int::class.java, null, null)
+                    paramTypes(classOf<Int>(), null, null)
                     returnType(Void.TYPE)
                     usingNumbers(1, 2, 5)
                     usingStrings("changeNetworkModeConfig", "SIMS_OplusSimInfoActivity")
@@ -94,10 +92,10 @@ class ForceDisplaySIMSomeSwitch(val dexKitBridge: DexKitBridge) : Hooker {
                     }.hook {
                         before {
                             if (!preferredNetwork) return@before
-                            val type = args().first().int()
+                            val type = firstArg().get<Int>() ?: 0
                             val bool = args.find { it is Boolean } ?: return@before
                             val index = args.indexOf(bool).takeIf { it != -1 } ?: return@before
-                            if (type == 1) args(index).setTrue()
+                            if (type == 1) arg(index).set(true)
                         }
                     }
                 }

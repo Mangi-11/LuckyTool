@@ -2,16 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.oshare
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     override fun onHook() {
         val osCode = getOSVersionCode
@@ -21,7 +20,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class HookOShareFeatureConfig(val dexKitBridge: DexKitBridge) : Hooker {
+    class HookOShareFeatureConfig(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source OShareFeatureConfig
             dexKitBridge.findClass {
@@ -32,8 +31,8 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
                 checkDataList("OShareFeatureConfig")
                 findMethod {
                     matcher {
-                        paramTypes(Context::class.java)
-                        returnType(Long::class.java)
+                    paramTypes(classOf<Context>())
+                        returnType(classOf<Long>())
                         usingStrings("getSwitchTimeOut")
                     }
                 }.apply {
@@ -44,7 +43,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
                             parameters(Context::class)
                             returnType = Long::class
                         }.hook {
-                            replaceTo(0L)
+                            intercept(0L)
                         }
                     }
                 }
@@ -53,7 +52,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class HookOShareSpUtils(val dexKitBridge: DexKitBridge) : Hooker {
+    class HookOShareSpUtils(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source SpUtils
             dexKitBridge.findClass {
@@ -64,7 +63,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
                 checkDataList("SpUtils")
                 findMethod {
                     matcher {
-                        paramTypes(Context::class.java, Long::class.java)
+                    paramTypes(classOf<Context>(), classOf<Long>())
                         usingStrings("updateLastTurnOnTime", "key_last_turn_on_time")
                     }
                 }.apply {
@@ -74,7 +73,7 @@ class RemoveOShareCloseCountDown(val dexKitBridge: DexKitBridge) : Hooker {
                             parameters(Context::class, Long::class)
                         }.hook {
                             before {
-                                args().last().set(0L)
+                                lastArg().set(0L)
                             }
                         }
                     }

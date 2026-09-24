@@ -4,14 +4,12 @@ import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveLauncherCardName : Hooker {
+object RemoveLauncherCardName : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(LauncherCardName)
@@ -19,13 +17,13 @@ object RemoveLauncherCardName : Hooker {
     }
 
     @Obfuscate
-    object LauncherCardName : Hooker {
+    object LauncherCardName : YukiBaseHooker() {
         override fun onHook() {
             //Source CardNameHelper
             "com.android.launcher3.card.utils.CardNameHelper".toClass().resolve().apply {
                 firstMethod { name = "initCardName" }.hook {
                     after {
-                        val cardName = args().first().cast<View>() ?: return@after
+                        val cardName = firstArg().get<View>() ?: return@after
                         cardName.isVisible = false
                         cardName.asResolver().firstMethod {
                             name = "setTextVisibility"; parameters(Boolean::class)
@@ -43,7 +41,7 @@ object RemoveLauncherCardName : Hooker {
     }
 
     @Obfuscate
-    object LauncherCardNameV13 : Hooker {
+    object LauncherCardNameV13 : YukiBaseHooker() {
         override fun onHook() {
             //Source TitleCardView
             "com.android.launcher3.card.TitleCardView".toClass().resolve().apply {

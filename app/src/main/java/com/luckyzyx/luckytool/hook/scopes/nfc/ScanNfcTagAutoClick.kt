@@ -4,16 +4,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ScanNfcTagAutoClick : Hooker {
+object ScanNfcTagAutoClick : YukiBaseHooker() {
     override fun onHook() {
-        var isEnable = prefs(ModulePrefs).getBoolean("scan_nfc_tag_auto_click", false)
+        var isEnable = preferences(ModulePrefs).getBoolean("scan_nfc_tag_auto_click", false)
         dataChannel.wait<Boolean>("scan_nfc_tag_auto_click") { isEnable = it }
 
         //Source TagDetectedNotification
@@ -21,10 +19,10 @@ object ScanNfcTagAutoClick : Hooker {
             firstMethod { name = "show" }.hook {
                 before {
                     if (!isEnable) return@before
-                    val context = args().first().cast<Context>() ?: return@before
-                    val intent = args(1).cast<Intent>() ?: return@before
-                    val type = args(2).int()
-//                    val bundle = args().last().cast<Bundle>()
+                    val context = firstArg().get<Context>() ?: return@before
+                    val intent = arg(1).get<Intent>() ?: return@before
+                    val type = arg(2).get<Int>() ?: 0
+//                    val bundle = lastArg().get<Bundle>()
 
                     val pendingIntent = Intent().apply {
                         setAction("com.oplus.nfc.dispatch.TagDetectedNotification.ACTION_PROCESS_TAG")

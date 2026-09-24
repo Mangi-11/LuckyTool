@@ -1,13 +1,11 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveStartRecordingOrCastingDialog : Hooker {
+object RemoveStartRecordingOrCastingDialog : YukiBaseHooker() {
     override fun onHook() {
         //Source MediaProjectionServiceHelper
         "com.android.systemui.mediaprojection.MediaProjectionServiceHelper".toClass().resolve()
@@ -17,7 +15,7 @@ object RemoveStartRecordingOrCastingDialog : Hooker {
                     parameters(Int::class, String::class)
                     returnType = Boolean::class
                 }.hook {
-                    replaceToTrue()
+                    intercept(true)
                 }
             }
     }

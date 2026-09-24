@@ -1,12 +1,12 @@
 package com.luckyzyx.luckytool.hook.statusbar
 
-import com.luckyzyx.luckytool.hook.core.Hooker
-import org.lsposed.lsparanoid.Obfuscate
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControllerCenterSliderTransparency
 import com.luckyzyx.luckytool.utils.getOSVersionCode
+import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object StatusBarSilder : Hooker {
+object StatusBarSilder : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 

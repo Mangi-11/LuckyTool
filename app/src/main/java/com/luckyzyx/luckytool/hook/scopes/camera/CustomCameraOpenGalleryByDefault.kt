@@ -2,26 +2,25 @@ package com.luckyzyx.luckytool.hook.scopes.camera
 
 import android.net.Uri
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class CustomCameraOpenGalleryByDefault(val dexKitBridge: DexKitBridge) : Hooker {
+class CustomCameraOpenGalleryByDefault(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        val gallery = prefs(ModulePrefs).getString("custom_camera_open_gallery_by_default", "")
+        val gallery = preferences(ModulePrefs).getString("custom_camera_open_gallery_by_default", "")
         if (gallery.isBlank()) return
 
         //Source GalleryUtil
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(Uri::class.java)
-                addFieldForType(Boolean::class.java)
-                addMethod { paramCount(0);returnType(String::class.java) }
+                addFieldForType(classOf<Uri>())
+                addFieldForType(classOf<Boolean>())
+                addMethod { paramCount(0);returnType(classOf<String>()) }
                 usingStrings("content://com.color.provider.removableapp", "removableapp")
             }
         }.apply {
@@ -29,7 +28,7 @@ class CustomCameraOpenGalleryByDefault(val dexKitBridge: DexKitBridge) : Hooker 
             findMethod {
                 matcher {
                     paramCount(0)
-                    returnType(String::class.java)
+                    returnType(classOf<String>())
                     usingStrings("com.oplus.gallery.base")
                 }
             }.apply {

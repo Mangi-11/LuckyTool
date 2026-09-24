@@ -5,16 +5,14 @@ import android.widget.LinearLayout
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveAdsAtDownloadPageBottom(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveAdsAtDownloadPageBottom(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val recommendConfig = VariousClass(
             "com.heytap.browser.downloads.entity.RecommendConfig",  //v40.8.24.1
@@ -36,7 +34,7 @@ class RemoveAdsAtDownloadPageBottom(val dexKitBridge: DexKitBridge) : Hooker {
                         }
                     }
                     add {
-                        type(LinearLayout::class.java)
+                        type(classOf<LinearLayout>())
                         addWriteMethod {
                             paramCount(0)
                             returnType(Void.TYPE)
@@ -55,7 +53,7 @@ class RemoveAdsAtDownloadPageBottom(val dexKitBridge: DexKitBridge) : Hooker {
                     before {
                         firstField { type(LinearLayout::class) }.of(instance).get<View>()
                             ?.isVisible = false
-                        resultNull()
+                        result = null
                     }
                 }
             }

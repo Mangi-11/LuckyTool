@@ -4,18 +4,16 @@ import android.content.Context
 import android.os.SystemProperties
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveRootDetection(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveRootDetection(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        var isEnable = prefs(ModulePrefs).getBoolean("remove_root_detection", false)
+        var isEnable = preferences(ModulePrefs).getBoolean("remove_root_detection", false)
         dataChannel.wait<Boolean>("remove_root_detection") { isEnable = it }
 
         //Source RecruitmentUtilsKt DeviceScenario 检测

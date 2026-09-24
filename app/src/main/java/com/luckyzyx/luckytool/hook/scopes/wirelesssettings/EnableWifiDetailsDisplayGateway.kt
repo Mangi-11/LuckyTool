@@ -8,10 +8,8 @@ import android.net.wifi.WifiManager
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.utils.preferences.PreferenceReflections
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.formatStringAuto
@@ -21,7 +19,7 @@ import java.net.Inet4Address
 import java.net.Inet6Address
 
 @Obfuscate
-class EnableWifiDetailsDisplayGateway(val dexKitBridge: DexKitBridge) : Hooker {
+class EnableWifiDetailsDisplayGateway(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source WifiAddressController
         val clazz = VariousClass(
@@ -57,14 +55,14 @@ class EnableWifiDetailsDisplayGateway(val dexKitBridge: DexKitBridge) : Hooker {
                             }.of(instance).get() ?: return@after
 
                             val connectivityManager =
-                                context.getSystemService(ConnectivityManager::class.java)
+                                context.getSystemService(classOf<ConnectivityManager>())
                             val wifiManager =
-                                context.applicationContext.getSystemService(WifiManager::class.java)
+                                context.applicationContext.getSystemService(classOf<WifiManager>())
 
                             val getCurrentNetwork = wifiManager.asResolver().firstMethod {
                                 name = "getCurrentNetwork"
                                 emptyParameters()
-                                returnType = Network::class.java
+                                returnType = classOf<Network>()
                             }.invoke<Network>() ?: return@after
 
                             @SuppressLint("MissingPermission")

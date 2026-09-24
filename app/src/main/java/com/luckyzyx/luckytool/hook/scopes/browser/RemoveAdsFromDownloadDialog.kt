@@ -2,24 +2,23 @@ package com.luckyzyx.luckytool.hook.scopes.browser
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveAdsFromDownloadDialog(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveAdsFromDownloadDialog(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source DownloadCardAdProvider
         dexKitBridge.findMethod {
             matcher {
                 declaredClass {
-                    addFieldForType(Context::class.java)
-                    addFieldForType(String::class.java)
+                addFieldForType(classOf<Context>())
+                    addFieldForType(classOf<String>())
                     addMethod {
-                        paramTypes(Context::class.java, Int::class.java)
+                    paramTypes(classOf<Context>(), classOf<Int>())
                         returnType(Void.TYPE)
                     }
                     usingStrings("DownloadCardAdProvider")

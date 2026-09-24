@@ -4,14 +4,12 @@ import android.content.Context
 import android.widget.ImageView
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.PackageUtils
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceShowToastIcon : Hooker {
+object ForceShowToastIcon : YukiBaseHooker() {
     override fun onHook() {
         //Source OplusSystemUIToast
         "com.oplus.systemui.toast.OplusSystemUIToast".toClass().resolve().apply {
@@ -19,7 +17,7 @@ object ForceShowToastIcon : Hooker {
                 after {
                     val context = firstField { type = Context::class }.of(instance)
                         .get<Context>() ?: return@after
-                    val packName = args(3).string()
+                    val packName = arg(3).get<String>() ?: ""
                     val mIconView = firstField { type = ImageView::class }.of(instance)
                         .get<ImageView>() ?: return@after
                     val icon = PackageUtils(context.packageManager).getApplicationIcon(packName)

@@ -1,19 +1,17 @@
 package com.luckyzyx.luckytool.hook.scopes.ota
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookNotificationHelper(val dexKitBridge: DexKitBridge) : Hooker {
+class HookNotificationHelper(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val notifySuccess =
-            prefs(ModulePrefs).getBoolean("remove_ota_notify_install_success", false)
+            preferences(ModulePrefs).getBoolean("remove_ota_notify_install_success", false)
 
         //Source NotificationHelper
         dexKitBridge.findClass {

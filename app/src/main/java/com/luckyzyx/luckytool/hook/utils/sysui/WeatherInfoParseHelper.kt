@@ -4,7 +4,6 @@ import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
@@ -13,7 +12,7 @@ class WeatherInfoParseHelper(val classLoader: ClassLoader?) {
     val clazz = VariousClass(
         "com.oplusos.systemui.keyguard.clock.WeatherInfoParseHelper",  //C13
         "com.oplus.systemui.keyguard.clock.WeatherInfoParseHelper"  //C14
-    ).toClass(classLoader)
+    ).load(classLoader)
 
     val holderInnerClazz = "${clazz.name}\$HolderInnerClass".toClass(classLoader)
     val weatherInfoClazz = "${clazz.name}\$WeatherInfo".toClass(classLoader)

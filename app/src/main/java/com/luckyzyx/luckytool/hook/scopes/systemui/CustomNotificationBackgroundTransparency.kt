@@ -4,11 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.ThemeUtils.isNightMode
 import com.luckyzyx.luckytool.utils.getOSVersionCode
@@ -16,7 +12,7 @@ import com.luckyzyx.luckytool.utils.safeOfNan
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomNotificationBackgroundTransparency : Hooker {
+object CustomNotificationBackgroundTransparency : YukiBaseHooker() {
 
     private var defaultNotifyPanelTintList: ColorStateList? = null
     private var defaultNotifyPanelElevation = -1f
@@ -29,7 +25,7 @@ object CustomNotificationBackgroundTransparency : Hooker {
 
     override fun onHook() {
         if (getOSVersionCode < 25) return
-        customAlpha = prefs(ModulePrefs).getInt("custom_notification_background_transparency", -1)
+        customAlpha = preferences(ModulePrefs).getInt("custom_notification_background_transparency", -1)
         dataChannel.wait<Int>("custom_notification_background_transparency") {
             customAlpha = it
         }
@@ -45,13 +41,13 @@ object CustomNotificationBackgroundTransparency : Hooker {
                 ?: firstMethod { method { name = "draw";parameterCount = 2 } }).hook {
                 before {
                     if (customAlpha < 0) return@before
-                    modifyNotifyPanelAlpha(instance(), args().last().cast<Drawable>())
+                    modifyNotifyPanelAlpha(instance(), lastArg().get<Drawable>())
                 }
             }
             firstMethod { name = "draw";parameterCount = 2;superclass() }.hook {
                 before {
                     if (customAlpha < 0) return@before
-                    modifyNotifyPanelAlpha(instance(), args().last().cast<Drawable>())
+                    modifyNotifyPanelAlpha(instance(), lastArg().get<Drawable>())
                 }
             }
         }
@@ -60,12 +56,12 @@ object CustomNotificationBackgroundTransparency : Hooker {
         if (isOld) NotificationBackgroundView.toClass().resolve().apply {
             firstMethod { name = "draw";parameterCount = 2 }.hook {
                 before {
-                    modifyNotifyPanelAlpha(instance(), args().last().cast<Drawable>())
+                    modifyNotifyPanelAlpha(instance(), lastArg().get<Drawable>())
                 }
             }
             firstMethodOrNull { name = "drawCustom";parameterCount = 2 }?.hook {
                 before {
-                    modifyNotifyPanelAlpha(instance(), args().last().cast<Drawable>())
+                    modifyNotifyPanelAlpha(instance(), lastArg().get<Drawable>())
                 }
             }
         }

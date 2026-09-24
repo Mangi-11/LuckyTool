@@ -7,12 +7,9 @@ import androidx.core.content.edit
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
-import com.highcapable.kavaref.extension.toClass
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.data.VoipRecorder
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.dyPackName
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.fsPackName
@@ -25,7 +22,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
+class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     private val audioApplication = "com.oplus.audiomonitor.AudioApplication"
     private val oplusVoipRecorderService =
@@ -76,7 +73,7 @@ class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
             firstMethod { emptyParameters();returnType = Boolean::class }.hook {
                 after {
                     val packName = firstField { type = String::class }.get<String>() ?: ""
-                    if (appList.contains(packName)) resultTrue()
+                    if (appList.contains(packName)) result = true
                 }
             }
         }
@@ -85,14 +82,14 @@ class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(Context::class.java)
-                    addForType(String::class.java)
-                    addForType(Boolean::class.java)
+                addForType(classOf<Context>())
+                    addForType(classOf<String>())
+                    addForType(classOf<Boolean>())
                 }
                 methods {
                     add { paramCount(0);returnType(Void.TYPE) }
-                    add { paramCount(0);returnType(String::class.java) }
-                    add { paramTypes(String::class.java);returnType(Boolean::class.java) }
+                    add { paramCount(0);returnType(classOf<String>()) }
+                    add { paramTypes(classOf<String>());returnType(classOf<Boolean>()) }
                 }
                 usingStrings("OplusRecordWrapper")
             }
@@ -115,8 +112,8 @@ class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
         //Source SwitchApp
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(String::class.java)
-                addFieldForType(Boolean::class.java)
+            addFieldForType(classOf<String>())
+                addFieldForType(classOf<Boolean>())
                 addMethod { name("equals") }
                 addMethod { name("hashCode") }
                 addMethod {
@@ -132,18 +129,18 @@ class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
 
             appNameField = findField {
                 matcher {
-                    type(String::class.java)
+                    type(classOf<String>())
                     addReadMethod { name("toString") }
-                    addWriteMethod { paramTypes(List::class.java);returnType(List::class.java) }
+                    addWriteMethod { paramTypes(classOf<List<*>>());returnType(classOf<List<*>>()) }
                 }
             }.checkDataList("HookVoipRecorder Util AppName").single().fieldName
             if (appNameField.isBlank()) return
 
             appStatusField = findField {
                 matcher {
-                    type(Boolean::class.java)
+                    type(classOf<Boolean>())
                     addReadMethod { name("onPostExecute") }
-                    addWriteMethod { paramTypes(List::class.java);returnType(List::class.java) }
+                    addWriteMethod { paramTypes(classOf<List<*>>());returnType(classOf<List<*>>()) }
                 }
             }.checkDataList("HookVoipRecorder Util AppStatus").single().fieldName
             if (appStatusField.isBlank()) return
@@ -154,13 +151,13 @@ class VoipRecorderWhitelist(val dexKitBridge: DexKitBridge) : Hooker {
             matcher {
                 addFieldForType(ArrayClass(String::class))
                 addMethod {
-                    paramTypes(List::class.java)
-                    returnType(List::class.java)
+                    paramTypes(classOf<List<*>>())
+                    returnType(classOf<List<*>>())
                     usingStrings(qqPackName, wxPackName, "enable_record_app")
                 }
                 addMethod {
-                    paramTypes(String::class.java)
-                    returnType(Boolean::class.javaObjectType)
+                    paramTypes(classOf<String>())
+                    returnType(classOf<Boolean>(primitiveType = false))
                 }
                 usingStrings(qqPackName, wxPackName)
             }

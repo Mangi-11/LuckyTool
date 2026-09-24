@@ -5,17 +5,14 @@ import android.view.View
 import android.widget.TextView
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.AppUtils
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LongPressAppIconOpenAppDetails : Hooker {
+object LongPressAppIconOpenAppDetails : YukiBaseHooker() {
     override fun onHook() {
         //Source OplusTaskHeaderView
         "com.android.quickstep.views.OplusTaskViewImpl".toClass().resolve().apply {

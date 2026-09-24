@@ -3,9 +3,7 @@ package com.luckyzyx.luckytool.hook.scopes.android
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.data.MemcConfigActivity
 import com.luckyzyx.luckytool.data.MemcConfigPackage
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -15,7 +13,7 @@ import kotlinx.serialization.json.Json
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableVideoMemcFrameInsertion : Hooker {
+object EnableVideoMemcFrameInsertion : YukiBaseHooker() {
 
     private val allConfigPackages = ArrayList<MemcConfigPackage>()
     private val allConfigActivitys = ArrayList<MemcConfigActivity>()
@@ -28,11 +26,11 @@ object EnableVideoMemcFrameInsertion : Hooker {
 
     override fun onHook() {
         if (getOSVersionCode < 26) return
-        val isEnable = prefs(ModulePrefs).getBoolean("enable_video_memc_frame_insertion", false)
+        val isEnable = preferences(ModulePrefs).getBoolean("enable_video_memc_frame_insertion", false)
         val configPackages =
-            prefs(ModulePrefs).getStringSet("memc_config_package_list", ArraySet())
+            preferences(ModulePrefs).getStringSet("memc_config_package_list", ArraySet())
         val configActivitys =
-            prefs(ModulePrefs).getStringSet("memc_config_activity_list", ArraySet())
+            preferences(ModulePrefs).getStringSet("memc_config_activity_list", ArraySet())
 
         //Source OplusMemcHelper
         VariousClass(

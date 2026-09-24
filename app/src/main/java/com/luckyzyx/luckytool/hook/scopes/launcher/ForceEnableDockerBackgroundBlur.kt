@@ -1,13 +1,11 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceEnableDockerBackgroundBlur : Hooker {
+object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
     override fun onHook() {
         // 旧版在 setDockerBackground() 内通过 createBlurDrawable() 生成模糊背景并设置到
         // mShortcutsAndWidgets；C17 起该方法被内联进 setDockerBackground()，模糊改由
@@ -31,7 +29,7 @@ object ForceEnableDockerBackgroundBlur : Hooker {
             .resolve().apply {
                 firstMethod { name = "isSupportNewBlur" }.hook {
                     before {
-                        if (forcingBlur.get() == true) resultTrue()
+                        if (forcingBlur.get() == true) result = true
                     }
                 }
             }
@@ -39,7 +37,7 @@ object ForceEnableDockerBackgroundBlur : Hooker {
         "com.android.common.util.ScreenUtils".toClass().resolve().apply {
             firstMethodOrNull { name = "hasLargeDisplayFeatures"; emptyParameters() }?.hook {
                 before {
-                    if (forcingBlur.get() == true) resultTrue()
+                    if (forcingBlur.get() == true) result = true
                 }
             }
         }

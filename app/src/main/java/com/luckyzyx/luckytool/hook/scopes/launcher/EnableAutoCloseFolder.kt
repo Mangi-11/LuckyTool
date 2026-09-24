@@ -5,13 +5,11 @@ import androidx.core.view.children
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isNotSubclassOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableAutoCloseFolder : Hooker {
+object EnableAutoCloseFolder : YukiBaseHooker() {
     override fun onHook() {
         //Source AbstractFloatingView
         "com.android.launcher3.AbstractFloatingView".toClass().let {
@@ -21,9 +19,9 @@ object EnableAutoCloseFolder : Hooker {
                     parameterCount = 4
                 }.hook {
                     before {
-                        val activityContext = args().first().any() ?: return@before
-                        val animate = args(1).boolean()
-                        val type = args(2).int()
+                        val activityContext = firstArg().get() ?: return@before
+                        val animate = arg(1).get<Boolean>() ?: false
+                        val type = arg(2).get<Int>() ?: 0
 
                         val typeFolder =
                             firstField { name = "TYPE_FOLDER" }.get<Int>() ?: return@before

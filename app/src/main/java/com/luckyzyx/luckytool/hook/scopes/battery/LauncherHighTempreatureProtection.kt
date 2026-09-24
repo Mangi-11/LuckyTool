@@ -6,15 +6,14 @@ import android.content.SharedPreferences
 import android.os.Handler
 import android.os.PowerManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class LauncherHighTempreatureProtection(val dexKitBridge: DexKitBridge) : Hooker {
+class LauncherHighTempreatureProtection(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     val key = "LauncherHighTempreatureProtection"
     override fun onHook() {
         //Source ThermalHandler high_temperature_shutdown_message / high_temperature_dialog_auto
@@ -22,17 +21,17 @@ class LauncherHighTempreatureProtection(val dexKitBridge: DexKitBridge) : Hooker
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(Int::class.java)
-                    addForType(Context::class.java)
-                    addForType(Handler::class.java)
-                    addForType(PowerManager::class.java)
-                    addForType(SharedPreferences::class.java)
-                    addForType(BroadcastReceiver::class.java)
+                    addForType(classOf<Int>())
+                    addForType(classOf<Context>())
+                    addForType(classOf<Handler>())
+                    addForType(classOf<PowerManager>())
+                    addForType(classOf<SharedPreferences>())
+                    addForType(classOf<BroadcastReceiver>())
                 }
                 methods {
                     add { name("handleMessage") }
-                    add { paramTypes(Context::class.java) }
-                    add { paramTypes(Int::class.java, Int::class.java) }
+                    add { paramTypes(classOf<Context>()) }
+                    add { paramTypes(classOf<Int>(), classOf<Int>()) }
                 }
             }
         }.apply {

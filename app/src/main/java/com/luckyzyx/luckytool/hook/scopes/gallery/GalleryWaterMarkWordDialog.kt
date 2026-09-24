@@ -2,16 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.gallery
 
 import android.text.Spanned
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class GalleryWaterMarkWordDialog(val dexKitBridge: DexKitBridge) : Hooker {
+class GalleryWaterMarkWordDialog(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(WaterMarkWordDialog(dexKitBridge))
@@ -19,7 +18,7 @@ class GalleryWaterMarkWordDialog(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class WaterMarkWordDialog(val dexKitBridge: DexKitBridge) : Hooker {
+    class WaterMarkWordDialog(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source CustomInfoEditDialogHelper
 
@@ -27,17 +26,17 @@ class GalleryWaterMarkWordDialog(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class WaterMarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
+    class WaterMarkWordLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source CustomInfoEditDialogHelper -> picture_editor_text_watermark_character_limit_toast
             dexKitBridge.findMethod {
                 matcher {
                     name("filter")
                     paramTypes(
-                        CharSequence::class.java, Int::class.java, Int::class.java,
-                        Spanned::class.java, Int::class.java, Int::class.java
+                        classOf<CharSequence>(), classOf<Int>(), classOf<Int>(),
+                        classOf<Spanned>(), classOf<Int>(), classOf<Int>()
                     )
-                    returnType(CharSequence::class.java)
+                    returnType(classOf<CharSequence>())
                     usingNumbers(0, 1, 2)
                     usingStrings("")
                 }
@@ -53,7 +52,7 @@ class GalleryWaterMarkWordDialog(val dexKitBridge: DexKitBridge) : Hooker {
                         returnType = CharSequence::class
                     }.hook {
                         before {
-                            result = args().first().cast<CharSequence>() ?: return@before
+                            result = firstArg().get<CharSequence>() ?: return@before
                         }
                     }
                 }

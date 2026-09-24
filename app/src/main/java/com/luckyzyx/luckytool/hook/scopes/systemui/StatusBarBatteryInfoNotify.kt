@@ -10,11 +10,10 @@ import android.widget.RemoteViews
 import com.highcapable.betterandroid.ui.component.notification.factory.Notification
 import com.highcapable.betterandroid.ui.component.notification.factory.NotificationChannel
 import com.highcapable.betterandroid.ui.component.notification.type.NotificationImportance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
-import com.luckyzyx.luckytool.hook.core.onAppLifecycle
 import com.luckyzyx.luckytool.hook.utils.IChargerUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.BatteryControllerUtils
 import com.luckyzyx.luckytool.utils.DeviceUtils.calcLocalHealth
@@ -34,7 +33,7 @@ import java.util.Properties
 import kotlin.math.abs
 
 @Obfuscate
-object StatusBarBatteryInfoNotify : Hooker {
+object StatusBarBatteryInfoNotify : YukiBaseHooker() {
     //battery
     private var status: String = ""
     private var statusValue: Int = 0
@@ -93,58 +92,58 @@ object StatusBarBatteryInfoNotify : Hooker {
 
     override fun onHook() {
         var thisContext: Context? = null
-        displayMode = prefs(ModulePrefs).getString("battery_information_display_mode", "0")
+        displayMode = preferences(ModulePrefs).getString("battery_information_display_mode", "0")
         dataChannel.wait<String>("battery_information_display_mode") {
             displayMode = it
             initSend(thisContext)
         }
         showChargerInfo =
-            prefs(ModulePrefs).getBoolean("battery_information_show_charge_info", false)
+            preferences(ModulePrefs).getBoolean("battery_information_show_charge_info", false)
         dataChannel.wait<Boolean>("battery_information_show_charge_info") {
             showChargerInfo = it
             initSend(thisContext)
         }
         showUpdateTime =
-            prefs(ModulePrefs).getBoolean("battery_information_show_update_time", false)
+            preferences(ModulePrefs).getBoolean("battery_information_show_update_time", false)
         dataChannel.wait<Boolean>("battery_information_show_update_time") {
             showUpdateTime = it
             initSend(thisContext)
         }
-        showVolMode = prefs(ModulePrefs).getString("battery_information_voltage_display_mode", "0")
+        showVolMode = preferences(ModulePrefs).getString("battery_information_voltage_display_mode", "0")
         dataChannel.wait<String>("battery_information_voltage_display_mode") {
             showVolMode = it
             initSend(thisContext)
         }
-        isHealth = prefs(ModulePrefs).getBoolean("battery_information_show_battery_health", false)
+        isHealth = preferences(ModulePrefs).getBoolean("battery_information_show_battery_health", false)
         dataChannel.wait<Boolean>("battery_information_show_battery_health") {
             isHealth = it
             initSend(thisContext)
         }
         isPositive =
-            prefs(ModulePrefs).getBoolean("battery_information_always_show_positive_current", false)
+            preferences(ModulePrefs).getBoolean("battery_information_always_show_positive_current", false)
         dataChannel.wait<Boolean>("battery_information_always_show_positive_current") {
             isPositive = it
             initSend(thisContext)
         }
-        isSimple = prefs(ModulePrefs).getBoolean("battery_information_show_simple_mode", false)
+        isSimple = preferences(ModulePrefs).getBoolean("battery_information_show_simple_mode", false)
         dataChannel.wait<Boolean>("battery_information_show_simple_mode") {
             isSimple = it
             initSend(thisContext)
         }
-        fontSize = prefs(ModulePrefs).getInt("battery_information_custom_font_size", 11)
+        fontSize = preferences(ModulePrefs).getInt("battery_information_custom_font_size", 11)
         dataChannel.wait<Int>("battery_information_custom_font_size") {
             fontSize = it
             initSend(thisContext)
         }
 
-        onAppLifecycle {
+        registerAppLifecycle {
             onCreate {
-                injectModuleAppResources()
+                injectModuleResources()
             }
             //BatteryService
             registerReceiver(Intent.ACTION_BATTERY_CHANGED) { context: Context, _: Intent ->
                 thisContext = context
-                context.injectModuleAppResources()
+                context.injectModuleResources()
 
                 initInfo(context)
                 initSend(context)
@@ -152,7 +151,7 @@ object StatusBarBatteryInfoNotify : Hooker {
             //OplusBatteryService
             registerReceiver("android.intent.action.ADDITIONAL_BATTERY_CHANGED") { context: Context, intent: Intent ->
                 thisContext = context
-                context.injectModuleAppResources()
+                context.injectModuleResources()
                 chargerTechnology = intent.getIntExtra("chargertechnology", 0)
                 chargeWattage = intent.getIntExtra("chargewattage", 0)
                 ppsMode = intent.getIntExtra("pps_chg_mode", 0)
@@ -218,7 +217,7 @@ object StatusBarBatteryInfoNotify : Hooker {
                 } else chargeInfo.getIntProperty("wireless_voltage_now") / 1000.0
             }
         } catch (e: Exception) {
-            XLog.error("StatusBarBatteryInfoNotify -> InitInfo", e)
+            YLog.error("StatusBarBatteryInfoNotify -> InitInfo", e)
         }
     }
 
@@ -243,13 +242,13 @@ object StatusBarBatteryInfoNotify : Hooker {
         isSimple: Boolean, showVolMode: String
     ) {
         //com.oplusos.systemui.keyguard.charginganim.ChargingTypeConstants C14.1-
-        val technology = BatteryControllerUtils(appClassLoader).let {
+        val technology = BatteryControllerUtils(hostClassLoader!!).let {
             if (getOSVersionCode >= 34) it.getTechnologyName(
                 chargerTechnology, usbFastChgType, ppsMode, isWireless
             )
             else it.getTechnologyNameOld(chargerTechnology, ppsMode, isWireless)
         }
-//        XLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
+//        YLog.debug("tech: $chargerTechnology | usbFastChgType: $usbFastChgType | pps: $ppsMode -> $technology")
 
         val powerCalc = if (isSeriesDual || isParallelDual) {
             (voltage + voltage2) * electricCurrent / 1000.0
@@ -386,16 +385,16 @@ object StatusBarBatteryInfoNotify : Hooker {
 
     private fun getChargeInfo(): Properties {
         return try {
-            val queryChargeInfo = IChargerUtils(appClassLoader).let {
+            val queryChargeInfo = IChargerUtils(hostClassLoader!!).let {
                 if (oplusCharger == null) oplusCharger = it.getInstance()
                 it.queryChargeInfo(oplusCharger)
             } ?: ""
-//            XLog.d("getChargeInfo -> queryChargeInfo : $queryChargeInfo")
+//            YLog.d("getChargeInfo -> queryChargeInfo : $queryChargeInfo")
             Properties().apply {
                 if (queryChargeInfo.isNotBlank()) load(StringReader(queryChargeInfo))
             }
         } catch (e: Exception) {
-            XLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
+            YLog.error("StatusBarBatteryInfoNotify -> getChargeInfo", e)
             Properties()
         }
     }

@@ -1,9 +1,7 @@
 package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -11,23 +9,23 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ReplaceSystemRootStateDetection : Hooker {
+object ReplaceSystemRootStateDetection : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
-        val isEnable = prefs(ModulePrefs).getBoolean("replace_system_root_state_detection", false)
+        val isEnable = preferences(ModulePrefs).getBoolean("replace_system_root_state_detection", false)
         if (SDK < A12 || !isEnable) return
 
         //Source HeimdallService
         if (osCode > 26) "com.android.server.oplus.heimdall.HeimdallService".toClass().resolve().apply {
             firstMethod { name = "isRootEnable" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
 
         //Source RootService
         "com.android.server.oplus.heimdall.service.RootService".toClass().resolve().apply {
             firstMethod { name = "isRoot" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
 

@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableSwipeUpNavigationGesture : Hooker {
+object EnableSwipeUpNavigationGesture : YukiBaseHooker() {
     override fun onHook() {
         //Source NavBarSettingsValueUtil
         "com.oplus.settings.feature.navbar.NavBarSettingsValueUtil".toClass().resolve().apply {
@@ -17,7 +15,7 @@ object EnableSwipeUpNavigationGesture : Hooker {
                 parameters(Context::class)
                 returnType = Int::class
             }.hook {
-                replaceTo(0)
+                intercept(0)
             }
         }
     }

@@ -7,12 +7,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.A15
 import com.luckyzyx.luckytool.utils.SDK
@@ -20,7 +15,7 @@ import com.luckyzyx.luckytool.utils.getScreenOrientation
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableNotificationAlignBothSides : Hooker {
+object EnableNotificationAlignBothSides : YukiBaseHooker() {
 
     private var qsPanelPaddingPx = 0
     override fun onHook() {
@@ -69,7 +64,7 @@ object EnableNotificationAlignBothSides : Hooker {
     }
 
     @Obfuscate
-    private object OtherNotification : Hooker {
+    private object OtherNotification : YukiBaseHooker() {
         override fun onHook() {
             //Source KeyguardMediaController -> MediaHost -> HostView -> parent
             VariousClass(
@@ -80,8 +75,8 @@ object EnableNotificationAlignBothSides : Hooker {
                 firstMethod { name = "setVisibility"; parameterCount = 2 }.hook {
                     before {
                         if (SDK >= A15) return@before
-                        val viewGroup = args().first().cast<ViewGroup>() ?: return@before
-                        val visible = args().last().cast<Int>() ?: return@before
+                        val viewGroup = firstArg().get<ViewGroup>() ?: return@before
+                        val visible = lastArg().get<Int>() ?: return@before
                         val count = viewGroup.childCount
                         if ((visible == 0) && (count > 0)) {
                             if (viewGroup.width != 0) viewGroup.setViewWidth(
@@ -162,7 +157,7 @@ object EnableNotificationAlignBothSides : Hooker {
     }
 
     @Obfuscate
-    private object OtherNotificationC12 : Hooker {
+    private object OtherNotificationC12 : YukiBaseHooker() {
         override fun onHook() {
             //Source OplusMediaHost
             "com.oplusos.systemui.media.OplusMediaHost".toClass().resolve().apply {

@@ -2,17 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveAlwaysAllowAppStartList : Hooker {
+object RemoveAlwaysAllowAppStartList : YukiBaseHooker() {
     override fun onHook() {
-        val isEnable = prefs(ModulePrefs).getBoolean("enable_always_allow_app_start_dialog", false)
+        val isEnable = preferences(ModulePrefs).getBoolean("enable_always_allow_app_start_dialog", false)
         if (!isEnable) return
 
         var controller: Any? = null
@@ -24,7 +22,7 @@ object RemoveAlwaysAllowAppStartList : Hooker {
                     parameters(Int::class)
                 }?.invoke(i)
             }
-            XLog.debug("cleaning $it always start app list")
+            YLog.debug("cleaning $it always start app list")
         }
 
         //Source OplusSecurityPermissionManager

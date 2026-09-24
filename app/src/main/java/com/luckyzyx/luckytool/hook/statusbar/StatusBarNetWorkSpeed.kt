@@ -17,10 +17,7 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import org.lsposed.lsparanoid.Obfuscate
@@ -28,7 +25,7 @@ import kotlin.math.pow
 
 @Obfuscate
 @Suppress("MemberVisibilityCanBePrivate")
-object StatusBarNetWorkSpeed : Hooker {
+object StatusBarNetWorkSpeed : YukiBaseHooker() {
 
     override fun onHook() {
         loadHooker(NetWorkSpeedDelay)
@@ -36,9 +33,9 @@ object StatusBarNetWorkSpeed : Hooker {
     }
 
     @Obfuscate
-    object NetWorkSpeedDelay : Hooker {
+    object NetWorkSpeedDelay : YukiBaseHooker() {
         override fun onHook() {
-            var networkSpeed = prefs(ModulePrefs).getBoolean("set_network_speed", false)
+            var networkSpeed = preferences(ModulePrefs).getBoolean("set_network_speed", false)
             dataChannel.wait<Boolean>("set_network_speed") { networkSpeed = it }
 
             //Search postUpdateNetworkSpeedDelay
@@ -56,7 +53,7 @@ object StatusBarNetWorkSpeed : Hooker {
                     ?: firstMethod { name { it.contains("updateNetworkSpeed") } }).hook {
                     before {
                         if (!networkSpeed) return@before
-                        val instance = instanceOrNull ?: args().first().any()
+                        val instance = instanceOrNull ?: firstArg().get()
 
                         val obtain = Message.obtain()
                         obtain.what = 100000
@@ -101,7 +98,7 @@ object StatusBarNetWorkSpeed : Hooker {
                             lastTime.copy().of(instance).set(0L)
                             lastTotalBytes.copy().of(instance).set(0L)
                         }
-                        resultNull()
+                        result = null
                     }
                 }
             }
@@ -109,17 +106,17 @@ object StatusBarNetWorkSpeed : Hooker {
     }
 
     @Obfuscate
-    object NetWorkSpeedView : Hooker {
-        var layoutMode = prefs(ModulePrefs).getString("statusbar_network_layout", "0")
-        var userTypeface = prefs(ModulePrefs).getBoolean("statusbar_network_user_typeface", false)
+    object NetWorkSpeedView : YukiBaseHooker() {
+        var layoutMode = preferences(ModulePrefs).getString("statusbar_network_layout", "0")
+        var userTypeface = preferences(ModulePrefs).getBoolean("statusbar_network_user_typeface", false)
         var useBoldFont =
-            prefs(ModulePrefs).getBoolean("statusbar_network_use_bold_font_style", false)
-        var noSpace = prefs(ModulePrefs).getBoolean("statusbar_network_no_space", false)
-        var noSecond = prefs(ModulePrefs).getBoolean("statusbar_network_no_second", false)
-        var noUnit = prefs(ModulePrefs).getBoolean("statusbar_network_no_unit", false)
-        var getDoubleSize = prefs(ModulePrefs).getInt("set_network_speed_font_size", 7)
-        var getBottomPadding = prefs(ModulePrefs).getInt("set_network_speed_padding_bottom", 0)
-        var setInterval = prefs(ModulePrefs).getInt("set_network_speed_double_row_spacing", -1)
+            preferences(ModulePrefs).getBoolean("statusbar_network_use_bold_font_style", false)
+        var noSpace = preferences(ModulePrefs).getBoolean("statusbar_network_no_space", false)
+        var noSecond = preferences(ModulePrefs).getBoolean("statusbar_network_no_second", false)
+        var noUnit = preferences(ModulePrefs).getBoolean("statusbar_network_no_unit", false)
+        var getDoubleSize = preferences(ModulePrefs).getInt("set_network_speed_font_size", 7)
+        var getBottomPadding = preferences(ModulePrefs).getInt("set_network_speed_padding_bottom", 0)
+        var setInterval = preferences(ModulePrefs).getInt("set_network_speed_double_row_spacing", -1)
 
         var bMargin = 0
         var tMargin = 0
@@ -202,7 +199,7 @@ object StatusBarNetWorkSpeed : Hooker {
                             if (layoutMode == "0") return@before
 
                             val viewGroup = instance<ViewGroup>()
-                            val state = args().first().any()
+                            val state = firstArg().get()
                             if (state == null) {
                                 viewGroup.isVisible = false
                                 mState.copy().of(instance).set(null)
@@ -288,7 +285,7 @@ object StatusBarNetWorkSpeed : Hooker {
                                     }
                                 }
                             }
-                            resultNull()
+                            result = null
                         }
                     }
                 }

@@ -1,27 +1,26 @@
 package com.luckyzyx.luckytool.hook.scopes.games
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class EnableSupportCompetitionMode(val dexKitBridge: DexKitBridge) : Hooker {
+class EnableSupportCompetitionMode(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source CompetitionModeManager
         //Search isSupportCompetitionMode
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(List::class.java)
+                    addForType(classOf<List<*>>())
                 }
                 methods {
-                    add { paramCount(0);returnType(List::class.java) }
-                    add { paramCount(0);returnType(Boolean::class.java) }
-                    add { paramTypes(String::class.java, ArrayList::class.java) }
+                add { paramCount(0);returnType(classOf<List<*>>()) }
+                    add { paramCount(0);returnType(classOf<Boolean>()) }
+                    add { paramTypes(classOf<String>(), classOf<ArrayList<*>>()) }
                 }
             }
         }.apply {
@@ -30,7 +29,7 @@ class EnableSupportCompetitionMode(val dexKitBridge: DexKitBridge) : Hooker {
             findMethod {
                 matcher {
                     paramCount(0)
-                    returnType(Boolean::class.java)
+                    returnType(classOf<Boolean>())
                     usingStrings("isSupportCompetitionMode")
                 }
             }.apply {
@@ -42,7 +41,7 @@ class EnableSupportCompetitionMode(val dexKitBridge: DexKitBridge) : Hooker {
                         emptyParameters()
                         returnType = Boolean::class
                     }.hook {
-                        replaceToTrue()
+                        intercept(true)
                     }
                 }
             }

@@ -2,16 +2,14 @@ package com.luckyzyx.luckytool.hook.scopes.cloudservice
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveNetworkRestriction(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveNetworkRestriction(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source BackUpActivity / BackupRestoreHelper -> backup_currently_mobile
         //Source BackupRestoreCheckerUtils -> check -> ? 2 : 0
@@ -23,22 +21,22 @@ class RemoveNetworkRestriction(val dexKitBridge: DexKitBridge) : Hooker {
                 methods {
                     add {
                         paramCount(0)
-                        returnType(Int::class.java)
+                        returnType(classOf<Int>())
                         usingStrings("connectivity")
                         usingNumbers(0, 1, 2)
                     }
                     add {
-                        paramTypes(Int::class.java)
-                        returnType(Boolean::class.java)
+                    paramTypes(classOf<Int>())
+                        returnType(classOf<Boolean>())
                     }
                     add {
-                        paramTypes(Context::class.java)
-                        returnType(Boolean::class.java)
+                    paramTypes(classOf<Context>())
+                        returnType(classOf<Boolean>())
                         usingStrings("NetworkUtil", "connectivity", "isMobileDataNetwork")
                     }
                     add {
-                        paramTypes(Context::class.java)
-                        returnType(Boolean::class.java)
+                    paramTypes(classOf<Context>())
+                        returnType(classOf<Boolean>())
                         usingStrings("NetworkUtil", "connectivity", "isNetworkConnected")
                     }
                 }

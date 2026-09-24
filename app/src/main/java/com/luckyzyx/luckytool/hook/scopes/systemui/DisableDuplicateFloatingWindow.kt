@@ -3,15 +3,12 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DisableDuplicateFloatingWindow : Hooker {
+object DisableDuplicateFloatingWindow : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -20,7 +17,7 @@ object DisableDuplicateFloatingWindow : Hooker {
             .apply {
                 firstMethodOrNull { name = "showSinglePreview" }?.hook {
                     after {
-                        args().first().cast<View>()?.isVisible = false
+                        firstArg().get<View>()?.isVisible = false
                         firstField { name = "mView" }.of(instance).get<View>()?.isVisible = false
                     }
                 }
@@ -32,7 +29,7 @@ object DisableDuplicateFloatingWindow : Hooker {
         "com.android.systemui.clipboardoverlay.ClipboardOverlayView".toClass().resolve().apply {
             firstMethodOrNull { name = "showSinglePreview" }?.hook {
                 after {
-                    args().first().cast<View>()?.isVisible = false
+                    firstArg().get<View>()?.isVisible = false
                     instance<View>().isVisible = false
                 }
             }

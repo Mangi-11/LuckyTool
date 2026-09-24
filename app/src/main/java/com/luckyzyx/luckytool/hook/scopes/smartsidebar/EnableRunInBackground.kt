@@ -5,19 +5,16 @@ import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.Modifiers
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.kavaref.extension.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
-import com.luckyzyx.luckytool.hook.core.toClass
 import com.luckyzyx.luckytool.utils.IntentUtils
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.startMirageWindow
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableRunInBackground : Hooker {
+object EnableRunInBackground : YukiBaseHooker() {
 
     override fun onHook() {
         val osCode = getOSVersionCode
@@ -34,15 +31,15 @@ object EnableRunInBackground : Hooker {
                 var context: Context?
                 firstConstructor { parameters(Context::class) }.hook {
                     before {
-                        context = args().first().cast<Context>() ?: return@before
-                        context.injectModuleAppResources()
+                        context = firstArg().get<Context>() ?: return@before
+                        context.injectModuleResources()
                     }
                 }
                 firstMethod { name = "getIconRes" }.hook {
-                    replaceTo(R.drawable.background_run)
+                    intercept(R.drawable.background_run)
                 }
                 firstMethod { name = "getNameRes" }.hook {
-                    replaceTo(R.string.run_in_background)
+                    intercept(R.string.run_in_background)
                 }
             }
             firstMethod { name = "handle" }.hook {
@@ -54,11 +51,11 @@ object EnableRunInBackground : Hooker {
                             .of(instance).get<Context>() ?: return@before
                         IntentUtils(context).startBackgroundRunServiceV14()
                     }
-                    resultNull()
+                    result = null
                 }
             }
             firstMethod { name = "isToolAvailable" }.hook {
-                replaceToTrue()
+                intercept(true)
             }
         }
 
@@ -85,7 +82,7 @@ object EnableRunInBackground : Hooker {
 //                            name = "sContext"
                             modifiers(Modifiers.STATIC)
                             type = Context::class
-                        }.get<Context>()?.injectModuleAppResources()
+                        }.get<Context>()?.injectModuleResources()
                     }
                 }
             }

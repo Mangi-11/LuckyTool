@@ -1,9 +1,7 @@
 package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.AESCrypt
 import com.luckyzyx.luckytool.utils.AESCrypt.baseDetrypt
 import com.luckyzyx.luckytool.utils.CommandUtils
@@ -14,7 +12,7 @@ import org.json.JSONArray
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookAppStartForbidden : Hooker {
+object HookAppStartForbidden : YukiBaseHooker() {
     private val forbiddenApps = ArrayList<String>()
 
     private fun initList(jsonString: String) {
@@ -29,7 +27,7 @@ object HookAppStartForbidden : Hooker {
     }
 
     override fun onHook() {
-        var apps = prefs(SettingsPrefs).getString("rk7cBXvdN33TqHzVdwBQvQ==", "")
+        var apps = preferences(SettingsPrefs).getString("rk7cBXvdN33TqHzVdwBQvQ==", "")
         dataChannel.wait<String>("rk7cBXvdN33TqHzVdwBQvQ==") {
             apps = it
             initList(apps)
@@ -40,13 +38,13 @@ object HookAppStartForbidden : Hooker {
         "com.android.server.am.OplusAppStartupConfig".toClassOrNull()?.resolve()?.apply {
             firstMethod { name = "isAppStartForbidden" }.hook {
                 after {
-                    val packName = args().first().string()
-                    if (isAppForbidden(packName)) resultTrue()
+                    val packName = firstArg().get<String>() ?: ""
+                    if (isAppForbidden(packName)) result = true
                 }
             }
             firstMethod { name = "handleAppStartForbidden" }.hook {
                 after {
-                    val packName = args().first().string()
+                    val packName = firstArg().get<String>() ?: ""
                     if (isAppForbidden(packName)) {
                         val curLanguage = firstMethod { name = "getCurrentLanguage" }.of(instance)
                             .invoke<String>() ?: ""
@@ -81,8 +79,8 @@ object HookAppStartForbidden : Hooker {
         "com.android.server.OplusListManagerImpl".toClassOrNull()?.resolve()?.apply {
             firstMethod { name = "isAppStartForbidden" }.hook {
                 after {
-                    val packName = args().first().string()
-                    if (isAppForbidden(packName)) resultTrue()
+                    val packName = firstArg().get<String>() ?: ""
+                    if (isAppForbidden(packName)) result = true
                 }
             }
         }

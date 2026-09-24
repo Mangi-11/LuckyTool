@@ -6,13 +6,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.highcapable.betterandroid.ui.extension.view.parent
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -22,7 +19,7 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @Suppress("UNUSED_VARIABLE", "DiscouragedApi")
-object StatusBarLayout : Hooker {
+object StatusBarLayout : YukiBaseHooker() {
     private var statusBarLeftMargin: Int = 0
     private var statusBarRightMargin: Int = 0
     private var statusBarTopMargin: Int = 0
@@ -35,14 +32,14 @@ object StatusBarLayout : Hooker {
         var mCenterLayout: LinearLayout?
         var mStatusBar: ViewGroup? = null
 
-        val layoutMode = prefs(ModulePrefs).getString("statusbar_layout_mode", "0")
+        val layoutMode = preferences(ModulePrefs).getString("statusbar_layout_mode", "0")
 
         val isCompatibleMode =
-            prefs(ModulePrefs).getBoolean("statusbar_layout_compatible_mode", false)
+            preferences(ModulePrefs).getBoolean("statusbar_layout_compatible_mode", false)
         val leftMargin =
-            prefs(ModulePrefs).getInt("statusbar_layout_left_margin", 0)
+            preferences(ModulePrefs).getInt("statusbar_layout_left_margin", 0)
         val rightMargin =
-            prefs(ModulePrefs).getInt("statusbar_layout_right_margin", 0)
+            preferences(ModulePrefs).getInt("statusbar_layout_right_margin", 0)
 
         fun updateCustomLayout(context: Context) {
             getScreenOrientation(context) {
@@ -83,7 +80,7 @@ object StatusBarLayout : Hooker {
                 parameterCount = 3
             }.hook {
                 before {
-                    if (isCompatibleMode) args(1).set(0)
+                    if (isCompatibleMode) arg(1).set(0)
                 }
             }
         }
@@ -98,7 +95,7 @@ object StatusBarLayout : Hooker {
                 parameterCount = 2
             }.hook {
                 after {
-                    val phoneStatusBarView = args(0).cast<ViewGroup>()!!
+                    val phoneStatusBarView = arg(0).get<ViewGroup>()!!
                     val context = phoneStatusBarView.context
                     val res = phoneStatusBarView.resources
                     val statusBarId = res?.getIdentifier(
@@ -179,11 +176,11 @@ object StatusBarLayout : Hooker {
                     }
                     if (layoutMode.isBlank() || layoutMode == "0") return@after
 
-                    (clock?.parent as ViewGroup).removeView(clock)
-                    (statusBarLeftSide?.parent as ViewGroup).removeView(statusBarLeftSide)
-                    (systemIconArea?.parent as ViewGroup).removeAllViews()
+                    clock?.parent()?.removeView(clock)
+                    statusBarLeftSide?.parent()?.removeView(statusBarLeftSide)
+                    systemIconArea?.parent()?.removeAllViews()
 
-                    statusBarLeftSide.layoutParams = ViewGroup.LayoutParams(
+                    statusBarLeftSide?.layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
                     )
 

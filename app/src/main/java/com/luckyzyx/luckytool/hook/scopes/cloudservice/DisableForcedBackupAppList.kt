@@ -2,25 +2,22 @@ package com.luckyzyx.luckytool.hook.scopes.cloudservice
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DisableForcedBackupAppList : Hooker {
+object DisableForcedBackupAppList : YukiBaseHooker() {
     override fun onHook() {
         val backupRestoreOptUiStyle =
             "com.heytap.cloud.backuprestore.bswitch.BackupRestoreOptUiStyle"
 
         val uiStyleEnum = backupRestoreOptUiStyle.toClassOrNull() ?: run {
-            XLog.debug("DisableForcedBackupAppList clazz is null!")
+            YLog.debug("DisableForcedBackupAppList clazz is null!")
             return
         }
         if (!uiStyleEnum.isEnum) {
-            XLog.debug("DisableForcedBackupAppList enum is error!")
+            YLog.debug("DisableForcedBackupAppList enum is error!")
             return
         }
         val switchStyle = uiStyleEnum.enumConstants?.find { it.toString() == "STYLE_SWITCH" }
@@ -29,7 +26,7 @@ object DisableForcedBackupAppList : Hooker {
         //Source BackupRestoreOpt
         "com.heytap.cloud.backuprestore.bswitch.BackupRestoreOpt".toClass().resolve().apply {
             firstMethodOrNull { name = "getForceSelect" }?.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
 

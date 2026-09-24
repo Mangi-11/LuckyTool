@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.statusbar
 
-import com.luckyzyx.luckytool.hook.core.Hooker
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControlCenterTiles
 import com.luckyzyx.luckytool.hook.scopes.systemui.CustomTileBackgroundTransparency
 import com.luckyzyx.luckytool.hook.scopes.systemui.FixTileAlignBothSides
@@ -19,27 +19,27 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class StatusBarTile(val dexKitBridge: DexKitBridge) : Hooker {
+class StatusBarTile(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
         //强制显示响铃状态切换磁贴
-        if (prefs(ModulePrefs).getBoolean("force_display_of_ringing_status_toggle_tiles", false)) {
+        if (preferences(ModulePrefs).getBoolean("force_display_of_ringing_status_toggle_tiles", false)) {
             loadHooker(ForceDisplayOfRingingStatusToggleTiles)
         }
 
         //强制启用设备控制器磁贴
-        if (prefs(ModulePrefs).getBoolean("force_display_of_device_controls_tiles", false)) {
+        if (preferences(ModulePrefs).getBoolean("force_display_of_device_controls_tiles", false)) {
             loadHooker(ForceDisplayOfDeviceControlsTiles)
         }
 
         //磁贴长按跳转事件
-        if (prefs(ModulePrefs).getBoolean("restore_some_tile_long_press_event", false)) {
+        if (preferences(ModulePrefs).getBoolean("restore_some_tile_long_press_event", false)) {
             if (SDK >= A13) loadHooker(LongPressTileOpenThePage)
         }
 
         //特殊磁贴间隙
-        if (prefs(ModulePrefs).getBoolean("control_center_custom_gaps_for_special_tile", false)) {
+        if (preferences(ModulePrefs).getBoolean("control_center_custom_gaps_for_special_tile", false)) {
             if (osCode >= 27) loadHooker(SpecialTileTopGap)
         }
 
@@ -50,12 +50,12 @@ class StatusBarTile(val dexKitBridge: DexKitBridge) : Hooker {
         if (osCode < 40) loadHooker(ControlCenterTiles)
 
         //经典控制中心 横屏磁贴两侧对齐
-        if (prefs(ModulePrefs).getBoolean("fix_tile_align_both_sides", false)) {
+        if (preferences(ModulePrefs).getBoolean("fix_tile_align_both_sides", false)) {
             if (osCode >= 26) loadHooker(FixTileAlignBothSides)
         }
 
         //恢复磁贴编辑页面布局行数
-        if (prefs(ModulePrefs).getBoolean("restore_page_layout_row_count_for_edit_tiles", false)) {
+        if (preferences(ModulePrefs).getBoolean("restore_page_layout_row_count_for_edit_tiles", false)) {
             if (SDK >= A13) loadHooker(RestorePageLayoutRowCountForEditTiles)
         }
 
@@ -63,7 +63,7 @@ class StatusBarTile(val dexKitBridge: DexKitBridge) : Hooker {
         if (osCode in 27..33) loadHooker(CustomTileBackgroundTransparency)
 
         //移除控制中心磁贴数量限制
-        if (prefs(ModulePrefs).getBoolean("remove_control_center_tile_count_limit", false)) {
+        if (preferences(ModulePrefs).getBoolean("remove_control_center_tile_count_limit", false)) {
             if (osCode < 37) loadHooker(RemoveControlCenterTileCountLimit(dexKitBridge))
         }
     }

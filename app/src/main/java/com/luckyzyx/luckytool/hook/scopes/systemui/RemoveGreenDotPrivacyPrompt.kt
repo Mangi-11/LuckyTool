@@ -2,14 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveGreenDotPrivacyPrompt : Hooker {
+object RemoveGreenDotPrivacyPrompt : YukiBaseHooker() {
     override fun onHook() {
         //Source ViewState
         VariousClass(
@@ -17,14 +14,14 @@ object RemoveGreenDotPrivacyPrompt : Hooker {
             "com.oplus.systemui.privacy.ViewState" //C14 C15
         ).toClass().resolve().apply {
             firstMethod { name = "shouldShowDot" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
 
         //Source ViewState
         "com.android.systemui.statusbar.events.ViewState".toClass().resolve().apply {
             firstMethod { name = "shouldShowDot" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
     }

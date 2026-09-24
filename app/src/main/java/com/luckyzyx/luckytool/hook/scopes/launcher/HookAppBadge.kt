@@ -4,17 +4,14 @@ import android.graphics.drawable.Drawable
 import android.os.UserHandle
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookMethod
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookAppBadge(val dexKitBridge: DexKitBridge) : Hooker {
+class HookAppBadge(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 30) loadHooker(AppBadge(dexKitBridge))
@@ -22,17 +19,17 @@ class HookAppBadge(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class AppBadge(val dexKitBridge: DexKitBridge) : Hooker {
+    class AppBadge(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
-            val isShortcut = prefs(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
-            val isWork = prefs(ModulePrefs).getBoolean("remove_app_work_badge", false)
-            val isClone = prefs(ModulePrefs).getBoolean("remove_app_clone_badge", false)
+            val isShortcut = preferences(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
+            val isWork = preferences(ModulePrefs).getBoolean("remove_app_work_badge", false)
+            val isClone = preferences(ModulePrefs).getBoolean("remove_app_clone_badge", false)
 
             //Source BitmapInfo
             "com.android.launcher3.icons.BitmapInfo".toClass().resolve().apply {
                 firstMethod { name = "applyFlags" }.hook {
                     before {
-                        val drawableCreationFlags = args(args.indexOfFirst { it is Int }).int()
+                        val drawableCreationFlags = arg(args.indexOfFirst { it is Int }).get<Int>() ?: 0
                         val badgeInfo = firstField { name = "badgeInfo" }.of(instance).get()
                         val flag = firstField { name = "flags" }.of(instance).get<Int>()
                             ?: return@before
@@ -42,27 +39,27 @@ class HookAppBadge(val dexKitBridge: DexKitBridge) : Hooker {
                         //flag & 1 != 0 -> ic_work_app_badge 工作应用程序
                         if ((drawableCreationFlags and 2) == 0) {
                             if (badgeInfo != null) {
-                                if (isShortcut) resultNull()
+                                if (isShortcut) result = null
                             }
                             if ((flag and 2) != 0) {
                                 //ic_instant_app_badge
-                                //resultNull()
+                                //result = null
                             }
                             if ((flag and 16) != 0) {
                                 //ic_archive_app_badge
-                                //resultNull()
+                                //result = null
                             }
                             if ((flag and 4) == 0) {
                                 if ((flag and 1) != 0) {
                                     //ic_work_app_badge
-                                    if (isWork) resultNull()
+                                    if (isWork) result = null
                                 } else if ((flag and 4) != 0) {
                                     //ic_clone_app_badge
-                                    if (isClone) resultNull()
+                                    if (isClone) result = null
                                 }
                             } else {
                                 //ic_oplus_clone_app_badge_new
-                                if (isClone) resultNull()
+                                if (isClone) result = null
                             }
                         }
                     }
@@ -77,41 +74,41 @@ class HookAppBadge(val dexKitBridge: DexKitBridge) : Hooker {
                     paramTypes(classOf<UserHandle>())
                     returnType(classOf<Drawable>())
                 }
-            }.single().getMethodInstance(appClassLoader).hookMethod {
+            }.single().getMethodInstance(hostClassLoader!!).hook {
                 after {
-                    if (isClone) resultNull()
+                    if (isClone) result = null
                 }
             }
         }
     }
 
     @Obfuscate
-    object AppBadgeC13 : Hooker {
+    object AppBadgeC13 : YukiBaseHooker() {
         override fun onHook() {
-            val isShortcut = prefs(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
-            val isWork = prefs(ModulePrefs).getBoolean("remove_app_work_badge", false)
-            val isClone = prefs(ModulePrefs).getBoolean("remove_app_clone_badge", false)
+            val isShortcut = preferences(ModulePrefs).getBoolean("remove_app_shortcut_badge", false)
+            val isWork = preferences(ModulePrefs).getBoolean("remove_app_work_badge", false)
+            val isClone = preferences(ModulePrefs).getBoolean("remove_app_clone_badge", false)
 
             //Source BitmapInfo
             "com.android.launcher3.icons.BitmapInfo".toClass().resolve().apply {
                 firstMethod { name = "applyFlags"; parameterCount = 3 }.hook {
                     before {
-                        val drawableCreationFlags = args().last().int()
+                        val drawableCreationFlags = lastArg().get<Int>() ?: 0
                         val badgeInfo = firstField { name = "badgeInfo" }.of(instance).get()
                         val flag = firstField { name = "flags" }.of(instance).get<Int>()
                             ?: return@before
                         if ((drawableCreationFlags and 2) == 0) {
                             if (badgeInfo != null) {
-                                if (isShortcut) resultNull()
+                                if (isShortcut) result = null
                             } else if ((flag and 2) != 0) {
                                 //ic_instant_app_badge
-                                //resultNull()
+                                //result = null
                             } else if ((flag and 1) != 0) {
                                 //ic_work_app_badge
-                                if (isWork) resultNull()
+                                if (isWork) result = null
                             } else if ((flag and 4) != 0) {
                                 //ic_oplus_clone_app_badge
-                                if (isClone) resultNull()
+                                if (isClone) result = null
                             }
                         }
                     }

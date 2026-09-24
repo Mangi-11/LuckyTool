@@ -3,15 +3,14 @@ package com.luckyzyx.luckytool.hook.hookers
 import android.app.StatusBarManager
 import android.content.Intent
 import android.nfc.NfcAdapter
-import android.os.Handler
 import com.drake.net.utils.scope
+import com.highcapable.betterandroid.ui.extension.component.lifecycleOwner
+import com.highcapable.betterandroid.ui.extension.component.runDelayed
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.BuildConfig
-import com.luckyzyx.luckytool.hook.core.Env
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.onAppLifecycle
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyGlobalDCMode
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyHighBrightness
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -21,18 +20,18 @@ import org.lsposed.lsparanoid.Obfuscate
 import kotlin.time.Duration.Companion.milliseconds
 
 @Obfuscate
-object HookSystemUIAutoStart : Hooker {
+object HookSystemUIAutoStart : YukiBaseHooker() {
     override fun onHook() {
-        var nfcEnable = prefs(ModulePrefs).getBoolean("enable_nfc_delay_shutdown", false)
+        var nfcEnable = preferences(ModulePrefs).getBoolean("enable_nfc_delay_shutdown", false)
         dataChannel.wait<Boolean>("enable_nfc_delay_shutdown") { nfcEnable = it }
-        var nfcDelay = prefs(ModulePrefs).getString("custom_nfc_delay_shutdown_time", "10M")
+        var nfcDelay = preferences(ModulePrefs).getString("custom_nfc_delay_shutdown_time", "10M")
         dataChannel.wait<String>("custom_nfc_delay_shutdown_time") { nfcDelay = it }
 
         //磁贴全局DC/高亮度模式：模块磁贴写入开关后，宿主侧即时唤起自启控制器执行
         dataChannel.wait<Boolean>(keyGlobalDCMode) { startAutoStartController() }
         dataChannel.wait<Boolean>(keyHighBrightness) { startAutoStartController() }
 
-        onAppLifecycle {
+        registerAppLifecycle {
             //监听锁屏解锁
             registerReceiver(Intent.ACTION_USER_PRESENT) { _, _ ->
                 startAutoStartController()
@@ -48,27 +47,18 @@ object HookSystemUIAutoStart : Hooker {
                 val delay = convertToMillis(nfcDelay)
                 if (delay < 0) {
                     nfcEnable = false
-                    XLog.debug("NFC Delay Error -> $nfcDelay | $delay")
+                    YLog.debug("NFC Delay Error -> $nfcDelay | $delay")
                     return@registerReceiver
                 }
                 val nfcAdapter = NfcAdapter.getDefaultAdapter(context)
                 val intExtra = intent.getIntExtra("android.nfc.extra.ADAPTER_STATE", 1)
-                val handler = Handler(context.mainLooper)
-                val runnable = Runnable {
-                    nfcAdapter.asResolver().firstMethod { name = "disable" }.invoke()
-                }
                 if (nfcAdapter.isEnabled) {
                     try {
-                        if (handler.hasCallbacks(runnable)) return@registerReceiver
-                        handler.postDelayed(runnable, delay)
+                        context.lifecycleOwner?.runDelayed(delay) {
+                            nfcAdapter.asResolver().firstMethod { name = "disable" }.invoke()
+                        }
                     } catch (t: Throwable) {
-                        XLog.debug("NFC [$intExtra] Handler Add Error", t)
-                    }
-                } else {
-                    try {
-                        if (handler.hasCallbacks(runnable)) handler.removeCallbacks(runnable)
-                    } catch (t: Throwable) {
-                        XLog.debug("NFC [$intExtra] Handler Remove Error", t)
+                        YLog.debug("NFC [$intExtra] Handler Add Error", t)
                     }
                 }
             }
@@ -77,7 +67,7 @@ object HookSystemUIAutoStart : Hooker {
 
     /** 唤起模块自启控制器（读当前磁贴开关执行系统命令），解锁与磁贴开关变化共用 */
     private fun startAutoStartController() {
-        val context = Env.hostContext() ?: return
+        val context = hostApplication ?: return
         scope {
             delay(200.milliseconds)
             try {
@@ -86,10 +76,10 @@ object HookSystemUIAutoStart : Hooker {
                     setPackage(BuildConfig.APPLICATION_ID)
                 })
             } catch (t: Throwable) {
-                XLog.debug("AutoStartService try sthrow", t)
+                YLog.debug("AutoStartService try sthrow", t)
             }
         }.catch {
-            XLog.debug("AutoStartService scope throw", it)
+            YLog.debug("AutoStartService scope throw", it)
         }
     }
 }

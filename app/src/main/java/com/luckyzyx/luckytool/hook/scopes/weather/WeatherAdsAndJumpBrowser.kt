@@ -8,14 +8,9 @@ import androidx.core.net.toUri
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
+import com.highcapable.yukihookapi.hook.core.YukiHookCreator
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.data.AppVerInfo
-import com.luckyzyx.luckytool.hook.core.HookAction
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
@@ -25,7 +20,7 @@ import org.luckypray.dexkit.query.enums.StringMatchType
 @Obfuscate
 class WeatherAdsAndJumpBrowser(
     private val appVer: AppVerInfo?, val dexKitBridge: DexKitBridge
-) : Hooker {
+) : YukiBaseHooker() {
     override fun onHook() {
         val isNew = appVer?.versionCode?.let { it >= 13000000 } ?: return
         if (isNew) loadHooker(HookWeatherAdsAndJump)
@@ -33,29 +28,35 @@ class WeatherAdsAndJumpBrowser(
     }
 
     @Obfuscate
-    object HookWeatherAdsAndJump : Hooker {
+    object HookWeatherAdsAndJump : YukiBaseHooker() {
         private const val weatherWrapper = "com.oplus.weather.main.model.WeatherWrapper"
 //        private const val BrowserCommonUtils = "com.oplus.weather.plugin.webview.BrowserCommonUtils"
         override fun onHook() {
             val removeAds =
-                prefs(ModulePrefs).getBoolean("remove_weather_some_page_bottom_ads", false)
-            val disableJump = prefs(ModulePrefs).getBoolean("disable_weather_jump_browser", false)
+                preferences(ModulePrefs).getBoolean("remove_weather_some_page_bottom_ads", false)
+            val disableJump = preferences(ModulePrefs).getBoolean("disable_weather_jump_browser", false)
             if (!removeAds && !disableJump) return
 
             //Source OPPOFeedAdManager switchesPopularRecommended
             "com.oplus.weather.ad.OPPOFeedAdManager".toClassOrNull()?.resolve()?.apply {
                 firstMethod { name = "hasOpenPopularRecommended" }.hook {
-                    if (removeAds) replaceToFalse()
+                    if (removeAds) {
+                        intercept(false)
+                    }
                 }
                 firstMethod { name = "hasOpenAdSdkShowBannerFromNetwork" }.hook {
-                    if (removeAds) replaceToFalse()
+                    if (removeAds) {
+                        intercept(false)
+                    }
                 }
             }
 
             //Source AppFeatureUtils
             "com.oplus.weather.utils.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
                 firstMethod { name = "isSupportOplusAd" }.hook {
-                    if (removeAds) replaceToFalse()
+                    if (removeAds) {
+                        intercept(false)
+                    }
                 }
             }
 
@@ -68,7 +69,7 @@ class WeatherAdsAndJumpBrowser(
                     hookBefore(removeAds, disableJump)
                 }
                 firstMethodOrNull { name = "isBrowserSupportJump" }?.hook {
-                    replaceToFalse()
+                    intercept(false)
                 }
                 firstMethod { name = "getH5StringBuffer" }.hook {
                     after {
@@ -92,7 +93,7 @@ class WeatherAdsAndJumpBrowser(
                 firstMethod { name = "showWarnWeatherPanel" }.hook {
                     before {
                         if (!disableJump) return@before
-                        val warnInfo = args().last().any() ?: return@before
+                        val warnInfo = lastArg().get() ?: return@before
                         warnInfo.asResolver().firstField { name = "addLink" }.set("")
                     }
                 }
@@ -110,7 +111,7 @@ class WeatherAdsAndJumpBrowser(
                 method {
                     name { it.startsWith("jump") && it.contains("Browser") }
                     parameters { it.contains(classOf<String>()) && it.contains(classOf<Boolean>()) }
-                    returnType { it == Intent::class.java || it == Any::class.java }
+                    returnType { it == classOf<Intent>() || it == classOf<Any>() }
                 }.hookAll {
                     after {
                         val intent = result<Intent>() ?: return@after
@@ -123,7 +124,7 @@ class WeatherAdsAndJumpBrowser(
             "com.oplus.weather.service.service.RainReminder".toClass().resolve().apply {
                 firstMethod { name = "createIntentOpenWeatherMainActivity" }.hook {
                     before {
-                        if (disableJump) args().last().set("")
+                        if (disableJump) lastArg().set("")
                     }
                 }
             }
@@ -131,7 +132,7 @@ class WeatherAdsAndJumpBrowser(
             "com.oplus.weather.service.service.WarnReminder".toClass().resolve().apply {
                 firstMethod { name = "getWarnWeatherIntent" }.hook {
                     before {
-                        if (disableJump) args().last().set("")
+                        if (disableJump) lastArg().set("")
                     }
                 }
             }
@@ -142,66 +143,66 @@ class WeatherAdsAndJumpBrowser(
                     returnType(PendingIntent::class)
                 }.hook {
                     before {
-                        if (disableJump) resultNull()
+                        if (disableJump) result = null
                     }
                 }
             }
         }
 
-        private fun HookAction.hookBefore(
+        private fun YukiHookCreator.ClassicMemberHooker.hookBefore(
             removeAds: Boolean, disableJump: Boolean
         ) {
             before {
                 val context = (args.find { it is Context } ?: return@before) as Context
-                val type = args(args.indexOfFirst { it is Int }).int()
+                val type = arg(args.indexOfFirst { it is Int }).get<Int>() ?: 0
 
-//                var url = args(2).string()
-//                val statisticsTag = args(3).string()
+//                var url = arg(2).get<String>() ?: ""
+//                val statisticsTag = arg(3).get<String>() ?: ""
                 val urlIndex = args.indexOfFirst {
                     it is String && (it.contains("http") || it.contains("://"))
                 }
-                val url = args(urlIndex).string()
+                val url = arg(urlIndex).get<String>() ?: ""
                 val tagIndex = args.indexOfFirst {
                     it is String && (!it.contains("http") && !it.contains("://"))
                 }
-                val statisticsTag = args(tagIndex).string()
+                val statisticsTag = arg(tagIndex).get<String>() ?: ""
 
                 //CCTV
                 if (url.startsWith("heytapbrowser://")) return@before
 
-                if (removeAds) args(urlIndex).set(formatWeatherUrl(url))
+                if (removeAds) arg(urlIndex).set(formatWeatherUrl(url))
                 if (disableJump) {
-                    val newUrl = args(urlIndex).string()
+                    val newUrl = arg(urlIndex).get<String>() ?: ""
                     startWebActivity(type, context, newUrl, statisticsTag)
-                    resultNull()
+                    result = null
                 }
             }
         }
     }
 
     @Obfuscate
-    class HookWeatherAdsAndJumpC12(val dexKitBridge: DexKitBridge) : Hooker {
+    class HookWeatherAdsAndJumpC12(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         private var startWebView = ""
         override fun onHook() {
             val removeAds =
-                prefs(ModulePrefs).getBoolean("remove_weather_some_page_bottom_ads", false)
+                preferences(ModulePrefs).getBoolean("remove_weather_some_page_bottom_ads", false)
             val disableJump =
-                prefs(ModulePrefs).getBoolean("disable_weather_jump_browser", false)
+                preferences(ModulePrefs).getBoolean("disable_weather_jump_browser", false)
             if (!removeAds && !disableJump) return
 
             //Source OppoUtils
             dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Boolean::class.java)
+                        addForType(classOf<Boolean>())
                         addForType("java.util.regex.Pattern")
                     }
                     methods {
                         add {
                             paramTypes(
-                                Int::class.java, Context::class.java,
-                                String::class.java, String::class.java, Boolean::class.java,
-                                Boolean::class.java
+                                classOf<Int>(), classOf<Context>(),
+                                classOf<String>(), classOf<String>(), classOf<Boolean>(),
+                                classOf<Boolean>()
                             )
                             returnType(Void.TYPE)
                             usingStrings(
@@ -210,8 +211,8 @@ class WeatherAdsAndJumpBrowser(
                         }
                         add {
                             paramTypes(
-                                Context::class.java, Int::class.java,
-                                String::class.java, String::class.java, Boolean::class.java
+                                classOf<Context>(), classOf<Int>(),
+                                classOf<String>(), classOf<String>(), classOf<Boolean>()
                             )
                             returnType(Void.TYPE)
                             usingStrings(
@@ -273,32 +274,32 @@ class WeatherAdsAndJumpBrowser(
             }
         }
 
-        private fun HookAction.hookBefore(
+        private fun YukiHookCreator.ClassicMemberHooker.hookBefore(
             removeAds: Boolean, disableJump: Boolean
         ) {
             before {
                 if (startWebView.isBlank()) return@before
                 val context = (args.find { it is Context } ?: return@before) as Context
-//                val url = args(2).string()
-//                val statisticsTag = args(3).string()
+//                val url = arg(2).get<String>() ?: ""
+//                val statisticsTag = arg(3).get<String>() ?: ""
 
                 val urlIndex = args.indexOfFirst {
                     it is String && (it.contains("http") || it.contains("://"))
                 }
-                val url = args(urlIndex).string()
+                val url = arg(urlIndex).get<String>() ?: ""
                 val tagIndex = args.indexOfFirst {
                     it is String && (!it.contains("http") && !it.contains("://"))
                 }
-                val statisticsTag = args(tagIndex).string()
+                val statisticsTag = arg(tagIndex).get<String>() ?: ""
 
                 //CCTV
                 if (url.startsWith("heytapbrowser://")) return@before
 
-                if (removeAds) args(urlIndex).set(formatWeatherUrl(url))
+                if (removeAds) arg(urlIndex).set(formatWeatherUrl(url))
                 if (disableJump) {
-                    val newUrl = args(urlIndex).string()
+                    val newUrl = arg(urlIndex).get<String>() ?: ""
                     startWebActivity(startWebView.toClass(), context, newUrl, statisticsTag)
-                    resultNull()
+                    result = null
                 }
             }
         }

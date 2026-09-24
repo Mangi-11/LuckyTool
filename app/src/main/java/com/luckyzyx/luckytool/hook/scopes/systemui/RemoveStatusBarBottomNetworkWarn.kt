@@ -2,16 +2,13 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveStatusBarBottomNetworkWarn : Hooker {
+object RemoveStatusBarBottomNetworkWarn : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 34) loadHooker(StatusBarBottomNetworkWarn)
@@ -19,9 +16,9 @@ object RemoveStatusBarBottomNetworkWarn : Hooker {
     }
 
     @Obfuscate
-    object StatusBarBottomNetworkWarn : Hooker {
+    object StatusBarBottomNetworkWarn : YukiBaseHooker() {
         override fun onHook() {
-            var removeMode = prefs(ModulePrefs).getString("remove_control_center_networkwarn", "0")
+            var removeMode = preferences(ModulePrefs).getString("remove_control_center_networkwarn", "0")
             dataChannel.wait<String>("remove_control_center_networkwarn") { removeMode = it }
 
             //Source OplusQSSecurityController
@@ -38,9 +35,9 @@ object RemoveStatusBarBottomNetworkWarn : Hooker {
     }
 
     @Obfuscate
-    object StatusBarBottomNetworkWarnOld : Hooker {
+    object StatusBarBottomNetworkWarnOld : YukiBaseHooker() {
         override fun onHook() {
-            var removeMode = prefs(ModulePrefs).getString("remove_control_center_networkwarn", "0")
+            var removeMode = preferences(ModulePrefs).getString("remove_control_center_networkwarn", "0")
             dataChannel.wait<String>("remove_control_center_networkwarn") { removeMode = it }
 
             //Source OplusQSSecurityText

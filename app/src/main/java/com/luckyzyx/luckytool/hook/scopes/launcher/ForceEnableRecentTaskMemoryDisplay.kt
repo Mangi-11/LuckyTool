@@ -1,14 +1,13 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
 import com.highcapable.kavaref.extension.classOf
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hookMethod
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class ForceEnableRecentTaskMemoryDisplay(val dexKitBridge: DexKitBridge) : Hooker {
+class ForceEnableRecentTaskMemoryDisplay(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source MemoryInfoManager
         dexKitBridge.findClass {
@@ -33,8 +32,8 @@ class ForceEnableRecentTaskMemoryDisplay(val dexKitBridge: DexKitBridge) : Hooke
                 }
             }.apply {
                 checkDataList("needMemoryDetail")
-            }.single().getMethodInstance(appClassLoader).hookMethod {
-                replaceToTrue()
+            }.single().getMethodInstance(hostClassLoader!!).hook {
+                intercept(true)
             }
 
             findMethod {
@@ -51,8 +50,8 @@ class ForceEnableRecentTaskMemoryDisplay(val dexKitBridge: DexKitBridge) : Hooke
                 }
             }.apply {
                 checkDataList("isAllowMemoryInfoDisplay")
-            }.single().getMethodInstance(appClassLoader).hookMethod {
-                replaceToTrue()
+            }.single().getMethodInstance(hostClassLoader!!).hook {
+                intercept(true)
             }
         }
     }

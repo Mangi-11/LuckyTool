@@ -8,15 +8,12 @@ import androidx.core.graphics.drawable.toDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FingerPrintIconAnim : Hooker {
+object FingerPrintIconAnim : YukiBaseHooker() {
 
     private const val TAG = "FpIcon"
 
@@ -31,9 +28,9 @@ object FingerPrintIconAnim : Hooker {
     )
 
     override fun onHook() {
-        val removeMode = prefs(ModulePrefs).getString("remove_fingerprint_icon_mode", "0")
-        val isReplaceIcon = prefs(ModulePrefs).getBoolean("replace_fingerprint_icon_switch", false)
-        val iconPath = prefs(ModulePrefs).getString("replace_fingerprint_icon_path", "")
+        val removeMode = preferences(ModulePrefs).getString("remove_fingerprint_icon_mode", "0")
+        val isReplaceIcon = preferences(ModulePrefs).getBoolean("replace_fingerprint_icon_switch", false)
+        val iconPath = preferences(ModulePrefs).getString("replace_fingerprint_icon_path", "")
 
         //Source OnScreenFingerprintUiMech
         VariousClass(
@@ -45,7 +42,7 @@ object FingerPrintIconAnim : Hooker {
             firstMethod { name = "loadAnimDrawables" }.hook {
                 if (removeMode == "3") intercept()
                 else after {
-//                    XLog.d(
+//                    YLog.d(
 //                        "loadAnimDrawables after: mode=$removeMode replace=$isReplaceIcon path=$iconPath",
 //                        tag = TAG
 //                    )
@@ -66,7 +63,7 @@ object FingerPrintIconAnim : Hooker {
             firstMethodOrNull { name = "startFadeInAnimation" }?.hook {
                 if (isReplaceIcon) before {
                     instance<Any>().setCustomDrawable(iconPath, false)
-                    resultNull()
+                    result = null
                 } else if (removeMode == "1" || removeMode == "3") intercept()
             }
             firstMethodOrNull { name = "startFadeOutAnimation" }?.hook {

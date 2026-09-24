@@ -10,9 +10,7 @@ import androidx.core.content.edit
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.utils.appcompat.dialog.COUIAlertDialogBuilder
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
@@ -20,19 +18,19 @@ import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
 @SuppressLint("DiscouragedApi")
-object CustomProcessorPageIntroductionParameters : Hooker {
+object CustomProcessorPageIntroductionParameters : YukiBaseHooker() {
     override fun onHook() {
         val replaceImage =
-            prefs(ModulePrefs).getBoolean("custom_processor_image_path_switch", false)
-        val imagePath = prefs(ModulePrefs).getString("customize_processor_image_path", "")
-        val replaceText = prefs(ModulePrefs).getBoolean("custom_processor_introduction_text", false)
+            preferences(ModulePrefs).getBoolean("custom_processor_image_path_switch", false)
+        val imagePath = preferences(ModulePrefs).getString("customize_processor_image_path", "")
+        val replaceText = preferences(ModulePrefs).getBoolean("custom_processor_introduction_text", false)
 
         //Source ProcessorDetailPreference
         "com.oplus.settings.feature.deviceinfo.processordetail.ProcessorDetailPreference".toClass()
             .resolve().apply {
                 firstMethod { name = "onBindViewHolder" }.hook {
                     after {
-                        val viewHolder = args().first().any() ?: return@after
+                        val viewHolder = firstArg().get() ?: return@after
                         val context = firstMethod { name = "getContext";superclass() }.of(instance)
                             .invoke<Context>() ?: return@after
 
@@ -104,7 +102,7 @@ object CustomProcessorPageIntroductionParameters : Hooker {
         setOnClickListener {
             var editText: EditText? = null
             var dialog: Any? = null
-            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", classLoader).apply {
+            COUIAlertDialogBuilder(context, "COUIAlertDialog.SingleInput", hostClassLoader).apply {
                 setTitle(text)
                 setNegativeButton(android.R.string.cancel, null)
                 setPositiveButton(android.R.string.ok) { _, _ ->

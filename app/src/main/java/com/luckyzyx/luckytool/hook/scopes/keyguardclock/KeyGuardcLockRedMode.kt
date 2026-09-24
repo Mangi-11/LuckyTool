@@ -2,17 +2,16 @@ package com.luckyzyx.luckytool.hook.scopes.keyguardclock
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class KeyGuardcLockRedMode(val dexKitBridge: DexKitBridge) : Hooker {
+class KeyGuardcLockRedMode(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        val redMode = prefs(ModulePrefs).getString("lock_screen_clock_redone_mode", "0")
+        val redMode = preferences(ModulePrefs).getString("lock_screen_clock_redone_mode", "0")
 
         //Source CustomizedTextView -> BrandUtils
         dexKitBridge.findClass {

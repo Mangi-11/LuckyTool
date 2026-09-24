@@ -3,13 +3,12 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveUSBConnectDialog : Hooker {
+object RemoveUSBConnectDialog : YukiBaseHooker() {
     override fun onHook() {
         //Source UsbService
         VariousClass(
@@ -20,21 +19,21 @@ object RemoveUSBConnectDialog : Hooker {
             (firstMethodOrNull { name = "onUsbConnected" }
                 ?: firstMethod { name { it.contains("onUsbConnected") } }).hook {
                 before {
-                    val instance = instanceOrNull ?: args().first().any()
-                    val context = args().last().cast<Context>() ?: return@before
+                    val instance = instanceOrNull ?: firstArg().get()
+                    val context = lastArg().get<Context>() ?: return@before
                     firstMethod { name = "onUsbSelect" }.of(instance).invoke(1)
                     firstMethod { name = "updateAdbNotification" }.of(instance).invoke(context)
                     firstMethod { name = "updateUsbNotification" }.let {
-                        val contextIndex = it.self.parameterTypes.indexOf(Context::class.java)
+                        val contextIndex = it.self.parameterTypes.indexOf(classOf<Context>())
                         if (contextIndex == 0) it.of(instance).invoke(context, 1)
                         else it.of(instance).invoke(1, context)
                     }
                     firstMethod { name = "changeUsbConfig" }.let {
-                        val contextIndex = it.self.parameterTypes.indexOf(Context::class.java)
+                        val contextIndex = it.self.parameterTypes.indexOf(classOf<Context>())
                         if (contextIndex == 0) it.of(instance).invoke(context, 1)
                         else it.of(instance).invoke(1, context)
                     }
-                    resultNull()
+                    result = null
                 }
             }
             firstMethod { name = "updateUsbNotification" }.hook {

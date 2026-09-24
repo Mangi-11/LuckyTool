@@ -2,9 +2,8 @@ package com.luckyzyx.luckytool.hook.scopes.camera
 
 import android.text.Spanned
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.SDK
@@ -12,7 +11,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source CameraSubSettingFragment -> camera_namelength_outofrange -> filter
         //Source CameraSloganSettingFragment -> camera_namelength_outofrange -> filter
@@ -20,10 +19,10 @@ class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
             matcher {
                 name("filter")
                 paramTypes(
-                    CharSequence::class.java, Int::class.java, Int::class.java,
-                    Spanned::class.java, Int::class.java, Int::class.java
+                    classOf<CharSequence>(), classOf<Int>(), classOf<Int>(),
+                    classOf<Spanned>(), classOf<Int>(), classOf<Int>()
                 )
-                returnType(CharSequence::class.java)
+                returnType(classOf<CharSequence>())
                 usingStrings("")
                 addInvoke {
                     paramCount(2..3)
@@ -45,7 +44,7 @@ class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
                             returnType = CharSequence::class
                         }.hook {
                             before {
-                                result = args().first().cast<CharSequence>() ?: return@before
+                                result = firstArg().get<CharSequence>() ?: return@before
                             }
                         }
                     }
@@ -61,7 +60,7 @@ class RemoveWatermarkWordLimit(val dexKitBridge: DexKitBridge) : Hooker {
                         returnType = CharSequence::class
                     }.hook {
                         before {
-                            result = args().first().cast<CharSequence>() ?: return@before
+                            result = firstArg().get<CharSequence>() ?: return@before
                         }
                     }
                 }

@@ -7,7 +7,7 @@ import androidx.preference.PreferenceDataStore
  * Preference UI 的数据存储层（替代 preferenceManager 默认的 SharedPreferences 文件）：
  * 所有 Preference 控件的持久化读写都经 [target]——
  * target 由 [appPrefs] 提供：libxposed service 绑定可用时即 remote prefs
- * （与宿主进程 Env.prefs 同一数据源），未绑定时回落本地 prefs。
+ * （与宿主进程 YukiHookPreferences 同一数据源），未绑定时回落本地 prefs。
  */
 class RemotePreferenceDataStore(private val target: SharedPreferences) : PreferenceDataStore() {
 

@@ -1,12 +1,12 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.luckyzyx.luckytool.hook.core.Hooker
-import org.lsposed.lsparanoid.Obfuscate
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.keyguardclock.KeyGuardcLockRedMode
 import com.luckyzyx.luckytool.utils.DexkitUtils
+import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookKeyguardClock : Hooker {
+object HookKeyguardClock : YukiBaseHooker() {
     override fun onHook() {
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->

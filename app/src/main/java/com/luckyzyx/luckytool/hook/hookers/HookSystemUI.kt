@@ -5,17 +5,14 @@ import android.media.MediaMetadata
 import android.os.Bundle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.HookSystemUIFeature
 import com.luckyzyx.luckytool.utils.DexkitUtils
 import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
 
 @Obfuscate
-object HookSystemUI : Hooker {
+object HookSystemUI : YukiBaseHooker() {
     override fun onHook() {
 
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
@@ -71,7 +68,7 @@ object HookSystemUI : Hooker {
                     before {
                         val context = firstField { type = Context::class }.of(instance)
                             .get<Context>() ?: return@before
-                        val metaData = args(1).cast<MediaMetadata>() ?: return@before
+                        val metaData = arg(1).get<MediaMetadata>() ?: return@before
                         val lyricInfo = metaData.getString("lyricInfo")
                         if (lyricInfo != null) return@before
 

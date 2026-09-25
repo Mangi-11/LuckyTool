@@ -107,6 +107,7 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             if (preferences(ModulePrefs).getBoolean("disable_dm_verity_verification", false)) {
 //            put("persist.sys.assert.panic", "true")
                 put("ro.boot.veritymode", "enforcing")
+                put("ro.boot.flash.locked", "1")
                 put("ro.boot.vbmeta.device_state", "locked")
 //            put("persist.vendor.oplus.verify_result", "")
             }

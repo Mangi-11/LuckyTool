@@ -114,6 +114,7 @@ class OplusSettings : BaseScopePreferenceFeagment() {
                 summary = getString(R.string.enable_statusbar_clock_format_summary)
                 key = "enable_statusbar_clock_format"
                 setDefaultValue(false)
+                isVisible = osCode < 40
                 isIconSpaceReserved = false
             })
             //锁屏

@@ -48,7 +48,6 @@ object HookSettings : YukiBaseHooker() {
 
         val osCode = getOSVersionCode
 
-
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
             //HookAppFeatureProvider
             loadHooker(HookGlobalFeatureProvider(dexKitBridge))
@@ -102,7 +101,7 @@ object HookSettings : YukiBaseHooker() {
         }
         //启用状态栏时钟格式
         if (preferences(ModulePrefs).getBoolean("enable_statusbar_clock_format", false)) {
-            loadHooker(EnableStatusBarClockFormat)
+            if (osCode < 40) loadHooker(EnableStatusBarClockFormat)
         }
         //自定义设备分享页面参数
         if (preferences(ModulePrefs).getBoolean("customize_device_sharing_page_parameters", false)) {

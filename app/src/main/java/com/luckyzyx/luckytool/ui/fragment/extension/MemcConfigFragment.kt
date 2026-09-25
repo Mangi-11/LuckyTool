@@ -362,10 +362,10 @@ class MemcConfigFragment : BaseFragment<FragmentMemcLayoutBinding>(), MenuProvid
             MaterialAlertDialogBuilder(requireActivity(), dialogCentered).apply {
                 setView(binding.root)
                 setPositiveButton(android.R.string.ok) { _, _ ->
-                val packageName = binding.packageView.textToString()
+                    val packageName = binding.packageView.textToString()
                     val rate = binding.rateView.textToString()
                     val type = binding.typeView.textToString()
-                    if (!(packageName.isNullOrBlank() || rate.isNullOrBlank() || type.isNullOrBlank())) {
+                    if (!(packageName.isBlank() || rate.isBlank() || type.isBlank())) {
                         val newConfig = MemcConfigPackage(packageName, rate, type)
                         onItemChanged?.invoke(config, newConfig)
                     } else context.showToast("Data is incomplete!")
@@ -543,12 +543,10 @@ class MemcConfigFragment : BaseFragment<FragmentMemcLayoutBinding>(), MenuProvid
             binding.activityView.apply {
                 setOnClickListener {
                     val packageName = binding.packageView.textToString()
-                    val packInfo = packageName?.let {
-                        PackageUtils(context.packageManager).getPackageInfo(
-                            it, PackageManager.GET_ACTIVITIES
-                        )
-                    }
-                    if (packageName.isNullOrBlank()) {
+                    val packInfo = PackageUtils(context.packageManager).getPackageInfo(
+                        packageName, PackageManager.GET_ACTIVITIES
+                    )
+                    if (packageName.isBlank()) {
                         context.showToast("PackageName is null!")
                         return@setOnClickListener
                     }
@@ -571,10 +569,10 @@ class MemcConfigFragment : BaseFragment<FragmentMemcLayoutBinding>(), MenuProvid
             MaterialAlertDialogBuilder(requireActivity(), dialogCentered).apply {
                 setView(binding.root)
                 setPositiveButton(android.R.string.ok) { _, _ ->
-                val packageName = binding.packageView.textToString()
+                    val packageName = binding.packageView.textToString()
                     val activity = binding.activityView.textToString()
                     val type = binding.typeView.textToString()
-                    if (!(packageName.isNullOrBlank() || activity.isNullOrBlank() || type.isNullOrBlank())) {
+                    if (!(packageName.isBlank() || activity.isBlank() || type.isBlank())) {
                         val newConfig = MemcConfigActivity(packageName, activity, type)
                         onItemChanged?.invoke(config, newConfig)
                     } else context.showToast("Data is incomplete!")

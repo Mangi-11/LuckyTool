@@ -41,7 +41,8 @@ object HookOplusWifiService : YukiBaseHooker() {
                         val className = firstArg().get<String>() ?: return@after
                         if (!className.contains(OPLUS_WIFI_SERVICE_CLASS_FLAG)) return@after
                         val service = result<Any>() ?: return@after
-                        applyHooks(service.javaClass.classLoader)
+                        val classLoader = service.javaClass.classLoader ?: return@after
+                        applyHooks(classLoader)
                     }
                 }
         } catch (t: Throwable) {
@@ -71,7 +72,11 @@ object HookOplusWifiService : YukiBaseHooker() {
         }
         //Source_ext oplus-wifi-service OplusTetheringNotification showSoftapEnabledDurationNotification
         //Channel DurationNotification -> Notification id -> 4
-        if (preferences(ModulePrefs).getBoolean("remove_hotspot_power_consumption_notification", false)) {
+        if (preferences(ModulePrefs).getBoolean(
+                "remove_hotspot_power_consumption_notification",
+                false
+            )
+        ) {
             loadHooker(HookOplusSoftAp(loader))
         }
         //Source_ext oplus-wifi-service OplusWifiRomUpdateHelper getSlaWhiteListApps
@@ -135,7 +140,12 @@ object HookOplusWifiService : YukiBaseHooker() {
             }
 
             gameWhitelist.clear()
-            gameWhitelist.addAll(preferences(ModulePrefs).getStringSet(gameWhitelistKey, ArraySet()))
+            gameWhitelist.addAll(
+                preferences(ModulePrefs).getStringSet(
+                    gameWhitelistKey,
+                    ArraySet()
+                )
+            )
             dataChannel.wait(gameWhitelistKey) {
                 val new = preferences(ModulePrefs).getStringSet(gameWhitelistKey, ArraySet())
                 YLog.debug("update oplus wifi game whitelist configs -> ${gameWhitelist.size} | ${new.size}")

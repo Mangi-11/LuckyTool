@@ -55,7 +55,7 @@ class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooke
                             if (it is Boolean) arg(index).set(false)
                             if (it?.javaClass?.isEnum == true) arg(index).set(null)
                         }
-                        if (args.last() is Boolean) lastArg().set(true)
+                        if (lastArg().get() is Boolean) lastArg().set(true)
                     }
                 }
             }

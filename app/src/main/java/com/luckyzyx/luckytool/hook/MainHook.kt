@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.factory.configure
 import com.highcapable.yukihookapi.hook.factory.encase
-import com.highcapable.yukihookapi.hook.log.YLog
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.highcapable.yukihookapi.hook.xposed.bridge.event.registerFrameworkEvents
 import com.luckyzyx.luckytool.hook.hookers.HookAlarmClock
@@ -151,12 +150,7 @@ class MainHook : YukiHookXposedModule {
             }
         }
         registerFrameworkEvents {
-            onModuleLoaded { param ->
-                YLog.info(
-                    "loaded in ${param.processName}: framework $frameworkName" +
-                            "($frameworkVersionCode) API $apiVersion"
-                )
-            }
+            onModuleLoaded { }
             onPackageLoaded { }
             onPackageReady { }
             onSystemServerStarting { }

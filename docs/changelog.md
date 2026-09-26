@@ -37,6 +37,7 @@ in [TG Channel’s associated groups](https://t.me/LuckyTool)**
 - [适配] 移除应用分身角标 C17
 - [适配] 状态栏通知中心两侧对齐 C17
 - [适配] 状态栏通知中心时钟显秒 C17
+- [适配] 状态栏电池状态通知 C17
 
 ### 1.3.4
 

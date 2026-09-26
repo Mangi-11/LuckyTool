@@ -7,12 +7,14 @@ import android.os.BatteryManager
 import android.os.SystemProperties
 import android.util.TypedValue
 import android.widget.RemoteViews
+import androidx.core.graphics.drawable.IconCompat
 import com.highcapable.betterandroid.ui.component.notification.factory.Notification
 import com.highcapable.betterandroid.ui.component.notification.factory.NotificationChannel
 import com.highcapable.betterandroid.ui.component.notification.type.NotificationImportance
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.highcapable.yukihookapi.hook.log.YLog
+import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.hook.utils.IChargerUtils
 import com.luckyzyx.luckytool.hook.utils.sysui.BatteryControllerUtils
@@ -91,49 +93,52 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
     }
 
     override fun onHook() {
-        var thisContext: Context? = null
         displayMode = preferences(ModulePrefs).getString("battery_information_display_mode", "0")
         dataChannel.wait<String>("battery_information_display_mode") {
             displayMode = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
         showChargerInfo =
             preferences(ModulePrefs).getBoolean("battery_information_show_charge_info", false)
         dataChannel.wait<Boolean>("battery_information_show_charge_info") {
             showChargerInfo = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
         showUpdateTime =
             preferences(ModulePrefs).getBoolean("battery_information_show_update_time", false)
         dataChannel.wait<Boolean>("battery_information_show_update_time") {
             showUpdateTime = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
-        showVolMode = preferences(ModulePrefs).getString("battery_information_voltage_display_mode", "0")
+        showVolMode =
+            preferences(ModulePrefs).getString("battery_information_voltage_display_mode", "0")
         dataChannel.wait<String>("battery_information_voltage_display_mode") {
             showVolMode = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
-        isHealth = preferences(ModulePrefs).getBoolean("battery_information_show_battery_health", false)
+        isHealth =
+            preferences(ModulePrefs).getBoolean("battery_information_show_battery_health", false)
         dataChannel.wait<Boolean>("battery_information_show_battery_health") {
             isHealth = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
-        isPositive =
-            preferences(ModulePrefs).getBoolean("battery_information_always_show_positive_current", false)
+        isPositive = preferences(ModulePrefs).getBoolean(
+            "battery_information_always_show_positive_current", false
+        )
         dataChannel.wait<Boolean>("battery_information_always_show_positive_current") {
             isPositive = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
-        isSimple = preferences(ModulePrefs).getBoolean("battery_information_show_simple_mode", false)
+        isSimple =
+            preferences(ModulePrefs).getBoolean("battery_information_show_simple_mode", false)
         dataChannel.wait<Boolean>("battery_information_show_simple_mode") {
             isSimple = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
         fontSize = preferences(ModulePrefs).getInt("battery_information_custom_font_size", 11)
         dataChannel.wait<Int>("battery_information_custom_font_size") {
             fontSize = it
-            initSend(thisContext)
+            initSend(hostApplication)
         }
 
         registerAppLifecycle {
@@ -142,7 +147,6 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
             }
             //BatteryService
             registerReceiver(Intent.ACTION_BATTERY_CHANGED) { context: Context, _: Intent ->
-                thisContext = context
                 context.injectModuleResources()
 
                 initInfo(context)
@@ -150,7 +154,6 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
             }
             //OplusBatteryService
             registerReceiver("android.intent.action.ADDITIONAL_BATTERY_CHANGED") { context: Context, intent: Intent ->
-                thisContext = context
                 context.injectModuleResources()
                 chargerTechnology = intent.getIntExtra("chargertechnology", 0)
                 chargeWattage = intent.getIntExtra("chargewattage", 0)
@@ -222,7 +225,8 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
     }
 
     private fun initSend(context: Context?) {
-        if (context == null) return
+        //hostApplication 可能先于首次电池广播可用，未初始化数据前不发送
+        if (context == null || !::chargeInfo.isInitialized) return
         when (displayMode) {
             "1" -> sendNotification(
                 context, showChargerInfo && isCharging, showUpdateTime, isSimple, showVolMode
@@ -236,10 +240,13 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
         }
     }
 
-    @SuppressLint("DiscouragedApi")
+    @SuppressLint("DiscouragedApi", "MissingPermission", "RestrictedApi")
     private fun sendNotification(
-        context: Context, isCharging: Boolean, isUpdateTime: Boolean,
-        isSimple: Boolean, showVolMode: String
+        context: Context,
+        isCharging: Boolean,
+        isUpdateTime: Boolean,
+        isSimple: Boolean,
+        showVolMode: String
     ) {
         //com.oplusos.systemui.keyguard.charginganim.ChargingTypeConstants C14.1-
         val technology = BatteryControllerUtils(hostClassLoader!!).let {
@@ -363,14 +370,22 @@ object StatusBarBatteryInfoNotify : YukiBaseHooker() {
             else "${updateTimeStr}: " + formatDate("HH:mm:ss")
         } else ""
 
-        val remoteViews = RemoteViews(packageName, R.layout.layout_battery_notify_view)
+        val remoteViews =
+            RemoteViews(BuildConfig.APPLICATION_ID, R.layout.layout_battery_notify_view)
         val info = formatStringInfoLine(batteryInfo, chargeInfo, updateTime)
         remoteViews.setTextViewText(R.id.battery_notify_tv, info)
         remoteViews.setTextViewTextSize(
             R.id.battery_notify_tv, TypedValue.COMPLEX_UNIT_SP, fontSize.toFloat()
         )
         val notify = Notification(context = context, channel = channel) {
-            smallIconResId = batteryIcon
+            //不能传 context 创建图标：IconCompat.createWithResource(context, id) 构造时会调用
+            //Resources.getResourceName(id) 解析资源名，依赖 SystemUI 进程内的模块资源注入，
+            //且 0x7f 段 ID 与 SystemUI 自身资源表易撞车；解析失败直接抛
+            //IllegalArgumentException("Icon resource cannot be found")，notify 根本不会执行。
+            //传 null Resources 只记录包名+ID、不做任何解析，加载时任何进程都经已安装模块 APK 获取
+            smallIcon(IconCompat.createWithResource(null, BuildConfig.APPLICATION_ID, batteryIcon))
+            contentTitle = "BatteryInfo"
+            contentText = info
             customContentView = remoteViews
             customBigContentView = remoteViews
             autoCancel(false)

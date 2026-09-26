@@ -3,10 +3,8 @@ package com.luckyzyx.luckytool.hook.scopes.android
 import android.util.ArrayMap
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.data.DarkModeInfo
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.safeOfNull
@@ -15,32 +13,32 @@ import kotlinx.serialization.json.Json
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DarkModeService : Hooker {
+object DarkModeService : YukiBaseHooker() {
 
     var isEnable = false
     val list = ArraySet<DarkModeInfo>()
 
     fun loadData() {
-        isEnable = prefs(ModulePrefs).getBoolean("dark_mode_list_enable", false)
+        isEnable = preferences(ModulePrefs).getBoolean("dark_mode_list_enable", false)
         dataChannel.wait<Boolean>("dark_mode_list_enable") {
             isEnable = it
-            XLog.debug("update dark mode service configs status -> $it")
+            YLog.debug("update dark mode service configs status -> $it")
         }
 
         list.clear()
-        val enabled = prefs(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
+        val enabled = preferences(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
         list.addAll(enabled.mapNotNull {
             safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
         })
-        dataChannel.watch("dark_mode_support_list") {
-            val new = prefs(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
-            XLog.debug("update dark mode service whitelist configs -> ${list.size} | ${new.size}")
+        dataChannel.wait("dark_mode_support_list") {
+            val new = preferences(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
+            YLog.debug("update dark mode service whitelist configs -> ${list.size} | ${new.size}")
             list.clear()
             list.addAll(new.mapNotNull {
                 safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
             })
         }
-        XLog.debug("init dark mode service configs success -> ${list.size}")
+        YLog.debug("init dark mode service configs success -> ${list.size}")
     }
 
     override fun onHook() {

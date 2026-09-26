@@ -6,24 +6,22 @@ import android.graphics.Color
 import android.graphics.Paint
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FullScreenGestureSideSlideBar : Hooker {
+object FullScreenGestureSideSlideBar : YukiBaseHooker() {
 
     override fun onHook() {
         //Source SideGestureViewManager
         //Source SideGestureNavView navbar_gesture_background
-        val removeView = prefs(ModulePrefs).getBoolean("remove_side_slider", false)
+        val removeView = preferences(ModulePrefs).getBoolean("remove_side_slider", false)
         val removeBackground =
-            prefs(ModulePrefs).getBoolean("remove_side_slider_black_background", false)
-        val isReplace = prefs(ModulePrefs).getBoolean("replace_side_slider_icon_switch", false)
-        val leftPath = prefs(ModulePrefs).getString("replace_side_slider_icon_on_left", "")
-        val rightPath = prefs(ModulePrefs).getString("replace_side_slider_icon_on_right", "")
+            preferences(ModulePrefs).getBoolean("remove_side_slider_black_background", false)
+        val isReplace = preferences(ModulePrefs).getBoolean("replace_side_slider_icon_switch", false)
+        val leftPath = preferences(ModulePrefs).getString("replace_side_slider_icon_on_left", "")
+        val rightPath = preferences(ModulePrefs).getString("replace_side_slider_icon_on_right", "")
         VariousClass(
             "com.oplusos.systemui.navbar.gesture.sidegesture.SideGestureNavView", //A11
             "com.oplusos.systemui.navigationbar.gesture.sidegesture.SideGestureNavView",
@@ -53,7 +51,7 @@ object FullScreenGestureSideSlideBar : Hooker {
                         1 -> BitmapFactory.decodeFile(rightPath)
                         else -> return@before
                     }
-                    bitmap?.let { args().first().set(it) }
+                    bitmap?.let { firstArg().set(it) }
                 }
             }
         }

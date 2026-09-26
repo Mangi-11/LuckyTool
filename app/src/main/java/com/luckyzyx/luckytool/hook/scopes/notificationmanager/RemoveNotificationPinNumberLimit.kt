@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.notificationmanager
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hookAll
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveNotificationPinNumberLimit : Hooker {
+object RemoveNotificationPinNumberLimit : YukiBaseHooker() {
     override fun onHook() {
         //Source AppNotificationTopController
         "com.oplus.notificationmanager.property.uicontroller.AppNotificationTopController".toClass()
@@ -19,11 +17,11 @@ object RemoveNotificationPinNumberLimit : Hooker {
                         returnType = Boolean::class
                     }.hookAll {
                         before {
-                            val controller = args().first().any() ?: return@before
-                            val bool = args().last().boolean()
+                            val controller = firstArg().get() ?: return@before
+                            val bool = lastArg().get<Boolean>() ?: false
                             controller.asResolver().firstMethod { name = "onChange";superclass() }
                                 .invoke(bool)
-                            resultTrue()
+                            result = true
                         }
                     }
                 }

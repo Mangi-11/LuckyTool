@@ -3,14 +3,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.result
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object ForceDisplayOfRingingStatusToggleTiles : Hooker {
+object ForceDisplayOfRingingStatusToggleTiles : YukiBaseHooker() {
     override fun onHook() {
         //Source QSTileHostHelper
         VariousClass(
@@ -42,7 +39,7 @@ object ForceDisplayOfRingingStatusToggleTiles : Hooker {
                 }
             }
             firstMethod { name = "isAvailable"; superclass() }.hook {
-                replaceToTrue()
+                intercept(true)
             }
         }
 
@@ -57,7 +54,7 @@ object ForceDisplayOfRingingStatusToggleTiles : Hooker {
                 parameters(String::class)
             }.hook {
                 before {
-                    val key = args().first().string()
+                    val key = firstArg().get<String>() ?: ""
                     if (key == "ringermode") {
                         val provider = firstField {
 //                            name = "mFlavorOneRingerModeTileProvider"

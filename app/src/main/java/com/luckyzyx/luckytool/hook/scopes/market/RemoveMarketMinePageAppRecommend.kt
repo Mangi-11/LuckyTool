@@ -4,15 +4,14 @@ import android.content.Context
 import android.os.Bundle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveMarketMinePageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveMarketMinePageAppRecommend(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val viewLayerWrapDto = "com.heytap.cdo.card.domain.dto.ViewLayerWrapDto"
         val mineActionBarView = "com.heytap.market.mine.view.MineActionBarView"
@@ -21,11 +20,11 @@ class RemoveMarketMinePageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker 
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(Map::class.java)
-                    addForType(String::class.java)
-                    addForType(Boolean::class.java)
-                    addForType(Bundle::class.java)
-                    addForType(Context::class.java)
+                    addForType(classOf<Map<*,*>>())
+                    addForType(classOf<String>())
+                    addForType(classOf<Boolean>())
+                    addForType(classOf<Bundle>())
+                    addForType(classOf<Context>())
                     addForType(mineActionBarView)
                 }
                 methods {
@@ -38,10 +37,10 @@ class RemoveMarketMinePageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker 
 //                    add { returnType(cdoNestedScrollListView) }
                     add {
                         paramTypes(viewLayerWrapDto)
-                        returnType(Map::class.java)
+                        returnType(classOf<Map<*,*>>())
                     }
                     add {
-                        paramTypes(viewLayerWrapDto, Boolean::class.java.name)
+                        paramTypes(viewLayerWrapDto, classOf<Boolean>().name)
                         returnType(Void.TYPE)
                     }
                 }
@@ -55,7 +54,7 @@ class RemoveMarketMinePageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker 
                     returnType(Void.TYPE)
                 }.hook {
                     before {
-                        val dto = args().first().any() ?: return@before
+                        val dto = firstArg().get() ?: return@before
                         val cards = dto.asResolver().firstMethod {
                             name = "getCards"
                         }.invoke<List<Any>>()?.toMutableList()?.apply {

@@ -4,21 +4,16 @@ import android.graphics.drawable.ShapeDrawable
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.result
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.ThemeUtils.isNightMode
 import com.luckyzyx.luckytool.utils.formatColorAlpha
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomTileBackgroundTransparency : Hooker {
+object CustomTileBackgroundTransparency : YukiBaseHooker() {
     override fun onHook() {
-        val customAlpha = prefs(ModulePrefs).getInt("custom_tile_background_transparency", -1)
+        val customAlpha = preferences(ModulePrefs).getInt("custom_tile_background_transparency", -1)
 
         //Source OplusQsMediaPanelBgDrawable status_bar_qs_tile_bg_color_inactive
         "com.oplus.systemui.qs.media.OplusQsMediaPanelBgDrawable".toClass().resolve().apply {
@@ -26,11 +21,11 @@ object CustomTileBackgroundTransparency : Hooker {
                 before {
                     if (customAlpha < 0) return@before
                     val value = customAlpha / 10.0F
-                    val view = args().first().cast<View>() ?: return@before
+                    val view = firstArg().get<View>() ?: return@before
                     if (view.context.isNightMode) return@before
-                    val color = args(1).int()
+                    val color = arg(1).get<Int>() ?: 0
                     val newColor = formatColorAlpha(color, value)
-                    args(1).set(newColor)
+                    arg(1).set(newColor)
                 }
             }
         }
@@ -47,7 +42,7 @@ object CustomTileBackgroundTransparency : Hooker {
                     val value = customAlpha / 10.0F
                     val view = instance<View>()
                     if (view.context.isNightMode) return@after
-                    val type = args().first().int()
+                    val type = firstArg().get<Int>() ?: 0
                     val shapeDrawable = result<ShapeDrawable>() ?: return@after
                     if (type == 1) {
                         val color = shapeDrawable.paint.color
@@ -70,7 +65,7 @@ object CustomTileBackgroundTransparency : Hooker {
                     val value = customAlpha / 10.0F
                     val view = instance<View>()
                     if (view.context.isNightMode) return@after
-                    val type = args().first().int()
+                    val type = firstArg().get<Int>() ?: 0
                     val shapeDrawable = result<ShapeDrawable>() ?: return@after
                     if (type == 1) {
                         val color = shapeDrawable.paint.color

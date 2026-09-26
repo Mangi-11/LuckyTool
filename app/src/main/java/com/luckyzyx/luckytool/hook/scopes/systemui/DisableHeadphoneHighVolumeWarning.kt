@@ -5,13 +5,12 @@ import android.media.AudioManager
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object DisableHeadphoneHighVolumeWarning : Hooker {
+object DisableHeadphoneHighVolumeWarning : YukiBaseHooker() {
     override fun onHook() {
         //Sourcce VolumeDialogImplEx
         VariousClass(
@@ -22,7 +21,7 @@ object DisableHeadphoneHighVolumeWarning : Hooker {
                 after {
                     val mContext = firstField { name = "mContext" }.of(instance).get<Context>()
                         ?: return@after
-                    val audioManager = mContext.getSystemService(AudioManager::class.java)
+                    val audioManager = mContext.getSystemService(classOf<AudioManager>())
                         ?: return@after
                     audioManager.asResolver().firstMethod { name = "disableSafeMediaVolume" }.invoke()
                 }

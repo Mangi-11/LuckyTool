@@ -2,17 +2,15 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.graphics.drawable.Drawable
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomFluidCloudIconBackgroundTransparency : Hooker {
+object CustomFluidCloudIconBackgroundTransparency : YukiBaseHooker() {
     override fun onHook() {
         var customAlpha =
-            prefs(ModulePrefs).getInt("custom_fluid_cloud_icon_background_transparency", -1)
+            preferences(ModulePrefs).getInt("custom_fluid_cloud_icon_background_transparency", -1)
         dataChannel.wait<Int>("custom_fluid_cloud_icon_background_transparency") {
             customAlpha = it
         }

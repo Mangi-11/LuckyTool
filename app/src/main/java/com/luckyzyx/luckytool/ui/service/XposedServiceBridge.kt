@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 /**
  * 模块 App 侧接入 libxposed service 的唯一入口：
  * - 绑定成功后持有 [XposedService]
- * - [preferences] 返回 remote prefs（宿主进程 Env.prefs 的同一数据源），
+ * - [preferences] 返回 remote prefs（宿主进程 YukiHookPreferences 的同一数据源），
  *   绑定不可用（未激活/无框架）时回落 null，由调用方走本地 prefs
  */
 object XposedServiceBridge {

@@ -2,23 +2,19 @@ package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LTPODynamicRefreshRate : Hooker {
+object LTPODynamicRefreshRate : YukiBaseHooker() {
 
     private const val BackLightBean = "com.oplus.vrr.bean.BackLightBean"
 
     override fun onHook() {
-        val ltpoMode = prefs(ModulePrefs).getString("set_ltpo_refresh_rate_mode", "0")
+        val ltpoMode = preferences(ModulePrefs).getString("set_ltpo_refresh_rate_mode", "0")
         val ltpoMinOne =
-            prefs(ModulePrefs).getBoolean("enable_full_brightness_refresh_rate_minimum_one", false)
+            preferences(ModulePrefs).getBoolean("enable_full_brightness_refresh_rate_minimum_one", false)
 
         if (ltpoMode != "1") return
 
@@ -30,7 +26,7 @@ object LTPODynamicRefreshRate : Hooker {
             }.hookAll {
                 before {
                     if (!ltpoMinOne) return@before
-                    val bean = args().first().any() ?: return@before
+                    val bean = firstArg().get() ?: return@before
                     val mNitsToMinFPS = bean.asResolver().firstField {
                         name = "mNitsToMinFPS"
                     }.get<HashMap<Int, ArrayList<HashMap<Float, Float>>>>()
@@ -112,7 +108,7 @@ object LTPODynamicRefreshRate : Hooker {
 //        "com.oplus.vrr.OPlusExternalRefreshRateManager".toClass().apply {
 //            method { name = "setAdfrMinFpsConfig" }.hook {
 //                before {
-//                    args().first().setTrue()
+//                    firstArg().set(true)
 //                }
 //            }
 //        }

@@ -3,22 +3,21 @@ package com.luckyzyx.luckytool.hook.scopes.filemanager
 import android.text.InputFilter
 import android.widget.EditText
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveWordLimitForCompressFiles(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveWordLimitForCompressFiles(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source CompressConfirmDialog
         dexKitBridge.findClass {
             matcher {
                 methods {
                     add { name("onTextChanged") }
-                    add { paramTypes(EditText::class.java, InputFilter::class.java) }
+                    add { paramTypes(classOf<EditText>(), classOf<InputFilter>()) }
                 }
                 usingStrings("CompressConfirmDialog")
             }
@@ -28,7 +27,7 @@ class RemoveWordLimitForCompressFiles(val dexKitBridge: DexKitBridge) : Hooker {
             findMethod {
                 matcher {
                     paramCount(0)
-                    returnType(Int::class.java)
+                    returnType(classOf<Int>())
                     usingNumbers(50)
                 }
             }.apply {
@@ -40,7 +39,7 @@ class RemoveWordLimitForCompressFiles(val dexKitBridge: DexKitBridge) : Hooker {
                         emptyParameters()
                         returnType = Int::class
                     }.hook {
-                        replaceTo(9999)
+                        intercept(9999)
                     }
                 }
             }

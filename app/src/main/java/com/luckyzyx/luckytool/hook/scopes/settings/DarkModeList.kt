@@ -4,12 +4,10 @@ import android.content.Context
 import android.util.ArrayMap
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.XLog
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.data.DarkModeInfo
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
@@ -22,32 +20,32 @@ import java.io.Reader
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Obfuscate
-class DarkModeList(val dexKitBridge: DexKitBridge) : Hooker {
+class DarkModeList(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     var isEnable = false
     val list = ArraySet<DarkModeInfo>()
 
     fun loadData() {
-        isEnable = prefs(ModulePrefs).getBoolean("dark_mode_list_enable", false)
+        isEnable = preferences(ModulePrefs).getBoolean("dark_mode_list_enable", false)
         dataChannel.wait<Boolean>("dark_mode_list_enable") {
             isEnable = it
-            XLog.debug("update dark mode configs status -> $it")
+            YLog.debug("update dark mode configs status -> $it")
         }
 
         list.clear()
-        val enabled = prefs(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
+        val enabled = preferences(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
         list.addAll(enabled.mapNotNull {
             safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
         })
-        dataChannel.watch("dark_mode_support_list") {
-            val new = prefs(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
-            XLog.debug("update dark mode whitelist configs -> ${list.size} | ${new.size}")
+        dataChannel.wait("dark_mode_support_list") {
+            val new = preferences(ModulePrefs).getStringSet("dark_mode_support_list", ArraySet())
+            YLog.debug("update dark mode whitelist configs -> ${list.size} | ${new.size}")
             list.clear()
             list.addAll(new.mapNotNull {
                 safeOfNull { Json.decodeFromString<DarkModeInfo>(it) }
             })
         }
-        XLog.debug("init dark mode configs success")
+        YLog.debug("init dark mode configs success")
     }
 
     override fun onHook() {
@@ -57,13 +55,13 @@ class DarkModeList(val dexKitBridge: DexKitBridge) : Hooker {
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(Any::class.java)
-                    addForType(AtomicBoolean::class.java)
-                    addForType(Map::class.java)
+                    addForType(classOf<Any>())
+                    addForType(classOf<AtomicBoolean>())
+                    addForType(classOf<Map<*,*>>())
                 }
                 methods {
-                    add { paramTypes(Reader::class.java) }
-                    add { paramTypes(InputStream::class.java) }
+                add { paramTypes(classOf<Reader>()) }
+                    add { paramTypes(classOf<InputStream>()) }
                 }
                 usingStrings("DarkModeFileUtils")
             }

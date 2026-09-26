@@ -2,9 +2,8 @@ package com.luckyzyx.luckytool.hook.scopes.games
 
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.IntentUtils
 import com.luckyzyx.luckytool.utils.getOSVersionCode
@@ -13,17 +12,17 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class EnableGameRunInBackground(val dexKitBridge: DexKitBridge) : Hooker {
+class EnableGameRunInBackground(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
         //Source HangUpUtil
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(List::class.java)
-                addMethod { paramCount(0);returnType(Boolean::class.java) }
+                addFieldForType(classOf<List<*>>())
+                addMethod { paramCount(0);returnType(classOf<Boolean>()) }
                 addMethod { paramCount(0);returnType(Void.TYPE) }
-                addMethod { paramTypes(Context::class.java);returnType(Void.TYPE) }
+                addMethod { paramTypes(classOf<Context>());returnType(Void.TYPE) }
                 usingStrings("HangUpUtil", "isSupportBackgroundHangUp")
             }
         }.apply {
@@ -31,7 +30,7 @@ class EnableGameRunInBackground(val dexKitBridge: DexKitBridge) : Hooker {
             findMethod {
                 matcher {
                     paramCount(0)
-                    returnType(Boolean::class.java)
+                    returnType(classOf<Boolean>())
                     usingStrings("isSupportBackgroundHangUp")
                 }
             }.apply {
@@ -42,7 +41,7 @@ class EnableGameRunInBackground(val dexKitBridge: DexKitBridge) : Hooker {
                         emptyParameters()
                         returnType = Boolean::class
                     }.hook {
-                        replaceToTrue()
+                        intercept(true)
                     }
                     firstMethod {
                         parameters(Context::class)
@@ -52,10 +51,10 @@ class EnableGameRunInBackground(val dexKitBridge: DexKitBridge) : Hooker {
                             if (osCode >= 34) {
                                 startMirageWindow(null)
                             } else {
-                                val context = args().first().cast<Context>() ?: return@before
+                                val context = firstArg().get<Context>() ?: return@before
                                 IntentUtils(context).startBackgroundRunServiceV14()
                             }
-                            resultNull()
+                            result = null
                         }
                     }
                 }

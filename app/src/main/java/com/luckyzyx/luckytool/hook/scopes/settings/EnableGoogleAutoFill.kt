@@ -11,24 +11,23 @@ import android.graphics.drawable.Drawable
 import android.os.UserHandle
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
+import com.highcapable.kavaref.extension.classOf
 import com.highcapable.kavaref.extension.createInstance
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : Hooker {
+class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         if (getOSVersionCode >= 30) loadHooker(GoogleAutoFill)
         else loadHooker(GoogleAutoFillV13(dexKitBridge))
     }
 
     @Obfuscate
-    object GoogleAutoFill : Hooker {
+    object GoogleAutoFill : YukiBaseHooker() {
         override fun onHook() {
             //Source DefaultAppInfo
             val defaultAppInfoClazz = "com.android.settingslib.applications.DefaultAppInfo"
@@ -105,24 +104,24 @@ class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class GoogleAutoFillV13(val dexKitBridge: DexKitBridge) : Hooker {
+    class GoogleAutoFillV13(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source DefaultAppInfo
             val defaultAppInfoClazz = dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Int::class.java)
-                        addForType(String::class.java)
-                        addForType(Context::class.java)
-                        addForType(ComponentName::class.java)
-                        addForType(PackageManager::class.java)
-                        addForType(PackageItemInfo::class.java)
+                    addForType(classOf<Int>())
+                        addForType(classOf<String>())
+                        addForType(classOf<Context>())
+                        addForType(classOf<ComponentName>())
+                        addForType(classOf<PackageManager>())
+                        addForType(classOf<PackageItemInfo>())
                     }
                     methods {
-                        add { paramCount(0);returnType(String::class.java) }
-                        add { paramCount(0);returnType(Drawable::class.java) }
-                        add { paramCount(0);returnType(CharSequence::class.java) }
-                        add { paramCount(0);returnType(ComponentInfo::class.java) }
+                    add { paramCount(0);returnType(classOf<String>()) }
+                        add { paramCount(0);returnType(classOf<Drawable>()) }
+                        add { paramCount(0);returnType(classOf<CharSequence>()) }
+                        add { paramCount(0);returnType(classOf<ComponentInfo>()) }
                     }
                 }
             }.let {
@@ -143,7 +142,7 @@ class EnableGoogleAutoFill(val dexKitBridge: DexKitBridge) : Hooker {
                                 firstMethod { name = "getContext";superclass() }.of(instance)
                                     .invoke<Context>() ?: return@before
                             val packageManager = firstField {
-                                type = PackageManager::class.java;superclass()
+                                type = classOf<PackageManager>();superclass()
                             }.of(instance).get<PackageManager>() ?: return@before
                             val intent = firstField {
                                 type = Intent::class;superclass()

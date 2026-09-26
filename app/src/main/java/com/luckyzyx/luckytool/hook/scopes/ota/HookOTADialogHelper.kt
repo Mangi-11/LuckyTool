@@ -4,25 +4,24 @@ import android.content.Context
 import android.content.DialogInterface
 import android.view.Window
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class HookOTADialogHelper(val dexKitBridge: DexKitBridge) : Hooker {
+class HookOTADialogHelper(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        val autoDownload = prefs(ModulePrefs).getBoolean("remove_ota_auto_download_dialog", false)
+        val autoDownload = preferences(ModulePrefs).getBoolean("remove_ota_auto_download_dialog", false)
 
         //Source OTADialogHelper
         dexKitBridge.findClass {
             matcher {
-                addMethod { paramTypes(Window::class.java) }
+            addMethod { paramTypes(classOf<Window>()) }
                 addMethod {
-                    paramTypes(Context::class.java, DialogInterface.OnClickListener::class.java)
+                paramTypes(classOf<Context>(), classOf<DialogInterface.OnClickListener>())
                 }
                 usingStrings("OTADialogHelper", "auto_download_network_type")
             }

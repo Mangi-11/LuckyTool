@@ -1,17 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.android
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookPowerManager : Hooker {
+object HookPowerManager : YukiBaseHooker() {
     override fun onHook() {
         val removeThermal =
-            prefs(ModulePrefs).getBoolean("disable_temperature_control_listener", false)
+            preferences(ModulePrefs).getBoolean("disable_temperature_control_listener", false)
         if (!removeThermal) return
 
         //Source PowerManager
@@ -21,7 +19,7 @@ object HookPowerManager : Hooker {
                 parameterCount = 1
             }.hook {
                 after {
-                    val listener = args().first().any() ?: return@after
+                    val listener = firstArg().get() ?: return@after
                     firstMethod {
                         name = "removeThermalStatusListener"
                         parameterCount = 1
@@ -29,7 +27,7 @@ object HookPowerManager : Hooker {
                 }
             }
             firstMethod { name = "getCurrentThermalStatus" }.hook {
-                replaceTo(0)
+                intercept(0)
             }
         }
     }

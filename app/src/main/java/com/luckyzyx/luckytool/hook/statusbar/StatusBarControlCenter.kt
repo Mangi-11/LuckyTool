@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.statusbar
 
-import com.luckyzyx.luckytool.hook.core.Hooker
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControlCenterBackgroundTransParency
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControlCenterClockStyle
 import com.luckyzyx.luckytool.hook.scopes.systemui.ControlCenterDateStyle
@@ -16,7 +16,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object StatusBarControlCenter : Hooker {
+object StatusBarControlCenter : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -27,11 +27,11 @@ object StatusBarControlCenter : Hooker {
         loadHooker(ControlCenterDateStyle)
 
         //通知两侧对齐
-        if (prefs(ModulePrefs).getBoolean("enable_notification_align_both_sides", false)) {
-            loadHooker(EnableNotificationAlignBothSides)
+        if (preferences(ModulePrefs).getBoolean("enable_notification_align_both_sides", false)) {
+            if (osCode >= 23) loadHooker(EnableNotificationAlignBothSides)
         }
         //移除控制中心多用户
-        if (prefs(ModulePrefs).getBoolean("remove_control_center_user_switcher", false)) {
+        if (preferences(ModulePrefs).getBoolean("remove_control_center_user_switcher", false)) {
             if (osCode < 26) loadHooker(RemoveControlCenterUserSwitcher)
         }
         //控制中心底部网络警告
@@ -49,13 +49,16 @@ object StatusBarControlCenter : Hooker {
 
         //启用控制中心进度条百分比显示
         val enableProgressPercent =
-            prefs(ModulePrefs).getBoolean("enable_control_center_progress_percent_display", false)
+            preferences(ModulePrefs).getBoolean(
+                "enable_control_center_progress_percent_display",
+                false
+            )
         if (enableProgressPercent) {
             loadHooker(EnableControlCenterProgressPercentDisplay)
         }
 
         //移除控制中心运营商
-        if (prefs(ModulePrefs).getBoolean("remove_control_center_carriers", false)) {
+        if (preferences(ModulePrefs).getBoolean("remove_control_center_carriers", false)) {
             loadHooker(RemoveControlCenterCarriers)
         }
     }

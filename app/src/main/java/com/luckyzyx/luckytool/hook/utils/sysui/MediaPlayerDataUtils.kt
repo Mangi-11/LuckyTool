@@ -3,7 +3,6 @@ package com.luckyzyx.luckytool.hook.utils.sysui
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
@@ -12,7 +11,7 @@ class MediaPlayerDataUtils(val classLoader: ClassLoader?) {
         "com.oplus.systemui.qs.media.OplusQsMediaCarouselController\$MediaPlayerData",  //C13.0 C13.1
         "com.oplusos.systemui.media.OplusMediaControllerImpl\$MediaPlayerData",  //C13.2
         "com.oplus.systemui.media.OplusMediaControllerImpl\$MediaPlayerData"  //C14
-    ).toClass(classLoader)
+    ).load(classLoader)
 
     fun getMediaDataStatus(): Any? {
         val mediaPlayerData = clazz.resolve().firstField { name = "INSTANCE" }.get() ?: return null

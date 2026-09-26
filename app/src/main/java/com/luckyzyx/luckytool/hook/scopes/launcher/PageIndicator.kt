@@ -5,11 +5,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
@@ -17,13 +13,13 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object PageIndicator : Hooker {
+object PageIndicator : YukiBaseHooker() {
     override fun onHook() {
-        val removeDesktop = prefs(ModulePrefs).getBoolean("remove_pagination_component", false)
+        val removeDesktop = preferences(ModulePrefs).getBoolean("remove_pagination_component", false)
         val removeFolder =
-            prefs(ModulePrefs).getBoolean("remove_folder_pagination_component", false)
+            preferences(ModulePrefs).getBoolean("remove_folder_pagination_component", false)
         val disableSliding =
-            prefs(ModulePrefs).getBoolean("disable_pagination_component_sliding", false)
+            preferences(ModulePrefs).getBoolean("disable_pagination_component_sliding", false)
 
         //Source OplusPageIndicator
         "com.android.launcher.pageindicators.OplusPageIndicator".toClass().resolve().apply {
@@ -38,12 +34,12 @@ object PageIndicator : Hooker {
                     when (entryName) {
                         "drag_layer" -> if (removeDesktop) {
                             view.isVisible = false
-                            resultNull()
+                            result = null
                         }
 
                         "folder_content_root" -> if (removeFolder) {
                             view.isVisible = false
-                            resultNull()
+                            result = null
                         }
                     }
                 }
@@ -62,7 +58,9 @@ object PageIndicator : Hooker {
                 name = "getSwitchTargetPage"
                 parameters(MotionEvent::class)
             }.hook {
-                if (disableSliding) replaceTo(-1)
+                if (disableSliding) {
+                    intercept(-1)
+                }
             }
         }
 

@@ -5,27 +5,27 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.RippleDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup.PreferencePositionCallback
 import androidx.recyclerview.widget.RecyclerView
-import androidx.preference.PreferenceFragmentCompat
+import com.highcapable.betterandroid.ui.extension.component.runDelayed
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.data.PrefsItem
-import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
-import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.ui.activity.MainActivity
 import com.luckyzyx.luckytool.utils.LogUtils
+import com.luckyzyx.luckytool.utils.RemotePreferenceDataStore
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.ThemeUtils
+import com.luckyzyx.luckytool.utils.appPrefs
 import com.luckyzyx.luckytool.utils.checkPackName
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getOSVersionName
@@ -146,11 +146,11 @@ abstract class BaseScopePreferenceFeagment : PreferenceFragmentCompat(), MenuPro
         arguments?.apply {
             val scrollKey = getString("scrollKey", "")
             val scrollPosition = getInt("scrollPosition", -1)
-            Handler(Looper.getMainLooper()).postDelayed({
+            lifecycleScope.runDelayed(200) {
                 highLight(scrollKey, scrollPosition)
                 remove("scrollKey")
                 remove("scrollPosition")
-            }, 200)
+            }
         }
     }
 
@@ -188,7 +188,9 @@ abstract class BaseScopePreferenceFeagment : PreferenceFragmentCompat(), MenuPro
         background.setState(
             intArrayOf(android.R.attr.state_pressed, android.R.attr.state_enabled)
         )
-        Handler(Looper.getMainLooper()).postDelayed({ background.setState(intArrayOf()) }, 300)
+        lifecycleScope.runDelayed(300) {
+            background.setState(intArrayOf())
+        }
     }
 
     /**

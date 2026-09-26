@@ -5,7 +5,6 @@ import android.os.ServiceManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
 import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.toClass
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
@@ -18,7 +17,7 @@ class IChargerUtils(val classLoader: ClassLoader?) {
     private val CHARGER_SERVICE_NAME = "vendor.oplus.hardware.charger.ICharger/default"
 
     val clazz = VariousClass(CLASS_OPLUS_CHARGER, CLASS_OPLUS_CHARGER_NEW)
-        .toClass(classLoader)
+        .load(classLoader)
 
     fun getInstance(): Any? {
         return if (clazz.name == CLASS_OPLUS_CHARGER) {

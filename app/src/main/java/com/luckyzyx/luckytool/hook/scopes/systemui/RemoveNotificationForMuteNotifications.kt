@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveNotificationForMuteNotifications : Hooker {
+object RemoveNotificationForMuteNotifications : YukiBaseHooker() {
     override fun onHook() {
         //Source NoDisturbController
         VariousClass(
@@ -16,7 +14,7 @@ object RemoveNotificationForMuteNotifications : Hooker {
             "com.oplus.systemui.statusbar.controller.NoDisturbController" //C14
         ).toClass().resolve().apply {
             firstMethod { name = "checkBlockBannerStatus" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
     }

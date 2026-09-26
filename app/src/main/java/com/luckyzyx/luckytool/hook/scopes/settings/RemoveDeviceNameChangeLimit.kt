@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.settings
 
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveDeviceNameChangeLimit : Hooker {
+object RemoveDeviceNameChangeLimit : YukiBaseHooker() {
     override fun onHook() {
         //Source PhoneNameSettingsActivity -> AlertDialog
 
@@ -17,9 +15,9 @@ object RemoveDeviceNameChangeLimit : Hooker {
             .apply {
                 firstMethod { name = "activeVerifyPhoneName" }.hook {
                     before {
-                        val callback = args().last().any() ?: return@before
+                        val callback = lastArg().get() ?: return@before
                         callback.asResolver().firstMethod { name = "onSuccess" }.invoke(null)
-                        resultNull()
+                        result = null
                     }
                 }
                 firstMethod { name = "timeScheduleVerifyPhoneName" }.hook {
@@ -31,9 +29,9 @@ object RemoveDeviceNameChangeLimit : Hooker {
         "com.oplus.settings.utils.WirelessDeviceVerifyUtils".toClass().resolve().apply {
             firstMethod { name = "activeVerifyPhoneName" }.hook {
                 before {
-                    val callback = args().last().any() ?: return@before
+                    val callback = lastArg().get() ?: return@before
                     callback.asResolver().firstMethod { name = "onSuccess" }.invoke(null)
-                    resultNull()
+                    result = null
                 }
             }
         }
@@ -41,7 +39,7 @@ object RemoveDeviceNameChangeLimit : Hooker {
         //Source OplusDeviceInfoUtils
         "com.oplus.settings.utils.OplusDeviceInfoUtils".toClass().resolve().apply {
             firstMethod { name = "getVerifyNameCondition" }.hook {
-                replaceToFalse()
+                intercept(false)
             }
         }
     }

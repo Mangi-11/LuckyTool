@@ -3,23 +3,21 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A14
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object BluetoothIconRelated : Hooker {
+object BluetoothIconRelated : YukiBaseHooker() {
 
     private val BluetoothController = "com.android.systemui.statusbar.policy.BluetoothController"
     private val StatusBarIconController =
         "com.android.systemui.statusbar.phone.ui.StatusBarIconController"
 
     override fun onHook() {
-        var isHide = prefs(ModulePrefs).getBoolean("hide_icon_when_bluetooth_not_connected", false)
+        var isHide = preferences(ModulePrefs).getBoolean("hide_icon_when_bluetooth_not_connected", false)
         dataChannel.wait<Boolean>("hide_icon_when_bluetooth_not_connected") { isHide = it }
 
         //Source PhoneStatusBarPolicyEx
@@ -30,7 +28,7 @@ object BluetoothIconRelated : Hooker {
             firstMethodOrNull { name = "updateBluetoothIcon";parameterCount = 4 }?.hook {
                 before {
                     if (!isHide) return@before
-                    val isBluetoothEnabled = args().last().boolean()
+                    val isBluetoothEnabled = lastArg().get<Boolean>() ?: false
                     val controller = firstField {
                         type = BluetoothController
                         if (SDK < A14) superclass()
@@ -38,7 +36,7 @@ object BluetoothIconRelated : Hooker {
                     val isBluetoothConnected = controller.asResolver().firstMethod {
                         name = "isBluetoothConnected"
                     }.invoke<Boolean>() ?: return@before
-                    args().last().set(isBluetoothEnabled && isBluetoothConnected)
+                    lastArg().set(isBluetoothEnabled && isBluetoothConnected)
                 }
             } ?: run {
                 (firstMethodOrNull {
@@ -67,7 +65,7 @@ object BluetoothIconRelated : Hooker {
                             statusBarIconController.asResolver().firstMethod {
                                 name = "setIconVisibility"
                             }.invoke(slotBluetooth, false)
-                            resultNull()
+                            result = null
                         }
                     }
                 }

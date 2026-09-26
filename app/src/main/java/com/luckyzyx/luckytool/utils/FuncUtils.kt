@@ -37,7 +37,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.MenuRes
-import androidx.core.content.edit
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import androidx.core.graphics.drawable.toBitmap
@@ -64,6 +63,7 @@ import com.highcapable.betterandroid.ui.extension.graphics.decodeToBitmapOrNull
 import com.highcapable.betterandroid.ui.extension.view.toast
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.factory.dataChannel
 import com.luckyzyx.luckytool.BuildConfig
 import com.luckyzyx.luckytool.IGlobalFuncController
 import com.luckyzyx.luckytool.R
@@ -857,24 +857,16 @@ fun logcatToFile(file: File): Boolean {
  * @param packName 原 dataChannel 目标包，现仅作兼容保留（不再按包路由）
  */
 fun Context.sendPrefsValue(packName: String, key: String, newValue: Any) {
-    appPrefs(ModulePrefs).edit(true) {
-        when (newValue) {
-            is String -> putString(key, newValue)
-            is Int -> putInt(key, newValue)
-            is Long -> putLong(key, newValue)
-            is Float -> putFloat(key, newValue)
-            is Boolean -> putBoolean(key, newValue)
-            is Set<*> -> putStringSet(key, newValue.filterIsInstance<String>().toSet())
-            else -> putString(key, newValue.toString())
-        }
-    }
+    dataChannel(packName).put(key, newValue)
 }
 
 /**
  * 旧 dataChannel put(key)（无值推送）没有 remote prefs 对应物；
  * 键值本身由调用方的 putXxx(ModulePrefs, ...) 已写入，本函数保留为兼容空操作。
  */
-fun Context.sendPrefsKey(packName: String, key: String) = Unit
+fun Context.sendPrefsKey(packName: String, key: String) {
+    dataChannel(packName).put(key)
+}
 
 /**
  * 逆转字符串数组

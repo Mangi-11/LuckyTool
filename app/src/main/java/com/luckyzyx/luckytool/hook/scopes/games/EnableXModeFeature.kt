@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.games
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object EnableXModeFeature : Hooker {
+object EnableXModeFeature : YukiBaseHooker() {
     override fun onHook() {
         //Source CoolingBackClipHelper / CoolingBackClipFeature
         VariousClass(
@@ -17,7 +15,7 @@ object EnableXModeFeature : Hooker {
         ).toClass().resolve().apply {
             firstMethod { parameterCount = 1;returnType = Any::class }.hook {
                 after {
-                    resultTrue()
+                    result = true
                 }
             }
         }

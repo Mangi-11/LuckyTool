@@ -18,8 +18,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.highcapable.betterandroid.ui.extension.view.child
 import com.highcapable.betterandroid.ui.extension.view.textColor
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
 import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
 
@@ -34,7 +34,7 @@ internal class ApkDetailsView(context: Context) : LinearLayout(context) {
     init {
         orientation = VERTICAL
         setPadding(0, dp(24), 0, dp(8))
-        context.injectModuleAppResources()
+        context.injectModuleResources()
     }
 
     fun bind(pkg: String, versionName: String, versionCode: String, path: String, incoming: PackageInfo?, current: PackageInfo?) {

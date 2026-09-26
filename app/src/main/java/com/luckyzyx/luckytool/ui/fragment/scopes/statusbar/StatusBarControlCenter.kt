@@ -55,7 +55,7 @@ class StatusBarControlCenter : BaseScopePreferenceFeagment() {
                 title = getString(R.string.remove_control_center_clock_view)
                 key = "remove_control_center_clock_view"
                 setDefaultValue(false)
-                isVisible = osCode >= 34
+                isVisible = osCode in 34..39
                 isIconSpaceReserved = false
                 setOnPreferenceChangeListener { _, _ ->
                     (activity as MainActivity).restart()
@@ -277,7 +277,7 @@ class StatusBarControlCenter : BaseScopePreferenceFeagment() {
                 summary = getString(R.string.separate_control_center_mode_only)
                 key = "remove_control_center_more_button"
                 setDefaultValue(false)
-                isVisible = osCode >= 34
+                isVisible = osCode in 34..39
                 isIconSpaceReserved = false
             })
             add(SwitchPreference(this@loadPreferences).apply {

@@ -5,17 +5,14 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
+import com.highcapable.betterandroid.ui.extension.component.base.getDrawableCompat
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.isSubclassOf
-import com.highcapable.kavaref.extension.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.luckyzyx.luckytool.R
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
-import com.luckyzyx.luckytool.hook.core.instance
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.closeScreen
 import com.luckyzyx.luckytool.utils.getOSVersionCode
@@ -23,7 +20,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LockScreenBottomButton : Hooker {
+object LockScreenBottomButton : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 37) loadHooker(FlashlightQuickCloseScreen)
@@ -32,9 +29,9 @@ object LockScreenBottomButton : Hooker {
     }
 
     @Obfuscate
-    object FlashlightQuickCloseScreen : Hooker {
+    object FlashlightQuickCloseScreen : YukiBaseHooker() {
         override fun onHook() {
-            var autoCloseScreen = prefs(ModulePrefs).getBoolean(
+            var autoCloseScreen = preferences(ModulePrefs).getBoolean(
                 "lock_screen_switch_flashlight_auto_close_screen", false
             )
             dataChannel.wait<Boolean>("lock_screen_switch_flashlight_auto_close_screen") {
@@ -57,18 +54,18 @@ object LockScreenBottomButton : Hooker {
     }
 
     @Obfuscate
-    object LockScreenBottomButtonV14 : Hooker {
+    object LockScreenBottomButtonV14 : YukiBaseHooker() {
         val ViewModel =
             "com.android.systemui.keyguard.ui.viewmodel.KeyguardQuickAffordanceViewModel"
 
         override fun onHook() {
             var rmLeft =
-                prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_left_button", false)
+                preferences(ModulePrefs).getBoolean("remove_lock_screen_bottom_left_button", false)
             dataChannel.wait<Boolean>("remove_lock_screen_bottom_left_button") { rmLeft = it }
             var rmRight =
-                prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_right_camera", false)
+                preferences(ModulePrefs).getBoolean("remove_lock_screen_bottom_right_camera", false)
             dataChannel.wait<Boolean>("remove_lock_screen_bottom_right_camera") { rmRight = it }
-            var autoCloseScreen = prefs(ModulePrefs).getBoolean(
+            var autoCloseScreen = preferences(ModulePrefs).getBoolean(
                 "lock_screen_switch_flashlight_auto_close_screen", false
             )
             dataChannel.wait<Boolean>("lock_screen_switch_flashlight_auto_close_screen") {
@@ -117,25 +114,25 @@ object LockScreenBottomButton : Hooker {
     }
 
     @Obfuscate
-    object LockScreenBottomButtonV13 : Hooker {
+    object LockScreenBottomButtonV13 : YukiBaseHooker() {
         override fun onHook() {
             //affordance_magazine
             var rmLeft =
-                prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_left_button", false)
+                preferences(ModulePrefs).getBoolean("remove_lock_screen_bottom_left_button", false)
             dataChannel.wait<Boolean>("remove_lock_screen_bottom_left_button") { rmLeft = it }
             //affordance_camera
             var rmRight =
-                prefs(ModulePrefs).getBoolean("remove_lock_screen_bottom_right_camera", false)
+                preferences(ModulePrefs).getBoolean("remove_lock_screen_bottom_right_camera", false)
             dataChannel.wait<Boolean>("remove_lock_screen_bottom_right_camera") { rmRight = it }
 
             //affordance_flashlight
-            var useFlashLight = prefs(ModulePrefs).getBoolean(
+            var useFlashLight = preferences(ModulePrefs).getBoolean(
                 "lock_screen_bottom_left_button_replace_with_flashlight", false
             )
             dataChannel.wait<Boolean>("lock_screen_bottom_left_button_replace_with_flashlight") {
                 useFlashLight = it
             }
-            var autoCloseScreen = prefs(ModulePrefs).getBoolean(
+            var autoCloseScreen = preferences(ModulePrefs).getBoolean(
                 "lock_screen_switch_flashlight_auto_close_screen", false
             )
             dataChannel.wait<Boolean>("lock_screen_switch_flashlight_auto_close_screen") {
@@ -148,7 +145,7 @@ object LockScreenBottomButton : Hooker {
                     firstMethod { name = "onFinishInflate" }.hook {
                         before {
                             if (!useFlashLight) return@before
-                            instance<ViewGroup>().context.injectModuleAppResources()
+                            instance<ViewGroup>().context.injectModuleResources()
                         }
                     }
                     firstMethod { name = "updateLeftAffordanceIcon" }.hook {
@@ -165,7 +162,7 @@ object LockScreenBottomButton : Hooker {
                             val resId = if (isEnable) R.drawable.affordance_flashlight_on
                             else R.drawable.affordance_flashlight
                             val drawable = safeOfNull {
-                                ResourcesCompat.getDrawable(context.resources, resId, null)
+                                context.resources.getDrawableCompat(resId, null)
                             }
                             firstField { name = "mLeftAffordanceView";superclass() }.of(instance)
                                 .get()?.asResolver()?.firstMethod {
@@ -206,7 +203,7 @@ object LockScreenBottomButton : Hooker {
                                 ?.invoke(!isEnable)
                             firstMethod { name = "updateLeftAffordanceIcon" }.of(instance).invoke()
                             if (autoCloseScreen) closeScreen(instance<ViewGroup>().context)
-                            resultNull()
+                            result = null
                         }
                     }
                     firstMethod { name = "updateCameraVisibility" }.hook {
@@ -214,7 +211,7 @@ object LockScreenBottomButton : Hooker {
                             if (!rmRight) return@before
                             firstField { name = "mRightAffordanceView";superclass() }.of(instance)
                                 .get<ImageView>()?.isVisible = false
-                            resultNull()
+                            result = null
                         }
                     }
                 }

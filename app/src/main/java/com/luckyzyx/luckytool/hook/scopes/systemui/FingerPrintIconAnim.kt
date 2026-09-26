@@ -3,20 +3,18 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.os.Handler
 import android.widget.ImageView
 import androidx.core.graphics.drawable.toDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FingerPrintIconAnim : Hooker {
+object FingerPrintIconAnim : YukiBaseHooker() {
 
     private const val TAG = "FpIcon"
 
@@ -30,10 +28,21 @@ object FingerPrintIconAnim : Hooker {
         "com.oplus.systemui.keyguard.view.OplusAnimationDrawable" //C16
     )
 
+    //C17：宿主滤镜经 KeyguardFingerprintUtils.updateOpticalUI 投递到专用 HandlerThread 异步应用，
+    //懒加载到首次 updateFpColor 回调时再读，此时该类必已初始化、字段非空
+    private val opticalUiUpdateHandler: Handler? by lazy {
+        runCatching {
+            VariousClass("com.oplus.systemui.biometrics.finger.KeyguardFingerprintUtils")
+                .toClass().resolve().firstFieldOrNull { name = "opticalUiUpdateHandler" }
+                ?.get<Handler>()
+        }.getOrNull()
+    }
+
     override fun onHook() {
-        val removeMode = prefs(ModulePrefs).getString("remove_fingerprint_icon_mode", "0")
-        val isReplaceIcon = prefs(ModulePrefs).getBoolean("replace_fingerprint_icon_switch", false)
-        val iconPath = prefs(ModulePrefs).getString("replace_fingerprint_icon_path", "")
+        val removeMode = preferences(ModulePrefs).getString("remove_fingerprint_icon_mode", "0")
+        val isReplaceIcon =
+            preferences(ModulePrefs).getBoolean("replace_fingerprint_icon_switch", false)
+        val iconPath = preferences(ModulePrefs).getString("replace_fingerprint_icon_path", "")
 
         //Source OnScreenFingerprintUiMech
         VariousClass(
@@ -45,7 +54,7 @@ object FingerPrintIconAnim : Hooker {
             firstMethod { name = "loadAnimDrawables" }.hook {
                 if (removeMode == "3") intercept()
                 else after {
-//                    XLog.d(
+//                    YLog.d(
 //                        "loadAnimDrawables after: mode=$removeMode replace=$isReplaceIcon path=$iconPath",
 //                        tag = TAG
 //                    )
@@ -66,7 +75,7 @@ object FingerPrintIconAnim : Hooker {
             firstMethodOrNull { name = "startFadeInAnimation" }?.hook {
                 if (isReplaceIcon) before {
                     instance<Any>().setCustomDrawable(iconPath, false)
-                    resultNull()
+                    result = null
                 } else if (removeMode == "1" || removeMode == "3") intercept()
             }
             firstMethodOrNull { name = "startFadeOutAnimation" }?.hook {
@@ -96,14 +105,27 @@ object FingerPrintIconAnim : Hooker {
                 parameters(Int::class)
             }.hook {
                 after {
-                    val imMobileDrawable =
-                        firstField { name = "imMobileDrawable" }.of(instance).get<Drawable>()
-                    imMobileDrawable?.clearColorFilter()
-                    val imMobileDrawableDark =
-                        firstField { name = "imMobileDrawableDark" }.of(instance).get<Drawable>()
-                    imMobileDrawableDark?.clearColorFilter()
+                    if (!isReplaceIcon) return@after
+                    val mech = instance<Any>()
+                    //C17：宿主滤镜经 updateOpticalUI 投递到专用 HandlerThread 异步应用，
+                    //同步清除会被随后执行的 setColorFilter 覆盖，投递到同一队列保证在其之后执行
+                    val handler = opticalUiUpdateHandler
+                    if (handler != null) {
+                        handler.post { mech.clearFpIconColorFilter() }
+                    } else {
+                        mech.clearFpIconColorFilter()
+                    }
                 }
             }
+        }
+    }
+
+    /** 清除指纹图标 drawable 的颜色滤镜（C15 及之前为 Dark，C17 起改名 HY） */
+    private fun Any.clearFpIconColorFilter() {
+        asResolver().apply {
+            firstFieldOrNull { name = "imMobileDrawable" }?.get<Drawable>()?.clearColorFilter()
+            firstFieldOrNull { name = "imMobileDrawableDark" }?.get<Drawable>()?.clearColorFilter()
+            firstFieldOrNull { name = "imMobileDrawableHY" }?.get<Drawable>()?.clearColorFilter()
         }
     }
 

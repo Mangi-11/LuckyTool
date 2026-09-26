@@ -3,16 +3,13 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 import android.util.Pair
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.ArrayClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object LauncherLayoutRowColume : Hooker {
+object LauncherLayoutRowColume : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode >= 37) loadHooker(LayoutRowColume)
@@ -20,15 +17,15 @@ object LauncherLayoutRowColume : Hooker {
     }
 
     @Obfuscate
-    object LayoutRowColume : Hooker {
+    object LayoutRowColume : YukiBaseHooker() {
         override fun onHook() {
-            val maxRows = prefs(ModulePrefs).getInt("launcher_layout_max_rows", 6)
-            val maxColumns = prefs(ModulePrefs).getInt("launcher_layout_max_columns", 4)
+            val maxRows = preferences(ModulePrefs).getInt("launcher_layout_max_rows", 6)
+            val maxColumns = preferences(ModulePrefs).getInt("launcher_layout_max_columns", 4)
 
             //Source UiConfig
             "com.android.launcher.UiConfig".toClass().resolve().apply {
                 firstMethod { name = "isSupportLayout" }.hook {
-                    replaceToTrue()
+                    intercept(true)
                 }
                 firstMethod { name = "getSupportLayout" }.hook {
                     before {
@@ -59,16 +56,16 @@ object LauncherLayoutRowColume : Hooker {
     }
 
     @Obfuscate
-    object LayoutRowColumeV15 : Hooker {
+    object LayoutRowColumeV15 : YukiBaseHooker() {
         override fun onHook() {
             //Source UiConfig
             "com.android.launcher.UiConfig".toClass().resolve().apply {
                 firstMethod { name = "isSupportLayout" }.hook {
-                    replaceToTrue()
+                    intercept(true)
                 }
             }
-            val maxRows = prefs(ModulePrefs).getInt("launcher_layout_max_rows", 6)
-            val maxColumns = prefs(ModulePrefs).getInt("launcher_layout_max_columns", 4)
+            val maxRows = preferences(ModulePrefs).getInt("launcher_layout_max_rows", 6)
+            val maxColumns = preferences(ModulePrefs).getInt("launcher_layout_max_columns", 4)
             //Source ToggleBarLayoutAdapter
             "com.android.launcher.togglebar.adapter.ToggleBarLayoutAdapter".toClass().resolve()
                 .apply {

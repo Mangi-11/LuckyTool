@@ -2,15 +2,13 @@ package com.luckyzyx.luckytool.hook.scopes.packageinstaller
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class DisableStartAppDetail(val dexKitBridge: DexKitBridge) : Hooker {
+class DisableStartAppDetail(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     override fun onHook() {
         //Source AppDetailRedirectionUtils
@@ -36,7 +34,7 @@ class DisableStartAppDetail(val dexKitBridge: DexKitBridge) : Hooker {
 //                        parameters(Context::class, String::class)
                         returnType = Int::class
                     }.hook {
-                        replaceTo(9)
+                        intercept(9)
                     }
                 }
             }

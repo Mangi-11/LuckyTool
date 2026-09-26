@@ -4,14 +4,12 @@ import android.app.ActivityManager.RunningTaskInfo
 import android.content.Intent
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.startMirageWindow
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RunFloatingWindowTasksInForeground : Hooker {
+object RunFloatingWindowTasksInForeground : YukiBaseHooker() {
 
     override fun onHook() {
         var flag = -1
@@ -24,8 +22,8 @@ object RunFloatingWindowTasksInForeground : Hooker {
                 parameters(Int::class, Boolean::class)
             }.hook {
                 before {
-                    flag = args().first().int()
-                    status = args().last().boolean()
+                    flag = firstArg().get<Int>() ?: 0
+                    status = lastArg().get<Boolean>() ?: false
 
                     //浮窗全屏 flag 4
                     //浮窗贴边 flag 5
@@ -44,7 +42,7 @@ object RunFloatingWindowTasksInForeground : Hooker {
                         if (uid > 0) baseIntent.putExtra("TASKINFO_UID", uid)
 
                         startMirageWindow(baseIntent)
-                        resultNull()
+                        result = null
                     }
                 }
             }
@@ -54,7 +52,7 @@ object RunFloatingWindowTasksInForeground : Hooker {
         "com.oplus.zoom.ui.floathandle.FloatHandleController".toClass().resolve().apply {
             firstMethod { name = "onTaskMovedToFront" }.hook {
                 before {
-                    if (flag == 5) resultNull()
+                    if (flag == 5) result = null
                 }
             }
         }

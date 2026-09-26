@@ -12,14 +12,7 @@ import com.android.internal.graphics.drawable.BackgroundBlurDrawable
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.instance
-import com.luckyzyx.luckytool.hook.core.result
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.dp
 import com.luckyzyx.luckytool.utils.formatColorAlpha
@@ -28,7 +21,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
+class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     override fun onHook() {
         val osCode = getOSVersionCode
@@ -38,10 +31,10 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    object VolumeDialog : Hooker {
+    object VolumeDialog : YukiBaseHooker() {
         override fun onHook() {
             var customAlpha =
-                prefs(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
+                preferences(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
             dataChannel.wait<Int>("custom_volume_dialog_background_transparency") {
                 customAlpha = it
             }
@@ -125,10 +118,10 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    class VolumeDialogV15(val dexKitBridge: DexKitBridge) : Hooker {
+    class VolumeDialogV15(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             var customAlpha =
-                prefs(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
+                preferences(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
             dataChannel.wait<Int>("custom_volume_dialog_background_transparency") {
                 customAlpha = it
             }
@@ -142,7 +135,7 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
 
             volumnDialogClazz.resolve().apply {
                 firstMethodOrNull { name = "isSurrealQualityOn" }?.hook {
-                    replaceToFalse()
+                    intercept(false)
                 }
 
                 firstMethod { name { it.startsWith("initDialog") } }.hook {
@@ -338,10 +331,10 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
     }
 
     @Obfuscate
-    object VolumeDialogV14 : Hooker {
+    object VolumeDialogV14 : YukiBaseHooker() {
         override fun onHook() {
             var customAlpha =
-                prefs(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
+                preferences(ModulePrefs).getInt("custom_volume_dialog_background_transparency", -1)
             dataChannel.wait<Int>("custom_volume_dialog_background_transparency") {
                 customAlpha = it
             }
@@ -355,7 +348,7 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : Hooker {
 
             volumnDialogClazz.resolve().apply {
                 firstMethodOrNull { name = "isSurrealQualityOn" }?.hook {
-                    replaceToFalse()
+                    intercept(false)
                 }
 
                 firstMethod { parameters(DialogInterface::class) }.hook {

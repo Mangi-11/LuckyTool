@@ -3,13 +3,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 import android.content.Context
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HidePanoramicAodStatusBar : Hooker {
+object HidePanoramicAodStatusBar : YukiBaseHooker() {
     override fun onHook() {
         //Source AodData
         val aodData = "com.oplus.systemui.aod.aodclock.constant.AodData".toClass()
@@ -31,7 +29,7 @@ object HidePanoramicAodStatusBar : Hooker {
                     val isPanoramicAod = aodDataInstance.asResolver().firstMethod {
                         name = "isPanoramicAod"
                     }.invoke<Boolean>() ?: return@before
-                    if (args(0).boolean() && isPanoramicAod) resultFalse()
+                    if (arg(0).get<Boolean>() ?: false && isPanoramicAod) result = false
                 }
             }
         }

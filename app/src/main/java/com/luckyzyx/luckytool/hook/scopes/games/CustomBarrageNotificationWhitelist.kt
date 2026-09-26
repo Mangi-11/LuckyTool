@@ -2,16 +2,14 @@ package com.luckyzyx.luckytool.hook.scopes.games
 
 import android.util.ArraySet
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object CustomBarrageNotificationWhitelist : Hooker {
+object CustomBarrageNotificationWhitelist : YukiBaseHooker() {
     override fun onHook() {
-        val set = prefs(ModulePrefs).getStringSet(
+        val set = preferences(ModulePrefs).getStringSet(
             "custom_barrage_notification_whitelist_list", ArraySet()
         )
 

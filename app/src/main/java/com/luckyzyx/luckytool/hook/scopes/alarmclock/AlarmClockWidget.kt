@@ -11,13 +11,8 @@ import androidx.collection.arrayMapOf
 import androidx.core.graphics.toColorInt
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.hookAll
-import com.luckyzyx.luckytool.hook.core.injectModuleAppResources
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.injectModuleResources
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.safeOfNull
@@ -25,7 +20,7 @@ import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
+class AlarmClockWidget(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     companion object {
         private lateinit var redMode: String
@@ -57,24 +52,26 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
          * 新版时钟V14+替换RemoteViews
          * @receiver Class<*>
          */
-        fun hookBaseClock(clazz: Class<Any>) {
-            clazz.toClass().resolve().apply {
+        fun YukiBaseHooker.hookBaseClock(clazz: Class<Any>) {
+            clazz.resolve().apply {
                 method {
                     emptyParameters()
                     returnType = RemoteViews::class
-                }.hookAll {
-                    after {
-                        val context = (field { type = Context::class }.firstOrNull()
-                            ?: field { type = Context::class;superclass() }.firstOrNull())
-                            ?.of(instance)?.get<Context>() ?: return@after
-                        context.injectModuleAppResources()
-                        val res = result<RemoteViews>() ?: return@after
-                        val layoutName = safeOfNull {
-                            context.resources.getResourceEntryName(res.layoutId)
-                        } ?: return@after
-                        val replaceLayoutId = getReplaceLayout(context, layoutName, redMode)
-                            ?: return@after
-                        result = RemoteViews(context.packageName, replaceLayoutId)
+                }.forEach {
+                    it.hook {
+                        after {
+                            val context = (field { type = Context::class }.firstOrNull()
+                                ?: field { type = Context::class; superclass() }.firstOrNull())
+                                ?.of(instance)?.get<Context>() ?: return@after
+                            context.injectModuleResources()
+                            val res = result<RemoteViews>() ?: return@after
+                            val layoutName = safeOfNull {
+                                context.resources.getResourceEntryName(res.layoutId)
+                            } ?: return@after
+                            val replaceLayoutId = getReplaceLayout(context, layoutName, redMode)
+                                ?: return@after
+                            result = RemoteViews(context.packageName, replaceLayoutId)
+                        }
                     }
                 }
             }
@@ -170,7 +167,7 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
 
 
     override fun onHook() {
-        redMode = prefs(ModulePrefs).getString("alarmclock_widget_redone_mode", "0")
+        redMode = preferences(ModulePrefs).getString("alarmclock_widget_redone_mode", "0")
         dataChannel.wait<String>("alarmclock_widget_redone_mode") { redMode = it }
 
         val onePlusWidget = OnePlusWidget.toClassOrNull()?.resolve() ?: return
@@ -192,33 +189,33 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
         }
     }
 
-    private class BaseAlarmClock15(val dexKitBridge: DexKitBridge) : Hooker {
+    private class BaseAlarmClock15(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //Source BaseClockWidget
             //Source OnePlusWidget / OppoWeather / OppoWeatherSingle / OppoWeatherVertical
             dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Class::class.java)
-                        addForType(Context::class.java)
-                        addForType(Bitmap::class.java)
-                        addForType(Boolean::class.java)
-                        addForType(Int::class.java)
+                        addForType(classOf<Class<*>>())
+                        addForType(classOf<Context>())
+                        addForType(classOf<Bitmap>())
+                        addForType(classOf<Boolean>())
+                        addForType(classOf<Int>())
                     }
                     methods {
                         add {
                             paramCount(0)
-                            returnType(Int::class.java)
+                            returnType(classOf<Int>())
                         }
                         add {
-                            paramTypes(RemoteViews::class.java, Int::class.java, String::class.java)
+                            paramTypes(classOf<RemoteViews>(), classOf<Int>(), classOf<String>())
                             usingStrings("setTimeZone")
                         }
                         add {
                             paramTypes(
-                                RemoteViews::class.java,
-                                Boolean::class.java,
-                                Boolean::class.java
+                                classOf<RemoteViews>(),
+                                classOf<Boolean>(),
+                                classOf<Boolean>()
                             )
 //                            usingStrings(
 //                                "com.oplus.widget.smallweather.WEATHER_CLICK",
@@ -227,14 +224,14 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
                         }
                         add {
                             paramTypes(
-                                RemoteViews::class.java,
-                                Int::class.java,
-                                CharSequence::class.java
+                                classOf<RemoteViews>(),
+                                classOf<Int>(),
+                                classOf<CharSequence>()
                             )
                             usingStrings("setFormat24Hour", "setFormat12Hour")
                         }
                         add {
-                            paramTypes(RemoteViews::class.java)
+                            paramTypes(classOf<RemoteViews>())
                             usingStrings("com.oplus.widget.smallweather.REFRESH_CLICK")
                         }
                     }
@@ -246,32 +243,32 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
         }
     }
 
-    private object BaseAlarmClock14 : Hooker {
+    private object BaseAlarmClock14 : YukiBaseHooker() {
         override fun onHook() {
             //Source BaseClockWidget
             hookBaseClock(BaseClockWidget.toClass())
         }
     }
 
-    private class AlarmClock130(val dexKitBridge: DexKitBridge) : Hooker {
+    private class AlarmClock130(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             //OnePlusWidget setTextViewText -> local_hour_txt -> SpannableStringBuilder -> CharSequence
             dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Boolean::class.java)
-                        addForType(Handler::class.java)
+                        addForType(classOf<Boolean>())
+                        addForType(classOf<Handler>())
                     }
                     methods {
-                        add { returnType(Boolean::class.java) }
-                        add { returnType(Handler::class.java) }
-                        add { paramTypes(Context::class.java) }
-                        add { paramTypes(Context::class.java, String::class.java) }
+                        add { returnType(classOf<Boolean>()) }
+                        add { returnType(classOf<Handler>()) }
+                        add { paramTypes(classOf<Context>()) }
+                        add { paramTypes(classOf<Context>(), classOf<String>()) }
                         add {
                             paramTypes(
-                                Context::class.java,
-                                String::class.java,
-                                String::class.java
+                                classOf<Context>(),
+                                classOf<String>(),
+                                classOf<String>()
                             )
                         }
                     }
@@ -282,13 +279,15 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
                     resolve().method {
                         parameters { it[0] == classOf<Context>() && it[1] == classOf<String>() }
                         parameterCount { it in 2..3 }
-                    }.hookAll {
-                        after {
-                            if (redMode == "0") return@after
-                            result = when (redMode) {
-                                "1" -> result<CharSequence>()?.let { s -> setCharRedOne(s) }
-                                "2" -> result<CharSequence>().toString()
-                                else -> result
+                    }.forEach {
+                        it.hook {
+                            after {
+                                if (redMode == "0") return@after
+                                result = when (redMode) {
+                                    "1" -> result<CharSequence>()?.let { s -> setCharRedOne(s) }
+                                    "2" -> result<CharSequence>().toString()
+                                    else -> result
+                                }
                             }
                         }
                     }
@@ -297,7 +296,7 @@ class AlarmClockWidget(val dexKitBridge: DexKitBridge) : Hooker {
         }
     }
 
-    private object AlarmClock12 : Hooker {
+    private object AlarmClock12 : YukiBaseHooker() {
         override fun onHook() {
             //Source OnePlusWidget
             "com.coloros.widget.smallweather.OnePlusWidget".toClass().resolve().apply {

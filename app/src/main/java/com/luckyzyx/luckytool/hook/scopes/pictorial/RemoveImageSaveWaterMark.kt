@@ -5,34 +5,33 @@ import android.graphics.Bitmap
 import android.os.Handler
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 import java.io.File
 
 @Obfuscate
-class RemoveImageSaveWaterMark(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveImageSaveWaterMark(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Search ImageSaveManager
         //Search getWaterMaskBitmap -> standard_water_mask_template / high_quality_water_mask_template
         dexKitBridge.findClass {
             matcher {
                 fields {
-                    addForType(File::class.java)
-                    addForType(Handler::class.java)
-                    addForType(Long::class.java)
-                    addForType(Boolean::class.java)
-                    addForType(String::class.java)
+                    addForType(classOf<File>())
+                    addForType(classOf<Handler>())
+                    addForType(classOf<Long>())
+                    addForType(classOf<Boolean>())
+                    addForType(classOf<String>())
                 }
                 methods {
-                    add { returnType(Handler::class.java) }
-                    add { returnType(Bitmap::class.java) }
-                    add { returnType(Boolean::class.java) }
-                    add { paramTypes(Context::class.java) }
-                    add { paramCount(5);returnType(Bitmap::class.java) }
+                add { returnType(classOf<Handler>()) }
+                    add { returnType(classOf<Bitmap>()) }
+                    add { returnType(classOf<Boolean>()) }
+                    add { paramTypes(classOf<Context>()) }
+                    add { paramCount(5);returnType(classOf<Bitmap>()) }
                     add { paramTypes("com.heytap.pictorial.core.bean.BasePictorialData") }
                 }
             }
@@ -44,7 +43,7 @@ class RemoveImageSaveWaterMark(val dexKitBridge: DexKitBridge) : Hooker {
                     returnType = Bitmap::class
                 }.hook {
                     after {
-                        result = args(2).cast<Bitmap>() ?: return@after
+                        result = arg(2).get<Bitmap>() ?: return@after
                     }
                 }
             }

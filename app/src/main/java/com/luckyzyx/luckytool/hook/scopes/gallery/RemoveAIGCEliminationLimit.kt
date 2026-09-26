@@ -2,20 +2,18 @@ package com.luckyzyx.luckytool.hook.scopes.gallery
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source EliminateDetectInfo / PanoramicSegmentationInfo
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(Boolean::class.java)
+                addFieldForType(classOf<Boolean>())
                 addMethod { name("equals") }
                 addMethod { name("hashCode") }
                 addMethod { name("toString") }
@@ -28,8 +26,8 @@ class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : Hooker {
                 firstConstructor { parameters { it.contains(classOf<Boolean>()) } }.hook {
                     before {
                         args.forEachIndexed { index, it ->
-                            if (it is Boolean) args(index).set(false)
-                            if (it?.javaClass?.isEnum == true) args(index).set(null)
+                            if (it is Boolean) arg(index).set(false)
+                            if (it?.javaClass?.isEnum == true) arg(index).set(null)
                         }
                     }
                 }
@@ -39,9 +37,9 @@ class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : Hooker {
         //Source EliminateStack / PanoramicSegmentationStack
         dexKitBridge.findClass {
             matcher {
-                addFieldForType(Int::class.java)
-                addFieldForType(String::class.java)
-                addFieldForType(Boolean::class.java)
+                addFieldForType(classOf<Int>())
+                addFieldForType(classOf<String>())
+                addFieldForType(classOf<Boolean>())
                 addMethod { name("equals") }
                 addMethod { name("hashCode") }
                 addMethod { name("toString") }
@@ -54,10 +52,10 @@ class RemoveAIGCEliminationLimit(val dexKitBridge: DexKitBridge) : Hooker {
                 firstConstructor { parameters { it.contains(classOf<Boolean>()) } }.hook {
                     before {
                         args.forEachIndexed { index, it ->
-                            if (it is Boolean) args(index).set(false)
-                            if (it?.javaClass?.isEnum == true) args(index).set(null)
+                            if (it is Boolean) arg(index).set(false)
+                            if (it?.javaClass?.isEnum == true) arg(index).set(null)
                         }
-                        if (args.last() is Boolean) args().last().set(true)
+                        if (lastArg().get() is Boolean) lastArg().set(true)
                     }
                 }
             }

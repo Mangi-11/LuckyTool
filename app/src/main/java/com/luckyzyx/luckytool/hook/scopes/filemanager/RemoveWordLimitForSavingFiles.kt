@@ -1,15 +1,14 @@
 package com.luckyzyx.luckytool.hook.scopes.filemanager
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveWordLimitForSavingFiles(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveWordLimitForSavingFiles(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source ActionModeController
         dexKitBridge.findClass {
@@ -21,7 +20,7 @@ class RemoveWordLimitForSavingFiles(val dexKitBridge: DexKitBridge) : Hooker {
 
             findField {
                 matcher {
-                    type(Int::class.java)
+                    type(classOf<Int>())
                     addReadMethod {
                         paramCount(0)
                         returnType(Void.TYPE)

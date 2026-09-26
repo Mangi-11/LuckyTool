@@ -1,14 +1,11 @@
 package com.luckyzyx.luckytool.hook.scopes.calendar
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.result
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveHolidayPageInformationFlow : Hooker {
+object RemoveHolidayPageInformationFlow : YukiBaseHooker() {
     override fun onHook() {
         //Source SpecialHolidayWebViewDetailViewModel > V13.9.16
         "com.coloros.calendar.app.specialholiday.SpecialHolidayWebViewDetailViewModel".toClassOrNull()

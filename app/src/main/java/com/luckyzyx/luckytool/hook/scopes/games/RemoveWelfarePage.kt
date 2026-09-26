@@ -5,24 +5,20 @@ import androidx.core.view.isVisible
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
 import com.highcapable.kavaref.extension.classOf
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.instance
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class RemoveWelfarePage(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveWelfarePage(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val mainPanelView = "business.mainpanel.MainPanelView".toClassOrNull()
         if (mainPanelView == null) {
             "business.mainpanel.main.MainPanelFragment".toClass().resolve().apply {
                 firstMethod { name = "addRadioButton" }.hook {
                     before {
-                        if (args().first().string() == "welfare") resultNull()
+                        if ((firstArg().get<String>() ?: "") == "welfare") result = null
                     }
                 }
                 firstMethod { name = "initView" }.hook {
@@ -39,9 +35,9 @@ class RemoveWelfarePage(val dexKitBridge: DexKitBridge) : Hooker {
                 }
             }.findField {
                 matcher {
-                    type(String::class.java)
+                    type(classOf<String>())
                     addReadMethod {
-                        paramTypes(null, Boolean::class.java, Boolean::class.java)
+                        paramTypes(null, classOf<Boolean>(), classOf<Boolean>())
                         returnType(Void.TYPE)
                         usingStrings("perf", "tool")
                     }
@@ -74,9 +70,9 @@ class RemoveWelfarePage(val dexKitBridge: DexKitBridge) : Hooker {
                 returnType = Void.TYPE
             }.hook {
                 before {
-                    val list = args().first().list<Any>()
+                    val list = firstArg().get<List<Any>>() ?: emptyList()
                     val first = list.getOrNull(0) ?: return@before
-                    args().first().set(ArrayList(arrayListOf(first)))
+                    firstArg().set(ArrayList(arrayListOf(first)))
                 }
             }
         }

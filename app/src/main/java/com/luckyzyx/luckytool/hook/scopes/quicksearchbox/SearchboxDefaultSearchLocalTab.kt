@@ -1,15 +1,14 @@
 package com.luckyzyx.luckytool.hook.scopes.quicksearchbox
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class SearchboxDefaultSearchLocalTab(val dexKitBridge: DexKitBridge) : Hooker {
+class SearchboxDefaultSearchLocalTab(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source SearchResultFragment -> getDefaultTabId
         //Search From com.heytap.common.constants.Tab -> GENERAL -> LOCAL
@@ -23,7 +22,7 @@ class SearchboxDefaultSearchLocalTab(val dexKitBridge: DexKitBridge) : Hooker {
             findMethod {
                 matcher {
                     paramCount(0)
-                    returnType(String::class.java)
+                    returnType(classOf<String>())
                     addUsingField {
                         type("com.heytap.quicksearchbox.core.localsearch.SearchParams")
                     }
@@ -44,7 +43,7 @@ class SearchboxDefaultSearchLocalTab(val dexKitBridge: DexKitBridge) : Hooker {
                         emptyParameters()
                         returnType = String::class
                     }.hook {
-                        replaceTo("local")
+                        intercept("local")
                     }
                 }
             }

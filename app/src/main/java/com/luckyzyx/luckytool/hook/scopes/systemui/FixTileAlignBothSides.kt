@@ -7,10 +7,7 @@ import android.widget.LinearLayout
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getScreenOrientation
@@ -18,7 +15,7 @@ import com.luckyzyx.luckytool.utils.safeOfNull
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object FixTileAlignBothSides : Hooker {
+object FixTileAlignBothSides : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
         if (osCode <= 26) loadHooker(HookTileAlignVertical)
@@ -26,7 +23,7 @@ object FixTileAlignBothSides : Hooker {
     }
 
     @Obfuscate
-    private object HookTileAlignVertical : Hooker {
+    private object HookTileAlignVertical : YukiBaseHooker() {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
             //Sourcee QuickStatusBarHeader 竖屏溢出
@@ -53,11 +50,11 @@ object FixTileAlignBothSides : Hooker {
     }
 
     @Obfuscate
-    private object HookTileAlignHorizontal : Hooker {
+    private object HookTileAlignHorizontal : YukiBaseHooker() {
         @SuppressLint("DiscouragedApi")
         override fun onHook() {
-            val isCustomTile = prefs(ModulePrefs).getBoolean("control_center_tile_enable", false)
-            val columnHorizontal = prefs(ModulePrefs).getInt("tile_columns_horizontal_c13", 4)
+            val isCustomTile = preferences(ModulePrefs).getBoolean("control_center_tile_enable", false)
+            val columnHorizontal = preferences(ModulePrefs).getInt("tile_columns_horizontal_c13", 4)
 
             val QSFragmentHelperCls = VariousClass(
                 "com.oplusos.systemui.qs.helper.QSFragmentHelper", //C13

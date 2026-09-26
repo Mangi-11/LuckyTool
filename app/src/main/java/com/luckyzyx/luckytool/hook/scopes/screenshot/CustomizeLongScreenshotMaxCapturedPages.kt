@@ -2,15 +2,14 @@ package com.luckyzyx.luckytool.hook.scopes.screenshot
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.condition.type.VagueType
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class CustomizeLongScreenshotMaxCapturedPages(val dexKitBridge: DexKitBridge) : Hooker {
+class CustomizeLongScreenshotMaxCapturedPages(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         //Source ScrollCaptureConfigs -> scroll_configs_max_captured_pages / scroll_configs_max_captured_pixels
         //Source StitchLimitUtils -> isCapturedPagesReachLimit / trimToStitchLimit
@@ -18,11 +17,11 @@ class CustomizeLongScreenshotMaxCapturedPages(val dexKitBridge: DexKitBridge) : 
             matcher {
                 fieldCount(0)
                 methods {
-                    add { returnType(Int::class.java) }
-                    add { returnType(Boolean::class.java) }
+                    add { returnType(classOf<Int>()) }
+                    add { returnType(classOf<Boolean>()) }
                     add {
-                        paramTypes(Int::class.java, Int::class.java)
-                        returnType(Int::class.java)
+                        paramTypes(classOf<Int>(), classOf<Int>())
+                        returnType(classOf<Int>())
                     }
                 }
                 usingStrings("StitchLimitUtils")
@@ -36,7 +35,7 @@ class CustomizeLongScreenshotMaxCapturedPages(val dexKitBridge: DexKitBridge) : 
                     parameterCount = 2
                     returnType = Boolean::class
                 }.hook {
-                    replaceToFalse()
+                    intercept(false)
                 }
                 //trimToStitchLimit
                 firstMethod {
@@ -44,7 +43,7 @@ class CustomizeLongScreenshotMaxCapturedPages(val dexKitBridge: DexKitBridge) : 
                     parameterCount = 3
                     returnType = Int::class
                 }.hook {
-                    replaceTo(-1)
+                    intercept(-1)
                 }
             }
         }

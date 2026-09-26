@@ -1,17 +1,15 @@
 package com.luckyzyx.luckytool.hook.scopes.market
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.highcapable.kavaref.extension.toClassOrNull
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Obfuscate
-class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooker {
+class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
         val isV4 = "com.heytap.cdo.splash.domain.dto.v4.SplashDtoV4".toClassOrNull() != null
         if (isV4) loadHooker(MarketSplashPageV4(dexKitBridge))
@@ -19,7 +17,7 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
     }
 
     @Obfuscate
-    class MarketSplashPageV4(val dexKitBridge: DexKitBridge) : Hooker {
+    class MarketSplashPageV4(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             val splashDto = "com.heytap.cdo.splash.domain.dto.v4.SplashDtoV4"
             val mediaDto = "com.heytap.cdo.splash.domain.dto.v4.MediaComponentDtoV4"
@@ -29,20 +27,20 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
             dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Int::class.java)
-                        addForType(Long::class.java)
-                        addForType(Boolean::class.java)
-                        addForType(AtomicBoolean::class.java)
+                    addForType(classOf<Int>())
+                        addForType(classOf<Long>())
+                        addForType(classOf<Boolean>())
+                        addForType(classOf<AtomicBoolean>())
                     }
                     methods {
-                        add { paramTypes(String::class.java); returnType(Boolean::class.java) }
-                        add { paramTypes(Boolean::class.java); returnType(splashDto) }
+                    add { paramTypes(classOf<String>()); returnType(classOf<Boolean>()) }
+                        add { paramTypes(classOf<Boolean>()); returnType(splashDto) }
                         add {
-                            paramTypes(Boolean::class.java.name, Int::class.java.name, splashDto)
+                        paramTypes(classOf<Boolean>().name, classOf<Int>().name, splashDto)
                             returnType(Void.TYPE)
                         }
-                        add { paramTypes(splashDto, Boolean::class.java.name, mediaDto) }
-                        add { paramTypes(splashDto, Boolean::class.java.name, imageDto) }
+                        add { paramTypes(splashDto, classOf<Boolean>().name, mediaDto) }
+                        add { paramTypes(splashDto, classOf<Boolean>().name, imageDto) }
                     }
                     usingStrings("getSplashData")
                 }
@@ -50,7 +48,7 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
                 checkDataList("RemoveMarketSplashPageAppRecommend")
                 single().name.toClass().resolve().apply {
                     firstMethod {
-                        parameters(Boolean::class.java)
+                    parameters(classOf<Boolean>())
                         returnType(splashDto)
                     }.hook {
                         intercept()
@@ -61,7 +59,7 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
     }
 
     @Obfuscate
-    class MarketSplashPageV2(val dexKitBridge: DexKitBridge) : Hooker {
+    class MarketSplashPageV2(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             val splashDto = "com.heytap.cdo.splash.domain.dto.v2.SplashDto"
             val mediaDto = "com.heytap.cdo.splash.domain.dto.v2.MediaComponentDto"
@@ -71,20 +69,20 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
             dexKitBridge.findClass {
                 matcher {
                     fields {
-                        addForType(Int::class.java)
-                        addForType(Long::class.java)
-                        addForType(Boolean::class.java)
-                        addForType(AtomicBoolean::class.java)
+                    addForType(classOf<Int>())
+                        addForType(classOf<Long>())
+                        addForType(classOf<Boolean>())
+                        addForType(classOf<AtomicBoolean>())
                     }
                     methods {
-                        add { paramTypes(String::class.java); returnType(Boolean::class.java) }
-                        add { paramTypes(Boolean::class.java); returnType(splashDto) }
+                    add { paramTypes(classOf<String>()); returnType(classOf<Boolean>()) }
+                        add { paramTypes(classOf<Boolean>()); returnType(splashDto) }
                         add {
-                            paramTypes(Boolean::class.java.name, Int::class.java.name, splashDto)
+                        paramTypes(classOf<Boolean>().name, classOf<Int>().name, splashDto)
                             returnType(Void.TYPE)
                         }
-                        add { paramTypes(splashDto, Boolean::class.java.name, mediaDto) }
-                        add { paramTypes(splashDto, Boolean::class.java.name, imageDto) }
+                        add { paramTypes(splashDto, classOf<Boolean>().name, mediaDto) }
+                        add { paramTypes(splashDto, classOf<Boolean>().name, imageDto) }
                     }
                     usingStrings("getSplashData")
                 }
@@ -92,7 +90,7 @@ class RemoveMarketSplashPageAppRecommend(val dexKitBridge: DexKitBridge) : Hooke
                 checkDataList("RemoveMarketSplashPageAppRecommend")
                 single().name.toClass().resolve().apply {
                     firstMethod {
-                        parameters(Boolean::class.java)
+                        parameters(classOf<Boolean>())
                         returnType(splashDto)
                     }.hook {
                         intercept()

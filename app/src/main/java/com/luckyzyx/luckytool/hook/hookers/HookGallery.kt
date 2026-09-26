@@ -1,6 +1,6 @@
 package com.luckyzyx.luckytool.hook.hookers
 
-import com.luckyzyx.luckytool.hook.core.Hooker
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.hook.scopes.camera.HookCameraConfig
 import com.luckyzyx.luckytool.hook.scopes.gallery.GalleryWaterMarkWordDialog
 import com.luckyzyx.luckytool.hook.scopes.gallery.HookFunctionManager
@@ -16,7 +16,7 @@ import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object HookGallery : Hooker {
+object HookGallery : YukiBaseHooker() {
     override fun onHook() {
         val osCode = getOSVersionCode
 
@@ -32,15 +32,15 @@ object HookGallery : Hooker {
             if (osCode < 34) loadHooker(HookFunctionManager(dexKitBridge))
 
             //替换OnePlus机型水印
-            if (prefs(ModulePrefs).getBoolean("replace_oneplus_model_watermark", false)) {
+            if (preferences(ModulePrefs).getBoolean("replace_oneplus_model_watermark", false)) {
                 if (osCode >= 34) loadHooker(ReplaceOnePlusModelWatermark(dexKitBridge))
             }
             //移除自定义水印字数限制
-            if (prefs(ModulePrefs).getBoolean("remove_gallery_watermark_word_limit", false)) {
+            if (preferences(ModulePrefs).getBoolean("remove_gallery_watermark_word_limit", false)) {
                 if (osCode < 30) loadHooker(GalleryWaterMarkWordDialog(dexKitBridge))
             }
             //移除AIGC消除限制
-            if (prefs(ModulePrefs).getBoolean("remove_aigc_elimination_limit", false)) {
+            if (preferences(ModulePrefs).getBoolean("remove_aigc_elimination_limit", false)) {
                 if (SDK < A15) loadHooker(RemoveAIGCEliminationLimit(dexKitBridge))
             }
         }

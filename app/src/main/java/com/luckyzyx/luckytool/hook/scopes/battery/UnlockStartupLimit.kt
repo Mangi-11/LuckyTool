@@ -4,15 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
+import com.highcapable.kavaref.extension.classOf
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
 @Obfuscate
-class UnlockStartupLimit(val dexKitBridge: DexKitBridge) : Hooker {
+class UnlockStartupLimit(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     override fun onHook() {
         val recordDatabase = "com.oplus.startupapp.data.database.RecordDatabase"
@@ -22,15 +21,15 @@ class UnlockStartupLimit(val dexKitBridge: DexKitBridge) : Hooker {
         dexKitBridge.findMethod {
             matcher {
                 declaredClass {
-                    addFieldForType(Context::class.java)
+                addFieldForType(classOf<Context>())
                     addFieldForType(recordDatabase)
                     usingStrings("StartupManager")
-                    addMethod { paramCount(0);returnType(Int::class.java) }
-                    addMethod { paramTypes(Intent::class.java);returnType(Void.TYPE) }
-                    addMethod { paramTypes(Bundle::class.java);returnType(Void.TYPE) }
+                    addMethod { paramCount(0);returnType(classOf<Int>()) }
+                    addMethod { paramTypes(classOf<Intent>());returnType(Void.TYPE) }
+                    addMethod { paramTypes(classOf<Bundle>());returnType(Void.TYPE) }
                 }
                 paramCount(0)
-                returnType(Int::class.java)
+                returnType(classOf<Int>())
                 usingNumbers(5, 20)
             }
         }.apply {
@@ -41,7 +40,7 @@ class UnlockStartupLimit(val dexKitBridge: DexKitBridge) : Hooker {
                     emptyParameters()
                     returnType = Int::class
                 }.hook {
-                    replaceTo(999)
+                    intercept(999)
                 }
             }
         }

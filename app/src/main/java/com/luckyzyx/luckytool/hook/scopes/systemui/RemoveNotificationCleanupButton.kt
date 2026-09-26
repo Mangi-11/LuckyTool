@@ -2,13 +2,11 @@ package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
 @Obfuscate
-object RemoveNotificationCleanupButton : Hooker {
+object RemoveNotificationCleanupButton : YukiBaseHooker() {
     override fun onHook() {
         //Source ClearAllController
         VariousClass(
@@ -18,8 +16,8 @@ object RemoveNotificationCleanupButton : Hooker {
         ).toClass().resolve().apply {
             firstMethod { name = "setVisible";parameterCount = 3 }.hook {
                 before {
-                    args(1).setFalse()
-                    args().last().setFalse()
+                    arg(1).set(false)
+                    lastArg().set(false)
                 }
             }
         }

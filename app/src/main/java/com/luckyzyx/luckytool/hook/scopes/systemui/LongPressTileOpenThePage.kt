@@ -5,17 +5,14 @@ import android.os.Handler
 import android.telephony.SubscriptionManager
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.kavaref.extension.VariousClass
-import com.highcapable.kavaref.extension.toClass
-import com.luckyzyx.luckytool.hook.core.Hooker
-import com.luckyzyx.luckytool.hook.core.hook
-import com.luckyzyx.luckytool.hook.core.toClass
+import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.SDK
 import org.lsposed.lsparanoid.Obfuscate
 import java.lang.ref.WeakReference
 
 @Obfuscate
-object LongPressTileOpenThePage : Hooker {
+object LongPressTileOpenThePage : YukiBaseHooker() {
     override fun onHook() {
         if (SDK == A13) loadHooker(LongPressTileV13)
         else loadHooker(LongPressTile)
@@ -24,16 +21,16 @@ object LongPressTileOpenThePage : Hooker {
     }
 
     @Obfuscate
-    object LongPressTile : Hooker {
+    object LongPressTile : YukiBaseHooker() {
         override fun onHook() {
             //QSTileImpl
             "com.android.systemui.qs.tileimpl.QSTileImpl".toClass().resolve().apply {
                 firstMethod { name = "longClick";parameterCount = 1 }.hook {
                     before {
                         firstField { name = "mHandler" }.of(instance).get<Handler>()
-                            ?.obtainMessage(4, 0, 0, WeakReference(args().first().any()))
+                            ?.obtainMessage(4, 0, 0, WeakReference(firstArg().get()))
                             ?.sendToTarget()
-                        resultNull()
+                        result = null
                     }
                 }
             }
@@ -41,7 +38,7 @@ object LongPressTileOpenThePage : Hooker {
     }
 
     @Obfuscate
-    object LongPressTileV13 : Hooker {
+    object LongPressTileV13 : YukiBaseHooker() {
         override fun onHook() {
             //QSTileImpl
             "com.android.systemui.qs.tileimpl.QSTileImpl".toClass().resolve().apply {
@@ -49,7 +46,7 @@ object LongPressTileOpenThePage : Hooker {
                     before {
                         firstField { name = "mClickHandler" }.of(instance).get<Handler>()
                             ?.sendEmptyMessage(4)
-                        resultNull()
+                        result = null
                     }
                 }
             }
@@ -57,7 +54,7 @@ object LongPressTileOpenThePage : Hooker {
     }
 
     @Obfuscate
-    object HookCellularTileIntent : Hooker {
+    object HookCellularTileIntent : YukiBaseHooker() {
         override fun onHook() {
             //Source OplusCellularTile
             VariousClass(

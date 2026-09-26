@@ -28,7 +28,7 @@ object StatusBarControlCenter : YukiBaseHooker() {
 
         //通知两侧对齐
         if (preferences(ModulePrefs).getBoolean("enable_notification_align_both_sides", false)) {
-            loadHooker(EnableNotificationAlignBothSides)
+            if (osCode >= 23) loadHooker(EnableNotificationAlignBothSides)
         }
         //移除控制中心多用户
         if (preferences(ModulePrefs).getBoolean("remove_control_center_user_switcher", false)) {
@@ -49,7 +49,10 @@ object StatusBarControlCenter : YukiBaseHooker() {
 
         //启用控制中心进度条百分比显示
         val enableProgressPercent =
-            preferences(ModulePrefs).getBoolean("enable_control_center_progress_percent_display", false)
+            preferences(ModulePrefs).getBoolean(
+                "enable_control_center_progress_percent_display",
+                false
+            )
         if (enableProgressPercent) {
             loadHooker(EnableControlCenterProgressPercentDisplay)
         }

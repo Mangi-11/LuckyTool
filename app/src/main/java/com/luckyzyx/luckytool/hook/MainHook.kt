@@ -144,8 +144,6 @@ class MainHook : YukiHookXposedModule {
     override fun onInit() {
         configure {
             logging {
-                // 注意：logging 块内 TAG 会解析到 YLog.Config.TAG（Int，日志元素标识），
-                // 需显式限定本类的常量
                 tag = MainHook.TAG
             }
         }
@@ -157,10 +155,6 @@ class MainHook : YukiHookXposedModule {
         }
     }
 
-    /**
-     * hook 装载：YukiHook 的 encase 注册装载回调，每包加载时执行 loadApp 匹配，
-     * 子 hooker 经 YukiHook 的 loadHooker 直接装载（均继承 YukiBaseHooker）。
-     */
     override fun onHook() = encase {
         if (isMasterEnabled()) return@encase
 

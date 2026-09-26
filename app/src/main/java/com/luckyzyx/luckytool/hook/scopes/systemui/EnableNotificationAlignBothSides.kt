@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getScreenOrientation
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -15,9 +14,6 @@ object EnableNotificationAlignBothSides : YukiBaseHooker() {
 
     @SuppressLint("DiscouragedApi")
     override fun onHook() {
-        val osCode = getOSVersionCode
-        if (osCode < 23) return
-
         //Source C12+: NotificationStackScrollLayout
         //通知卡片两侧留白由 mSidePaddings 原生控制,onMeasure 统一按 (size - mSidePaddings * 2) 测量子视图,onLayout 自动水平居中
         //锁屏媒体卡(hostView/MediaContainerView)同为 NSSL 子视图,一并覆盖

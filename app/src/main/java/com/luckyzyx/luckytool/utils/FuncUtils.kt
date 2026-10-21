@@ -60,48 +60,53 @@ import kotlin.math.roundToLong
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
-/**
- * 获取设备信息
- * @receiver Context
- * @return String
- */
+/** 设备信息按字段保存，显示时再根据当前语言解析标题。 */
+data class DeviceInfoEntry(val labelRes: Int, val value: String)
+
+fun getDeviceInfoEntries(controller: IGlobalFuncController? = null): List<DeviceInfoEntry> {
+    fun value(vararg parts: String?): String = parts
+        .filterNot { it.isNullOrBlank() || it.equals("null", ignoreCase = true) }
+        .joinToString(" ").ifBlank { "—" }
+    val serial = controller?.snInfo
+    val chip = controller?.chipInfo
+    val osCode = getOSVersionCode
+    val osName = if (osCode > 0) runCatching { getOSVersionName(osCode) }.getOrNull()
+        ?.takeUnless { it == "null" } else null
+    val systemVersion = "Android ${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})" +
+        (osName?.let { " · OS $it ($osCode)" } ?: "")
+    return buildList {
+        add(DeviceInfoEntry(R.string.model, value(getFingerPrintBrand, getFingerPrintModel, getModelMarketName())))
+        add(DeviceInfoEntry(R.string.system, systemVersion))
+        add(DeviceInfoEntry(R.string.version, value(controller?.otaVersion)))
+        add(DeviceInfoEntry(R.string.product, value(Build.PRODUCT, Build.DEVICE, controller?.cpuInfo, controller?.prjNameInfo, controller?.slotInfo)))
+        add(DeviceInfoEntry(R.string.build_version, value(Build.DISPLAY, getManifestEndVersion(controller?.manifestVersion))))
+        add(DeviceInfoEntry(R.string.flash, value(controller?.flashInfo)))
+        if (serial == chip) {
+            add(DeviceInfoEntry(R.string.home_device_pas, value(controller?.pcbInfo, serial)))
+        } else {
+            add(DeviceInfoEntry(R.string.home_device_pos, value(controller?.pcbInfo)))
+            add(DeviceInfoEntry(R.string.home_device_sas, value(serial, chip)))
+        }
+    }
+}
+
+/** 获取设备信息的文本表示，供日志等纯文本场景使用。 */
 fun Context.getDeviceInfo(
     controller: IGlobalFuncController? = null, isLog: Boolean = false
-): String {
-    val androidVer = "Android ${Build.VERSION.RELEASE}(${Build.VERSION.SDK_INT})"
-    val osVer = "OS $getOSVersionName($getOSVersionCode)"
-    return ArrayList<String>().apply {
-        if (isLog) {
-            add("${getString(R.string.module_version)} $getVersionName($getVersionCode)")
-            add("${getString(R.string.root_source)} ${DeviceUtils.getRootVersion(this@getDeviceInfo)}")
-            add("${getString(R.string.framework_version)} ${DeviceUtils.getFrameWorkVersion(this@getDeviceInfo)}")
-        }
-        add("${getString(R.string.model)}: $getFingerPrintBrand $getFingerPrintModel ${getModelMarketName()}")
-        add("${getString(R.string.product)}: ${Build.PRODUCT} ${Build.DEVICE} ${controller?.cpuInfo} ${controller?.prjNameInfo} ${controller?.slotInfo}")
-        add("${getString(R.string.system)}: $androidVer $osVer")
-        add(
-            "${getString(R.string.build_version)}: ${Build.DISPLAY} ${
-                getManifestEndVersion(controller?.manifestVersion)
-            }"
-        )
-        add("${getString(R.string.version)}: ${controller?.otaVersion}")
-        add("${getString(R.string.flash)}: ${controller?.flashInfo}")
-
-        if (controller?.snInfo == controller?.chipInfo) {
-            add("PAS: ${controller?.pcbInfo} ${controller?.snInfo}")
-        } else {
-            add("POS: ${controller?.pcbInfo}")
-            add("SAS: ${controller?.snInfo} ${controller?.chipInfo}")
-        }
-
-        if (isLog) {
-            add(getMyManifesstVersion())
-            add(DeviceUtils.getGuid())
-            add(DeviceUtils.getRecruitId())
-            add(DeviceUtils.getRegisterId())
-        }
-    }.let { formatStringAuto(it, "\n") }
-}
+): String = buildList {
+    if (isLog) {
+        add("${getString(R.string.module_version)} $getVersionName($getVersionCode)")
+        add(DeviceUtils.getRootVersion(this@getDeviceInfo))
+        add(DeviceUtils.getFrameWorkVersion(this@getDeviceInfo))
+    }
+    getDeviceInfoEntries(controller).forEach { add("${getString(it.labelRes)}: ${it.value}") }
+    if (isLog) {
+        add(getMyManifesstVersion())
+        add(DeviceUtils.getGuid())
+        add(DeviceUtils.getRecruitId())
+        add(DeviceUtils.getRegisterId())
+    }
+}.joinToString("\n")
 
 /**
  * 检测包名是否存在

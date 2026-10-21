@@ -1277,4 +1277,9 @@
     <string name="settings_floating_bottom_bar_style">懸浮底欄樣式</string>
     <string name="settings_floating_style_miuix">Miuix</string>
     <string name="settings_floating_style_ios">iOS 風格（液態玻璃）</string>
+    <string name="home_device_details_show">更多裝置資訊</string>
+    <string name="home_device_details_hide">收起詳細資訊</string>
+    <string name="home_device_info_copied">已複製裝置 OTA 資料</string>
+    <string name="home_module_inactive_summary">請在框架管理員中啟用模組</string>
+    <string name="home_info_loading">正在讀取裝置資訊…</string>
 </resources>
